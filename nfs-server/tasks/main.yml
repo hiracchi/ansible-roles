@@ -1,0 +1,19 @@
+# vars
+#   - exports_table:
+#     - export_dir: /mnt/disk1
+#       clients: *(rw,no_root_squash,no_subtree_check)
+
+- name: install nfs-server
+  apt: pkg={{ item }} force=yes update_cache=yes state=latest
+  with_items:
+    - nfs-common
+    - nfs-kernel-server
+
+- name: create exports
+  template: src=exports.j2 dest=/etc/exports 
+
+- name: enabled nfs-kernel-server
+  service: name=nfs-kernel-server enabled=yes
+
+- name: restart nfs-kernel-server
+  service: name=nfs-kernel-server state=restarted

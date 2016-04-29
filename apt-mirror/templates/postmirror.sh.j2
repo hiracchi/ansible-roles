@@ -1,0 +1,13 @@
+#!/bin/bash
+
+RSYNC="rsync --recursive --times --links --hard-links --delete --delete-after"
+SOURCE="rsync://ftp.jaist.ac.jp/pub/Linux/ubuntu"
+TARGET="/var/spool/apt-mirror/mirror/archive.ubuntu.com/ubuntu" 
+dists=(raring raring-security raring-updates raring-backports)
+
+for dist in "${dists[@]}"; do 
+  ${RSYNC} ${SOURCE}/dists/${dist}/main/i18n/ ${TARGET}/dists/${dist}/main/i18n/ 
+  ${RSYNC} ${SOURCE}/dists/${dist}/multiverse/i18n/ ${TARGET}/dists/${dist}/multiverse/i18n/ 
+  ${RSYNC} ${SOURCE}/dists/${dist}/restricted/i18n/ ${TARGET}/dists/${dist}/restricted/i18n/ 
+  ${RSYNC} ${SOURCE}/dists/${dist}/universe/i18n/ ${TARGET}/dists/${dist}/universe/i18n/ 
+done 

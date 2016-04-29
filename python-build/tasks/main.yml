@@ -1,0 +1,27 @@
+---
+- name: install Python version 2.7.11
+  shell: pyenv install -s 2.7.11
+  register: result
+  changed_when: '"Installed python" in result.stderr'
+
+- name: switch to pyenv 2.7.11 version in global
+  shell: pyenv global 2.7.11
+
+- name: upgrade pip packages
+  shell: pip install --upgrade {{ item.name | default(item) }}
+  with_items: pip_packages
+  when: pip_packages
+
+- name: upgrade pip packages (for .local)
+  shell: pip install --upgrade --user {{ item.name | default(item) }}
+  with_items: pip_user_packages
+  when: pip_user_packages
+
+# - name: install latest stable version of Python
+#   shell: pyenv install -s $(pyenv install -l | grep -v - | tail -1)
+#   register: result
+#   changed_when: '"Installed python" in result.stderr'
+# 
+# - name: switch to latest stable version of Python
+#   shell: pyenv global $(pyenv install -l | grep -v - | tail -1)
+

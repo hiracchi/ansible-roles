@@ -1,0 +1,5 @@
+---
+# apt_mirror_spool_path: /var/spool/apt-mirror
+# apt_mirror_storage_path: /var/spool/apt-mirror
+# apt_mirror_remote_site: jp.archive.ubuntu.com
+

@@ -1,0 +1,12 @@
+- name: install devtools
+  become: yes
+  apt: pkg={{ item }} force=yes update_cache=yes state=latest
+  with_items:
+    - electric-fence
+    - ddd
+    - git
+    - subversion
+    - doxygen
+    - graphviz
+    - google-perftools
+    - libgoogle-perftools-dev

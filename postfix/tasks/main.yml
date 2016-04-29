@@ -1,0 +1,35 @@
+# vars
+# 
+# postfix_relay_host: e.g. smtp.gmail.com
+# postfix_relay_port: e.g. 587
+# postfix_relay_user: e.g. someone@gmail.com
+# postfix_relay_password:
+---
+- name: install postfix
+  become: yes
+  apt: pkg={{ item }} force=yes update_cache=yes state=latest
+  with_items:
+    - postfix
+
+- name: set postfix config
+  become: yes
+  template: 
+    src: main.cf.j2 
+    dest: /etc/postfix/main.cf
+
+- name: set relay_password
+  become: yes
+  template:
+    src: sasl_password.j2
+    dest: /etc/postfix/sasl_passwd
+    mode: 0600 
+    owner: root
+
+- name: postmap
+  become: yes
+  command: postmap /etc/postfix/sasl_passwd
+
+- name: service postfix
+  become: yes
+  service: name=postfix enabled=yes state=restarted
+

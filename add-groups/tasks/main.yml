@@ -1,0 +1,12 @@
+# This role require followinf vars:
+# vars:
+#   - my_groups:
+#     - group: pdfadmin
+#       gid: 10000
+#       
+
+- name: add groups
+  group: name="{{ item.group }}"
+         gid="{{ item.gid}}"
+  with_items: my_groups
+

@@ -1,0 +1,12 @@
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+127.0.1.1   {{ inventory_hostname }}
+
+
+{% if hosts_table %}
+{% for item in hosts_table %}
+{{ item['ipv4_address'] }} {{ item['hostname'] }} {{ item['alias'] }}
+{% endfor %}
+{% endif %}
+

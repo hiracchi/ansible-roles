@@ -1,0 +1,3 @@
+- name: setup repository to my apt server
+  template: src=sources.list.j2 dest=/etc/apt/sources.list
+

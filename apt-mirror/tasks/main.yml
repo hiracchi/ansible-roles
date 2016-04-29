@@ -1,0 +1,42 @@
+---
+- name: install apt-mirror
+  become: yes
+  apt: pkg={{ item }} force=yes update_cache=yes state=latest
+  with_items:
+    - apt-mirror
+
+- name: setup mirror list
+  become: yes
+  template: src=mirror.list.j2 dest=/etc/apt/mirror.list
+
+- name: setup postmirror.sh
+  become: yes
+  template: src=postmirror.sh.j2 dest=/var/spool/apt-mirror/var/postmirror.sh 
+
+- name: link ubuntu to apache
+  become: yes
+  file: src="/var/spool/apt-mirror/mirror/{{ apt_mirror_remote_site }}/ubuntu" 
+        dest=/var/www/html/ubuntu
+        state=link
+        force=yes
+
+- name: setup cron for apt-mirror
+  become: yes
+  copy: src=cron_d_apt-mirror dest=/etc/cron.d/apt-mirror
+
+- name: check apt-mirror storage path
+  become: yes
+  shell: test x{{ apt_mirror_storage_path }} = x/var/spool/apt-mirror
+  register: is_empty_apt_mirror_storage_path
+  ignore_errors: True
+
+- name: move apt-mirror spool
+  become: yes
+  shell: mv /var/spool/apt-mirror {{ apt_mirror_storage_path }}
+  when: is_empty_apt_mirror_storage_path | failed
+
+- name: link for apt-mirror spool
+  become: yes
+  file: src="{{ apt_mirror_storage_path }}" dest="/var/spool/apt-mirror" state=link
+  when: is_empty_apt_mirror_storage_path | failed
+

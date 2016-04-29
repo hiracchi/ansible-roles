@@ -1,0 +1,9 @@
+---
+- name: create resolvconf/resolv.conf.d/base
+  become: yes
+  template: src=resolvconf_base.j2 dest=/etc/resolvconf/resolv.conf.d/base
+
+- name: update resolvconf
+  become: yes
+  shell: resolvconf -u
+

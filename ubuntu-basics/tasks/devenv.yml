@@ -1,0 +1,32 @@
+- name: install devtools
+  become: yes
+  apt: pkg={{ item }} force=yes update_cache=yes state=latest
+  with_items:
+    - build-essential
+    - gcc
+    - g++
+    - gfortran
+    - ruby
+    - golang
+    - make
+    - automake 
+    - autoconf 
+    - libtool
+    - pkg-config
+    - git
+    - libreadline-dev
+    - libncurses5-dev
+    - openssl
+    - libssl-dev
+    - zlib1g-dev
+    - libbz2-dev 
+    - libsqlite3-dev
+    - tk8.5-dev
+    - liblzma-dev
+    - liblapack-dev
+    - libpng-dev
+    - libjpeg8-dev
+    - libfreetype6-dev
+    - libyaml-dev
+    - libcppunit-dev
+

@@ -1,0 +1,14 @@
+# ex.)
+# vars
+#   sudoers_table:
+#     - who: user1
+#       where: ALL
+#       as_whom: (ALL)
+#       what: "NOPASSWD: ALL"
+
+- name: show sudoers_table
+  debug: var=sudoers_table
+
+- name: set up sudoers
+  become: yes
+  template: src=sudoers.j2 dest=/etc/sudoers validate='visudo -cf %s'

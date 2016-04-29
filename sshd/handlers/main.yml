@@ -1,0 +1,6 @@
+- name: restart ssh service
+  become: yes
+  service: name=ssh state=restarted
+# - name: restart iptables
+#  become: yes
+#  service: name=iptables state=restarted

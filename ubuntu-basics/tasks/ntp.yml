@@ -1,0 +1,12 @@
+- name: install ntp package
+  become: yes
+  apt: pkg={{ item }} force=yes update_cache=yes state=latest
+  with_items:
+    - ntp
+- name: copy NTP setting file
+  become: yes
+  template: src=ntp.conf.j2 dest=/etc/ntp.conf owner=root mode=0644
+  notify: restart ntp server
+- name: service ntp
+  become: yes
+  service: name=ntp enabled=yes state=restarted

@@ -1,0 +1,26 @@
+# This role require followinf vars:
+# vars:
+#   - my_users:
+#     - user: pdfadmin
+#       group: satolab
+#       groups: pdfadmin,adm,sudo
+#       password: hogehoge
+#       uid: 10000
+#       createhome: yes
+#       
+# ---
+# password string should be created by following:
+# for SHA512
+# python -c "import crypt; print crypt.crypt('test','\$6\$SALTsalt\$')" 
+# 
+# for MD5
+# python -c 'import crypt; print crypt.crypt("gitgit", "$1$SomeSalt$")'
+
+- name: add users
+  user: name="{{ item.user }}"
+        createhome="{{ item.createhome }}"
+        uid=10000
+        group="{{ item.group }}"
+        groups="{{ item.groups }}"
+        password="{{ item.password }}"
+  with_items: my_users

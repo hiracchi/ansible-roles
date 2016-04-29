@@ -1,0 +1,13 @@
+# vars
+#   hosts_table:
+#     - hostname: sample01.localdomain
+#       ipv4_address: 192.168.0.1
+#       alias: sample01
+
+- name: show hosts_table
+  debug: var=hosts_table
+
+- name: manage hosts
+  become: yes
+  template: src=hosts.j2 dest=/etc/hosts
+
