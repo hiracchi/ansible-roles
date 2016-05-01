@@ -5,6 +5,8 @@
     - electric-fence
     - ddd
     - git
+    - git-flow
+    - tig
     - subversion
     - doxygen
     - graphviz
