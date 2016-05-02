@@ -12,6 +12,7 @@
     - automake 
     - autoconf 
     - libtool
+    - cmake
     - pkg-config
     - git
     - libreadline-dev
