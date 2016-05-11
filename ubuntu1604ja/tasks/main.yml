@@ -1,0 +1,23 @@
+- name: add ubuntu-ja-archive keyring
+  become: yes
+  shell: wget -q https://www.ubuntulinux.jp/ubuntu-ja-archive-keyring.gpg -O- | sudo apt-key add -
+- name: add ubuntu-ja-ppa keyring
+  become: yes
+  shell: wget -q https://www.ubuntulinux.jp/ubuntu-jp-ppa-keyring.gpg -O- | sudo apt-key add -
+- name: add sources.list
+  become: yes
+  shell: wget https://www.ubuntulinux.jp/sources.list.d/xenial.list -O /etc/apt/sources.list.d/ubuntu-ja.list 
+  args:
+    creates: /etc/apt/sources.list.d/ubuntu-ja.list
+- name: apt-get update
+  become: yes
+  apt: update_cache=yes state=latest
+- name: Update all packages to the latest version
+  become: yes
+  apt: upgrade=dist state=latest
+- name: install ja packages
+  become: yes
+  apt: pkg={{ item }} force=yes update_cache=yes state=latest
+  with_items:
+    - ubuntu-defaults-ja
+

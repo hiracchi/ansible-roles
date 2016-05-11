@@ -20,4 +20,4 @@
   apt: pkg={{ item }} force=yes update_cache=yes state=latest
   with_items:
     - ubuntu-defaults-ja
-    - language-pack-ja
+
