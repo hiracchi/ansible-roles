@@ -1,0 +1,8 @@
+---
+- name: install aptitude
+  become: yes
+  apt: name=aptitude state=latest
+- name: apt-upgrade
+  become: yes
+  apt: update_cache=yes upgrade=safe
+  
