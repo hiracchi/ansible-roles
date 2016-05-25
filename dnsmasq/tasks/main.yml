@@ -1,8 +1,3 @@
-# vars
-#   - dns_table:
-#     - nameserver: 8.8.8.8
-#     - nameserver: 8.8.4.4
-# 
 ---
 - name: install dnsmasq
   become: yes
@@ -13,10 +8,6 @@
 - name: create dnsmasq.conf
   become: yes
   template: src=dnsmasq.conf.j2 dest=/etc/dnsmasq.conf
-
-- name: create resolv.conf
-  become: yes
-  template: src=resolv.conf.j2 dest=/etc/resolv.conf
 
 - name: service dnsmasq
   become: yes

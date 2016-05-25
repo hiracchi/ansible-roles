@@ -10,6 +10,10 @@
   apt: pkg={{ item }} force=yes update_cache=yes state=latest
   with_items:
     - postfix
+    - mailutils
+    - libsasl2-2
+    - ca-certificates
+    - libsasl2-modules
 
 - name: set postfix config
   become: yes
@@ -29,7 +33,7 @@
   become: yes
   command: postmap /etc/postfix/sasl_passwd
 
-- name: service postfix
+- name: restart service postfix
   become: yes
   service: name=postfix enabled=yes state=restarted
 
