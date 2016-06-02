@@ -14,28 +14,52 @@ set _tilde 0
 #
 ############# end config ##############
 
+# 16.04(xenial)
+deb-amd64 http://{{ apt_mirror_remote_site }}/ubuntu xenial main restricted universe multiverse
+deb-amd64 http://{{ apt_mirror_remote_site }}/ubuntu xenial-security main restricted universe multiverse
+deb-amd64 http://{{ apt_mirror_remote_site }}/ubuntu xenial-updates main restricted universe multiverse
+deb-amd64 http://{{ apt_mirror_remote_site }}/ubuntu xenial-proposed main restricted universe multiverse
+deb-amd64 http://{{ apt_mirror_remote_site }}/ubuntu xenial-backports main restricted universe multiverse
+# debian installer here
+deb-amd64 http://{{ apt_mirror_remote_site }}/ubuntu xenial main/debian-installer restricted/debian-installer
+
+deb-i386 http://{{ apt_mirror_remote_site }}/ubuntu xenial main restricted universe multiverse
+deb-i386 http://{{ apt_mirror_remote_site }}/ubuntu xenial-security main restricted universe multiverse
+deb-i386 http://{{ apt_mirror_remote_site }}/ubuntu xenial-updates main restricted universe multiverse
+deb-i386 http://{{ apt_mirror_remote_site }}/ubuntu xenial-proposed main restricted universe multiverse
+deb-i386 http://{{ apt_mirror_remote_site }}/ubuntu xenial-backports main restricted universe multiverse
+# debian installer here
+deb-i386 http://{{ apt_mirror_remote_site }}/ubuntu xenial main/debian-installer restricted/debian-installer
+
+deb-src http://{{ apt_mirror_remote_site }}/ubuntu xenial main restricted universe multiverse
+deb-src http://{{ apt_mirror_remote_site }}/ubuntu xenial-security main restricted universe multiverse
+deb-src http://{{ apt_mirror_remote_site }}/ubuntu xenial-updates main restricted universe multiverse
+deb-src http://{{ apt_mirror_remote_site }}/ubuntu xenial-proposed main restricted universe multiverse
+deb-src http://{{ apt_mirror_remote_site }}/ubuntu xenial-backports main restricted universe multiverse
+
+
 # 14.04(trusty)
-deb-amd64 http://{{ apt_mirror_remote_site }}/ubuntu trusty main restricted universe multiverse
-deb-amd64 http://{{ apt_mirror_remote_site }}/ubuntu trusty-security main restricted universe multiverse
-deb-amd64 http://{{ apt_mirror_remote_site }}/ubuntu trusty-updates main restricted universe multiverse
-deb-amd64 http://{{ apt_mirror_remote_site }}/ubuntu trusty-proposed main restricted universe multiverse
-deb-amd64 http://{{ apt_mirror_remote_site }}/ubuntu trusty-backports main restricted universe multiverse
+#deb-amd64 http://{{ apt_mirror_remote_site }}/ubuntu trusty main restricted universe multiverse
+#deb-amd64 http://{{ apt_mirror_remote_site }}/ubuntu trusty-security main restricted universe multiverse
+#deb-amd64 http://{{ apt_mirror_remote_site }}/ubuntu trusty-updates main restricted universe multiverse
+#deb-amd64 http://{{ apt_mirror_remote_site }}/ubuntu trusty-proposed main restricted universe multiverse
+#deb-amd64 http://{{ apt_mirror_remote_site }}/ubuntu trusty-backports main restricted universe multiverse
 # debian installer here
-deb-amd64 http://{{ apt_mirror_remote_site }}/ubuntu trusty main/debian-installer restricted/debian-installer
+#deb-amd64 http://{{ apt_mirror_remote_site }}/ubuntu trusty main/debian-installer restricted/debian-installer
 
-deb-i386 http://{{ apt_mirror_remote_site }}/ubuntu trusty main restricted universe multiverse
-deb-i386 http://{{ apt_mirror_remote_site }}/ubuntu trusty-security main restricted universe multiverse
-deb-i386 http://{{ apt_mirror_remote_site }}/ubuntu trusty-updates main restricted universe multiverse
-deb-i386 http://{{ apt_mirror_remote_site }}/ubuntu trusty-proposed main restricted universe multiverse
-deb-i386 http://{{ apt_mirror_remote_site }}/ubuntu trusty-backports main restricted universe multiverse
+#deb-i386 http://{{ apt_mirror_remote_site }}/ubuntu trusty main restricted universe multiverse
+#deb-i386 http://{{ apt_mirror_remote_site }}/ubuntu trusty-security main restricted universe multiverse
+#deb-i386 http://{{ apt_mirror_remote_site }}/ubuntu trusty-updates main restricted universe multiverse
+#deb-i386 http://{{ apt_mirror_remote_site }}/ubuntu trusty-proposed main restricted universe multiverse
+#deb-i386 http://{{ apt_mirror_remote_site }}/ubuntu trusty-backports main restricted universe multiverse
 # debian installer here
-deb-i386 http://{{ apt_mirror_remote_site }}/ubuntu trusty main/debian-installer restricted/debian-installer
+#deb-i386 http://{{ apt_mirror_remote_site }}/ubuntu trusty main/debian-installer restricted/debian-installer
 
-deb-src http://{{ apt_mirror_remote_site }}/ubuntu trusty main restricted universe multiverse
-deb-src http://{{ apt_mirror_remote_site }}/ubuntu trusty-security main restricted universe multiverse
-deb-src http://{{ apt_mirror_remote_site }}/ubuntu trusty-updates main restricted universe multiverse
-deb-src http://{{ apt_mirror_remote_site }}/ubuntu trusty-proposed main restricted universe multiverse
-deb-src http://{{ apt_mirror_remote_site }}/ubuntu trusty-backports main restricted universe multiverse
+#deb-src http://{{ apt_mirror_remote_site }}/ubuntu trusty main restricted universe multiverse
+#deb-src http://{{ apt_mirror_remote_site }}/ubuntu trusty-security main restricted universe multiverse
+#deb-src http://{{ apt_mirror_remote_site }}/ubuntu trusty-updates main restricted universe multiverse
+#deb-src http://{{ apt_mirror_remote_site }}/ubuntu trusty-proposed main restricted universe multiverse
+#deb-src http://{{ apt_mirror_remote_site }}/ubuntu trusty-backports main restricted universe multiverse
 
 clean http://{{ apt_mirror_remote_site }}/ubuntu
 

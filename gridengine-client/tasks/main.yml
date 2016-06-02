@@ -1,0 +1,19 @@
+---
+- name: install gridengine client
+  become: yes
+  apt: pkg={{ item }} force=yes update_cache=yes state=latest
+  with_items:
+    - gridengine-client
+    - gridengine-exec
+
+- name: set custom hosts script
+  become: yes
+  template: src=gridengine-get-hostfile.py dest=/usr/local/bin/gridengine-get-hostfile.py mode=0755
+
+- name: start gridengine-exec daemon
+  service: name=gridengine-exec state=started enabled=yes
+
+- name: update act_qmaster
+  become: yes
+  template: src=act_qmaster.tmpl dest=/var/lib/gridengine/default/common/act_qmaster mode=0644
+  notify: restart gridengine-exec

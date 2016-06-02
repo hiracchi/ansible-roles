@@ -19,7 +19,7 @@
 - name: add users
   user: name="{{ item.user }}"
         createhome="{{ item.createhome }}"
-        uid=10000
+        uid="{{ item.uid }}"
         group="{{ item.group }}"
         groups="{{ item.groups }}"
         password="{{ item.password }}"

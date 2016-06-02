@@ -1,0 +1,2 @@
+group_name @{{ item.name }}
+hostlist {% for exec_host in item.hosts %} {{ exec_host }} {% endfor %}

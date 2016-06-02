@@ -1,0 +1,11 @@
+---
+gridengine_admin_users: root
+gridengine_users: user1
+gridengine_master_host: master.local
+gridengine_hostgroups:
+  group1:
+    - host1.local
+    - host2.local
+  group2:
+    - host3.local
+    - host4.local

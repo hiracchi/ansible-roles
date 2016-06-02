@@ -1,0 +1,60 @@
+---
+- name: install gridengine server
+  become: yes
+  apt: pkg={{ item }} force=yes update_cache=yes state=latest
+  with_items:
+    - gridengine-client
+    - gridengine-common
+    - gridengine-master
+    - gridengine-qmon
+
+- name: start gridengine-master daemon
+  service: name=gridengine-master state=started enabled=yes
+
+- name: make bin dir
+  become: yes
+  file: path=/usr/local/gridengine/bin state=directory owner=root group=root mode=0755
+- name: make data dir
+  become: yes
+  file: path=/usr/local/gridengine/data state=directory owner=root group=root mode=0755
+  
+- name: set initial scripts
+  become: yes
+  template: src=setup.sh dest=/usr/local/gridengine/bin/setup.sh mode=0755
+
+- name: set hostlist
+  become: yes
+  template: src=hostlist.tmpl dest=/usr/local/gridengine/data/hostlist-{{ item.name }}
+  with_items: |
+    {% set o = [] %}
+    {% for k, v in gridengine_hostgroups.items() %}
+    {%   set _ = o.append({"name": k, "hosts": v }) %}
+    {% endfor %}
+    {{ o }}
+
+- name: set queue list
+  become: yes
+  template: src=queue.tmpl dest=/usr/local/gridengine/data/queue-{{ item.name }}
+  with_items: |
+    {% set o = [] %}
+    {% for k, v in gridengine_queue_list.items() %}
+    {%   set _ = o.append({"name": k, "hostlist": v.hostlist, "slots": v.slots }) %}
+    {% endfor %}
+    {{ o }}
+    
+- name: set pe file
+  become: yes
+  template: src=pe-{{ item }}.tmpl dest=/usr/local/gridengine/data/pe-{{ item }}
+  with_items:
+    - smp
+    - mpich
+    - openmpi
+
+- name: exec setup script
+  become: yes
+  command: /usr/local/gridengine/bin/setup.sh
+    
+- name: restart gridengine-master daemon
+  become: yes
+  service: name=gridengine-master state=restarted 
+  

@@ -4,7 +4,11 @@
   apt: pkg={{ item }} force=yes update_cache=yes state=latest
   with_items:
     - apache2
-    - libapache2-mod-php5
+    - libapache2-mod-php
+
+- name: start service apache2
+  become: yes
+  service: name=apache2 enabled=yes state=started 
 
 - name: apache2 config site
   become: yes
@@ -32,6 +36,7 @@
 - name: enable mod_rewirte
   become: yes
   command: a2enmod rewrite
-- name: service apache2
+
+- name: restart service apache2
   become: yes
   service: name=apache2 enabled=yes state=restarted
