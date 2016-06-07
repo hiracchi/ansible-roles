@@ -5,20 +5,28 @@
 
 ---
 - name: install nfs-client
+  become: yes
   apt: pkg={{ item }} force=yes update_cache=yes state=latest
   with_items:
     - nfs-common
+
 - name: debug out nfs-client-items
   debug: var=nfs_clients
-- name: debug out host
-  debug: var="{{ item.host }}"
-  with_items: nfs_clients
-- name: debug out mount_point
-  debug: var="{{ item.mount_point }}"
-  with_items: nfs_clients
+
+#- name: debug out host
+#  debug: var="{{ item.host }}"
+#  with_items: nfs_clients
+
+#- name: debug out mount_point
+#  debug: var="{{ item.mount_point }}"
+#  with_items: nfs_clients
+
 - name: make fstab for nfs
-  mount: name="{{ item.mount_point }}" src="{{ item.host }}" fstype=nfs state=present
-  with_items: nfs_clients
-- name: mount nfs
-  mount: name="{{ item.mount_point }}" src="{{ item.host }}" fstype=nfs state=mounted
-  with_items: nfs_clients
+  become: yes
+  mount: name="{{ item.mount_point }}" src="{{ item.host }}" fstype=nfs opts="rw,rsize=8192,wsize=8192,hard,intr,proto=tcp,nolock" state=mounted
+  with_items: "{{ nfs_clients }}"
+
+#- name: mount nfs
+#  become: yes
+#  mount: name="{{ item.mount_point }}" src="{{ item.host }}" fstype=nfs state=mounted
+#  with_items: "{{ nfs_clients }}"

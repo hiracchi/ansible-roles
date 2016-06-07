@@ -1,0 +1,5 @@
+---
+hosts_deny_table:
+  - daemon_list: ALL
+    host_list: ALL
+      

@@ -3,11 +3,19 @@
 #     - hostname: sample01.localdomain
 #       ipv4_address: 192.168.0.1
 #       alias: sample01
-
-- name: show hosts_table
-  debug: var=hosts_table
+---
+#- name: show hosts_table
+#  debug: var=hosts_table
 
 - name: manage hosts
   become: yes
   template: src=hosts.j2 dest=/etc/hosts
 
+- name: update hosts.allow
+  become: yes
+  template: src=hosts.allow.j2 dest=/etc/hosts.allow
+
+- name: update hosts.deny
+  become: yes
+  template: src=hosts.deny.j2 dest=/etc/hosts.deny
+  

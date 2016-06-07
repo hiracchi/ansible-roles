@@ -1,5 +1,5 @@
 {% if dns_nameservers %}
 {% for item in dns_nameservers %}
-nameservers {{ item }}  
+nameserver {{ item }}  
 {% endfor %}
 {% endif %}

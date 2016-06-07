@@ -1,0 +1,3 @@
+---
+nis_merge_passwd: true
+nis_merge_group: true

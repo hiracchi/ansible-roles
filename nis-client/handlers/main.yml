@@ -1,0 +1,5 @@
+---
+- name: restart nis service
+  become: yes
+  service: name=nis state=restarted
+  

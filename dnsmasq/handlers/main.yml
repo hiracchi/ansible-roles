@@ -1,0 +1,4 @@
+---
+- name: service dnsmasq
+  become: yes
+  service: name=dnsmasq enabled=yes state=restarted

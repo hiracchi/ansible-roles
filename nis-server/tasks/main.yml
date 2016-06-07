@@ -1,0 +1,45 @@
+# {{ nis_securentes_netmask }}         {{ nis_securenets_network }}
+# nis_domainname
+# nis_servername
+---
+- name: install nis server
+  become: yes
+  apt: pkg={{ item }} force=yes update_cache=yes state=latest
+  with_items:
+    - nis
+
+- name: edit yp.conf
+  become: yes
+  lineinfile:
+    dest: /etc/yp.conf
+    regexp: '^ypserver'
+    line: 'ypserver {{ nis_servername }}'
+  notify: restart nis
+- name: setup ypserv.securenets
+  become: yes
+  template: src=ypserv.securenets.tmpl dest=/etc/ypserv.securenets
+  notify: restart nis
+- name: setup nis Makefile
+  become: yes
+  template: src=Makefile.tmpl dest=/var/yp/Makefile
+  notify: restart nis
+- name: setup nis default
+  become: yes
+  lineinfile:
+    dest: /etc/default/nis
+    regexp: "^NISSERVER=*"
+    line: "NISSERVER=true"
+  notify: restart nis
+    
+- name: initialize nis database
+  become: yes
+  command: /usr/lib/yp/ypinit -m
+
+- name: update nis database
+  become: yes
+  command: make -C /var/yp
+  
+- name: start service nis
+  become: yes
+  service: name=nis enabled=yes state=started
+
