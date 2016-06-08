@@ -1,0 +1,16 @@
+---
+- name: install rsh server
+  become: yes
+  apt: pkg={{ item }} force=yes update_cache=yes state=latest
+  with_items:
+    - openbsd-inetd
+    - rsh-server
+
+- name: update /etc/hosts.equiv
+  become: yes
+  template: src=hosts.equiv.tmpl dest=/etc/hosts.equiv
+  
+- name: start openbsd-inetd server
+  become: yes
+  service: name=openbsd-inetd state=started enabled=yes
+  

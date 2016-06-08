@@ -1,0 +1,4 @@
+---
+- name: restart openbsd-inetd server
+  become: yes
+  service: name=openbsd-inetd state=restarted
