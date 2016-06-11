@@ -17,6 +17,11 @@
 - name: make data dir
   become: yes
   file: path=/usr/local/gridengine/data state=directory owner=root group=root mode=0755
+- name: initialize data dir
+  become: yes
+  shell: rm *
+  args:
+    chdir: /usr/local/gridengine/data
   
 - name: set initial scripts
   become: yes
