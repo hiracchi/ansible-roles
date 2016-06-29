@@ -1,4 +1,4 @@
-- name: restart ntp server
+- name: restart ntp
   become: yes
   service: name=ntp state=restarted
 
