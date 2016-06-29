@@ -1,0 +1,24 @@
+---
+- name: install MariaDB
+  become: yes
+  apt: pkg={{ item }} force=yes update_cache=yes state=latest
+  with_items:
+    - mariadb-server
+- name: start MariaDB server
+  become: yes
+  service: name=mariadb state=started enabled=true
+- name: update mysql root password
+  become: yes
+  mysql_user:
+    name: root
+    host: "{{ item }}"
+    password: "{{ mariadb_root_password }}"
+    priv: "*.*:ALL,GRANT"
+  with_items:
+    - "{{ ansible_hostname }}"
+    - 127.0.0.1
+    - ::1
+    - localhost
+    
+
+    
