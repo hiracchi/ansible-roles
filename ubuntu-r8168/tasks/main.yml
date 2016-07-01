@@ -1,0 +1,25 @@
+---
+- name: install packages for r8168
+  become: yes
+  apt: pkg={{ item }} force=yes update_cache=yes state=latest
+  with_items:
+    - linux-headers-generic 
+    - build-essential 
+    - dkms
+    - r8168-dkms
+
+- name: add blacklist
+  become: yes
+  lineinfile:
+    dest: /etc/modprobe.d/blacklist.conf
+    line: 'blacklist r8169'
+
+#- name: remove modules
+#  become: yes
+#  command: "modprobe -rfv r8169"
+#  ignore_errors: yes
+- name: update modules
+  become: yes
+  command: "modprobe -v r8168"
+
+
