@@ -1,0 +1,37 @@
+---
+- name: update apt sources
+  become: yes
+  apt: pkg={{ item }} force=yes update_cache=yes state=latest
+  with_items:
+    - apt-transport-https
+    - ca-certificates
+
+- name: add new GPG key
+  become: yes
+  command: "apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D"
+
+- name: add apt entry
+  become: yes
+  copy: src=docker.list.xenial dest=/etc/apt/sources.list.d/docker.list
+  when: ansible_distribution_version == '16.04'
+
+- name: check uname
+  shell: uname -r
+  register: uname_r
+
+- name: debugout uname_r
+  debug: var=uname_r.stdout_lines
+  when: uname_r | success
+  
+- name: apt update
+  become: yes
+  apt: pkg=linux-image-extra-{{ uname_r.stdout }} force=yes update_cache=yes state=latest
+  
+- name: install docker
+  become: yes
+  apt: pkg=docker-engine update_cache=yes state=latest
+
+- name: start docker daemon
+  become: yes
+  service: name=docker enabled=yes state=started
+  
