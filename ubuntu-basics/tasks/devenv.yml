@@ -30,4 +30,5 @@
     - libfreetype6-dev
     - libyaml-dev
     - libcppunit-dev
+    - jq
 
