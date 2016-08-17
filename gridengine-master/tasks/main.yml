@@ -19,17 +19,50 @@
   file: path=/usr/local/gridengine/data state=directory owner=root group=root mode=0755
 - name: initialize data dir
   become: yes
-  shell: rm *
-  args:
-    chdir: /usr/local/gridengine/data
+  shell: rm /usr/local/gridengine/data/*
+  ignore_errors: yes
   
 - name: set initial scripts
   become: yes
-  template: src=setup.sh dest=/usr/local/gridengine/bin/setup.sh mode=0755
+  template:
+    src: setup.sh
+    dest: /usr/local/gridengine/bin/setup.sh
+    mode: 0755
+    force: yes
 
+- name: set conf updater
+  become: yes
+  copy:
+    src: sge.conf.sh
+    dest: /usr/local/gridengine/bin/
+    mode: 0755
+    force: yes
+
+- name: replace rlogin_daemon
+  become: yes
+  shell: /usr/local/gridengine/bin/sge.conf.sh mconf rlogin_daemon builtin
+- name: replace rlogin_command
+  become: yes
+  shell: /usr/local/gridengine/bin/sge.conf.sh mconf rlogin_command builtin
+- name: replace qlogin_daemon
+  become: yes
+  shell: /usr/local/gridengine/bin/sge.conf.sh mconf qlogin_daemon builtin
+- name: replace qlogin_command
+  become: yes
+  shell: /usr/local/gridengine/bin/sge.conf.sh mconf qlogin_command builtin
+- name: replace rsh_daemon
+  become: yes
+  shell: /usr/local/gridengine/bin/sge.conf.sh mconf rsh_daemon builtin
+- name: replace ssh_command
+  become: yes
+  shell: /usr/local/gridengine/bin/sge.conf.sh mconf rsh_command builtin
+    
 - name: set hostlist
   become: yes
-  template: src=hostlist.tmpl dest=/usr/local/gridengine/data/hostlist-{{ item.name }}
+  template:
+    src: hostlist.tmpl
+    dest: /usr/local/gridengine/data/hostlist-{{ item.name }}
+    force: yes
   with_items: |
     {% set o = [] %}
     {% for k, v in gridengine_hostgroups.items() %}
@@ -39,7 +72,10 @@
 
 - name: set queue list
   become: yes
-  template: src=queue.tmpl dest=/usr/local/gridengine/data/queue-{{ item.name }}
+  template:
+    src: queue.tmpl
+    dest: /usr/local/gridengine/data/queue-{{ item.name }}
+    force: yes
   with_items: |
     {% set o = [] %}
     {% for k, v in gridengine_queue_list.items() %}
@@ -49,7 +85,10 @@
     
 - name: set pe file
   become: yes
-  template: src=pe-{{ item }}.tmpl dest=/usr/local/gridengine/data/pe-{{ item }}
+  template:
+    src: pe-{{ item }}.tmpl
+    dest: /usr/local/gridengine/data/pe-{{ item }}
+    force: yes
   with_items:
     - smp
     - mpich

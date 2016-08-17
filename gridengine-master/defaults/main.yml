@@ -9,3 +9,7 @@ gridengine_hostgroups:
   group2:
     - host3.local
     - host4.local
+gridengine_queue_list:
+  all:
+    hostlist: host1.local
+    slots: ""

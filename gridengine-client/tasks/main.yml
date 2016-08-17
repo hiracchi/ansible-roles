@@ -8,7 +8,11 @@
 
 - name: set custom hosts script
   become: yes
-  template: src=gridengine-get-hostfile.py dest=/usr/local/bin/gridengine-get-hostfile.py mode=0755
+  copy:
+    src: gridengine-get-hostfile.py
+    dest: /usr/local/bin/gridengine-get-hostfile.py
+    mode: 0755
+    force: yes
 
 - name: start gridengine-exec daemon
   service: name=gridengine-exec state=started enabled=yes

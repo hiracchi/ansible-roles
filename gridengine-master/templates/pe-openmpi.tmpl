@@ -2,7 +2,7 @@ pe_name            openmpi
 slots              999
 user_lists         NONE
 xuser_lists        NONE
-start_proc_args    /usr/local/bin/gridengine_get_hostfile.py -o $pe_hostfile \
+start_proc_args    /usr/local/bin/gridengine-get-hostfile.py -o $pe_hostfile \
                    /tmp/hostfile.$job_id
 stop_proc_args     /bin/true
 allocation_rule    $fill_up
