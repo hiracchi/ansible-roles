@@ -8,9 +8,9 @@
 - name: copy NTP setting file
   become: yes
   template: src=ntp.conf.j2 dest=/etc/ntp.conf owner=root mode=0644
-  notify: restart ntp
+  notify: restart ntp server
 
-- name: start ntp server
+- name: restart ntp server
   become: yes
   service: name=ntp enabled=yes state=started
 
