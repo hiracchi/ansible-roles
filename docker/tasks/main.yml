@@ -29,7 +29,10 @@
   
 - name: install docker
   become: yes
-  apt: pkg=docker-engine update_cache=yes state=latest
+  apt: pkg={{ item }} update_cache=yes state=latest
+  with_items:
+    - docker-engine
+    - docker-compose
 
 - name: start docker daemon
   become: yes
