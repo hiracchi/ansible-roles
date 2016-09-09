@@ -44,6 +44,6 @@
   user:
     append: yes
     groups: docker
-    name: {{ item }}
+    name: "{{ item }}"
   with_items: "{{ docker_users }}"
   
