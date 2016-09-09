@@ -1,0 +1,5 @@
+- name: restart docker server
+  become: yes
+  service: name=docker enabled=yes state=started
+
+

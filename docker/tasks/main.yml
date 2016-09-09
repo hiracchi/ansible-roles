@@ -37,4 +37,13 @@
 - name: start docker daemon
   become: yes
   service: name=docker enabled=yes state=started
+  # notify: restart docker server
+
+- name: add users to docker group
+  become: yes
+  user:
+    append: yes
+    groups: docker
+    name: {{ item }}
+  with_items: "{{ docker_users }}"
   
