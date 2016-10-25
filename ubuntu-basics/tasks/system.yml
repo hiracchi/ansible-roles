@@ -1,0 +1,3 @@
+- name: setup timeout for shutdown
+  become: yes
+  shell: sed -i 's/#DefaultTimeoutStopSec=90s/DefaultTimeoutStopSec=10s/g' /etc/systemd/system.conf
