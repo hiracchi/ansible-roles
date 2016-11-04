@@ -3,7 +3,10 @@
   apt: pkg={{ item }} force=yes update_cache=yes state=latest
   with_items:
     - ntp
-  notify: restart ntp server
+
+- name: start ntp server
+  become: yes
+  service: name=ntp state=started
 
 - name: copy NTP setting file
   become: yes

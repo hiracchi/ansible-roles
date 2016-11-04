@@ -4,16 +4,25 @@
 #       clients: *(rw,no_root_squash,no_subtree_check)
 
 - name: install nfs-server
+  become: yes
   apt: pkg={{ item }} force=yes update_cache=yes state=latest
   with_items:
     - nfs-common
     - nfs-kernel-server
 
 - name: create exports
+  become: yes
   template: src=exports.j2 dest=/etc/exports 
 
+- name: enable rpcbind
+  become: yes
+  command: "systemctl add-wants multi-user.target rpcbind.service"
+
 - name: enabled nfs-kernel-server
+  become: yes
   service: name=nfs-kernel-server enabled=yes
 
 - name: restart nfs-kernel-server
+  become: yes
   service: name=nfs-kernel-server state=restarted
+
