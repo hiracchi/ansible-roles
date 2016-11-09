@@ -1,0 +1,19 @@
+---
+# cf.) http://qiita.com/zoeponta/items/678e2ebc4b89f33ecc19
+
+- name: REMOVE  | public keys from all hosts
+  authorized_key: 
+    user: "{{ target }}"
+    key: "{{ lookup('file', item) }}"
+    state: absent
+  sudo: yes 
+  with_fileglob: "{{ publickeys }}/removed/*.pub"
+
+- name: APPEND  | public keys into all hosts
+  authorized_key: 
+    user: "{{ target }}"
+    key: "{{ lookup('file', item) }}"
+    state: present
+  sudo: yes 
+  with_fileglob: "{{ publickeys }}/*.pub"
+
