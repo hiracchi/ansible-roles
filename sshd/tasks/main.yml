@@ -25,6 +25,19 @@
   notify:
     - restart sshd
 
+- name: no use PAM for sshd
+  become: yes
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    state: present
+    regexp: "^#?UsePAM yes"
+    line: "UsePAM no"
+    backrefs: yes
+    validate: "sshd -T -f %s"
+    backup: yes
+  notify:
+    - restart sshd
+
 - name: Permit only specific users
   become: yes
   lineinfile:

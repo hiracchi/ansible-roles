@@ -14,22 +14,22 @@
     dest: /etc/yp.conf
     regexp: '^ypserver'
     line: 'ypserver {{ nis_servername }}'
-  notify: restart nis
+  notify: restart nis server
 - name: setup ypserv.securenets
   become: yes
   template: src=ypserv.securenets.tmpl dest=/etc/ypserv.securenets
-  notify: restart nis
+  notify: restart nis server
 - name: setup nis Makefile
   become: yes
   template: src=Makefile.tmpl dest=/var/yp/Makefile
-  notify: restart nis
+  notify: restart nis server
 - name: setup nis default
   become: yes
   lineinfile:
     dest: /etc/default/nis
     regexp: "^NISSERVER=*"
     line: "NISSERVER=true"
-  notify: restart nis
+  notify: restart nis server
     
 - name: initialize nis database
   become: yes
