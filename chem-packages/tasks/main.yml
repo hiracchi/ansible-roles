@@ -1,0 +1,16 @@
+---
+- name: install chem packages
+  become: yes
+  apt: pkg={{ item }} force=yes update_cache=yes state=latest
+  with_items:
+    - libblas-dev
+    - liblapack-dev
+    - openmpi-bin
+    - openmpi-common
+    - libopenmpi-dev
+    - libscalapack-openmpi1
+    - libscalapack-mpi-dev
+    - gromacs
+    - gromacs-dev
+    - gromacs-data
+    - gromacs-openmpi
