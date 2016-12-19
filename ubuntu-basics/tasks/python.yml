@@ -4,10 +4,15 @@
   with_items:
     - python-dev 
     - python-setuptools
+    - python-pip
     - python-sphinx 
-    - python-numpy 
+    - python-numpy
+    - python-scipy
+    - python-pandas
     - python-matplotlib 
     - msgpack-python 
     - python-yaml 
     - pep8
+    - python-jinja2
+    - python-scikits-learn
 
