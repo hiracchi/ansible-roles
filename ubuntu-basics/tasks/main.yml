@@ -13,7 +13,7 @@
   become: yes
   apt: pkg={{ item }} force=yes update_cache=yes state=latest
   with_items:
-    - lsb
+#    - lsb-core
     - expect  
 
 #- include: ubuntu1404ja.yml

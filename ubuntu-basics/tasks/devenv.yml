@@ -5,16 +5,22 @@
     - build-essential
     - gcc
     - g++
+    - libgmp-dev
+    - libboost-dev
     - gfortran
     - ruby
     - golang
+
     - make
     - automake 
     - autoconf 
     - libtool
     - cmake
     - pkg-config
+
     - git
+
+    - xorg-dev
     - libreadline-dev
     - libncurses5-dev
     - openssl
@@ -31,4 +37,10 @@
     - libyaml-dev
     - libcppunit-dev
     - jq
+    - libffi-dev
+    - libhdf5-dev
+    - hdf5-tools
+    - flex
+    - bison
+    - clisp
 

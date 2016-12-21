@@ -23,6 +23,7 @@
   become: yes
   template: src=Makefile.tmpl dest=/var/yp/Makefile
   notify: restart nis server
+
 - name: setup nis default
   become: yes
   lineinfile:
@@ -35,6 +36,38 @@
   become: yes
   command: /usr/lib/yp/ypinit -m
 
+- name: add NIS group
+  become: yes
+  group:
+    name: "{{ item.key }}"
+    gid: "{{ item.value.gid }}"
+    state: present
+  with_dict: "{{ nis_groups | default({}) }}"
+    
+- name: add NIS users
+  become: yes
+  user:
+    name: "{{ item.key }}"
+    groups: "{{ item.value.groups }}"
+    group: "{{ item.value.group }}"
+    state: present
+    uid: "{{ item.value.uid }}"
+    home: "{{ item.value.home }}"
+    shell: "{{ item.value.shell | default('/bin/bash') }}"
+    createhome: no
+  with_dict: "{{ nis_users | default({}) }}"
+      
+- name: update NIS user password
+  become: yes
+  user:
+    name: "{{ item.key }}"
+    password: "{{ item.value.password }}"
+  when:
+    - item.value.password is defined
+    - item.value.update_password is defined
+    - item.value.update_password
+  with_dict: "{{ nis_users | default({}) }}"
+        
 - name: update nis database
   become: yes
   command: make -C /var/yp
