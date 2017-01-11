@@ -13,4 +13,4 @@
     - graphviz
     - google-perftools
     - libgoogle-perftools-dev
-    -libgtest-dev
+    - libgtest-dev
