@@ -2,6 +2,7 @@
   become: yes
   apt: pkg={{ item }} force=yes update_cache=yes state=latest
   with_items:
+    - libboost-all-dev
     - electric-fence
     - ddd
     - git
@@ -12,3 +13,4 @@
     - graphviz
     - google-perftools
     - libgoogle-perftools-dev
+    -libgtest-dev
