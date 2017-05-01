@@ -1,0 +1,23 @@
+---
+- name: fetch AMD GPU pro driver
+  get_url:
+    url: "https://www2.ati.com/drivers/linux/ubuntu/amdgpu-pro-{{ amdgpu_driver_version }}.tar.xz"
+    dest: "/tmp/amdgpu-pro-{{ amdgpu_driver_version }}.tar.xz"
+    checksum: md5:5ddaf4eee70b0aa7855476f1fd053ff4
+- name: unpack AMD GPU pro driver
+  unarchive:
+    src: "/tmp/amdgpu-pro-{{ amdgpu_driver_version }}.tar.xz"
+    dest: /tmp/amdgpu-pro/
+- name: install AMD GPU pro driver
+  become: yes
+  shell: "/tmp/amdgpu-pro/amdgpu-pro-install -y"
+
+# http://developer.amd.com/tools-and-sdks/opencl-zone/amd-accelerated-parallel-processing-app-sdk/
+- name: put AMD APP SDK
+  unarchive:
+    src: AMD-APP-SDKInstaller-v2.0.130.136-GA-linux64.tar.bz2
+    dest: /tmp/amdappsdk/
+- name: install AMD-APP-SDK
+  become: yes
+  shell: "yes | /tmp/amdappsdk/AMD-APP-SDK-v3.0.130.136-GA-linux64.sh"
+
