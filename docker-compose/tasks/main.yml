@@ -15,19 +15,19 @@
   debug: var=uname_m.stdout_lines
   when: uname_m | success 
 
-#- name: install docker-compose
-#  become: yes
-#  get_url:
-#    url: "https://github.com/docker/compose/releases/download/1.8.1/docker-compose-{{ uname_s.stdout }}-{{ uname_m.stdout }}"
-#    dest: "/usr/local/bin/docker-compose"
-#    force: yes
-#    mode: "a+x"
-
 - name: install docker-compose
   become: yes
   get_url:
-    url: "https://github.com/docker/compose/releases/download/1.8.1/run.sh"
+    url: "https://github.com/docker/compose/releases/download/1.12.0/docker-compose-{{ uname_s.stdout }}-{{ uname_m.stdout }}"
     dest: "/usr/local/bin/docker-compose"
     force: yes
     mode: "a+x"
+
+#- name: install docker-compose
+#  become: yes
+#  get_url:
+#    url: "https://github.com/docker/compose/releases/download/1.8.1/run.sh"
+#    dest: "/usr/local/bin/docker-compose"
+#    force: yes
+#    mode: "a+x"
 
