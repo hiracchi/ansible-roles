@@ -1,5 +1,10 @@
 - name: restart docker server
   become: yes
-  service: name=docker enabled=yes state=started
+  # service: name=docker enabled=yes state=started
+  systemd:
+    name: docker.service
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
 
 

@@ -52,10 +52,26 @@
   with_items:
     - docker-ce
 
+- name: mkdir docker image path
+  become: yes
+  file:
+    path: "{{ docker_image_path }}"
+    state: directory
+    mode: 0711
+    
+- name: setup docker image path
+  become: yes
+  lineinfile:
+    dest: /lib/systemd/system/docker.service
+    regexp: "ExecStart="
+    line: "ExecStart=/usr/bin/docker daemon -H fd:// -g {{ docker_image_path  }}"
+  notify: restart docker server
+  changed_when: True
+    
 - name: start docker daemon
   become: yes
   service: name=docker enabled=yes state=started
-  # notify: restart docker server
+  notify: restart docker server
 
 - name: add users to docker group
   become: yes

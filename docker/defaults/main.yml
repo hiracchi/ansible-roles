@@ -1,2 +1,4 @@
 docker_users: []
+docker_image_path: /var/lib/docker
+
 
