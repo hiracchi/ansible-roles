@@ -1,0 +1,21 @@
+---
+- name: install PPA for Paper
+  become: yes
+  shell: add-apt-repository -y ppa:snwh/pulp -y
+
+- name: install PPA for Papirus
+  become: yes
+  shell: add-apt-repository -y ppa:papirus/papirus -y
+
+- name: install themes
+  become: yes
+  apt: pkg={{ item }} force=yes update_cache=yes state=latest
+  with_items:
+    - paper-icon-theme
+    - paper-gtk-theme
+    - paper-cursor-theme
+    - unity-tweak-tool
+    - papirus-icon-theme
+    
+    
+  
