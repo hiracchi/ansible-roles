@@ -1,21 +1,39 @@
 ---
+# - name: fetch AMD GPU pro driver
+#  shell: >
+#    curl -o "/tmp/amdgpu-pro-{{ amdgpu_driver_version }}.tar.xz"
+#    -e "http://support.amd.com/en-us/kb-articles/Pages/AMD-Radeon-GPU-PRO-Linux-Beta-Driver%E2%80%93Release-Notes.aspx"
+#    "https://www2.ati.com/drivers/linux/ubuntu/amdgpu-pro-{{ amdgpu_driver_version }}.tar.xz"
+
 - name: fetch AMD GPU pro driver
   get_url:
     url: "https://www2.ati.com/drivers/linux/ubuntu/amdgpu-pro-{{ amdgpu_driver_version }}.tar.xz"
+    headers: "Referer:http://support.amd.com/en-us/kb-articles/Pages/AMD-Radeon-GPU-PRO-Linux-Beta-Driver%E2%80%93Release-Notes.aspx"
     dest: "/tmp/amdgpu-pro-{{ amdgpu_driver_version }}.tar.xz"
-    checksum: md5:5ddaf4eee70b0aa7855476f1fd053ff4
+#- name: make temp dir for amdgpu
+#  become: yes
+#  file:
+#    path: /tmp/amdgpu-pro
+#    state: directory
 - name: unpack AMD GPU pro driver
+  become: yes
   unarchive:
     src: "/tmp/amdgpu-pro-{{ amdgpu_driver_version }}.tar.xz"
-    dest: /tmp/amdgpu-pro/
+    dest: /tmp
+    remote_src: True
 - name: install AMD GPU pro driver
   become: yes
-  shell: "/tmp/amdgpu-pro/amdgpu-pro-install -y"
+  shell: "/tmp/mdgpu-pro-{{ amdgpu_driver_version }}/amdgpu-pro-install -y"
 
 # http://developer.amd.com/tools-and-sdks/opencl-zone/amd-accelerated-parallel-processing-app-sdk/
+- name: make temp dir for AMD-APP-SDK
+  become: yes
+  file:
+    path: /tmp/amdappsdk
+    state: directory
 - name: put AMD APP SDK
   unarchive:
-    src: AMD-APP-SDKInstaller-v2.0.130.136-GA-linux64.tar.bz2
+    src: AMD-APP-SDKInstaller-v3.0.130.136-GA-linux64.tar.bz2
     dest: /tmp/amdappsdk/
 - name: install AMD-APP-SDK
   become: yes
