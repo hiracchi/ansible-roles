@@ -6,7 +6,7 @@
     user: "{{ target }}"
     key: "{{ lookup('file', item) }}"
     state: absent
-  sudo: yes 
+  become: yes 
   with_fileglob: "{{ publickeys }}/removed/*.pub"
 
 - name: APPEND  | public keys into all hosts
@@ -14,6 +14,6 @@
     user: "{{ target }}"
     key: "{{ lookup('file', item) }}"
     state: present
-  sudo: yes 
+  become: yes 
   with_fileglob: "{{ publickeys }}/*.pub"
 
