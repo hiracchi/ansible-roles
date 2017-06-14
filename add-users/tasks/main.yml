@@ -15,8 +15,9 @@
 # 
 # for MD5
 # python -c 'import crypt; print crypt.crypt("gitgit", "$1$SomeSalt$")'
-
+---
 - name: add users
+  become: yes
   user: 
     name: "{{ item.user }}"
     createhome: "{{ item.createhome }}"
@@ -24,4 +25,4 @@
     group: "{{ item.group }}"
     groups: "{{ item.groups }}"
     password: "{{ item.password }}"
-  with_items: my_users
+  with_items: "{{ my_users }}"
