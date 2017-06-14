@@ -17,10 +17,11 @@
 # python -c 'import crypt; print crypt.crypt("gitgit", "$1$SomeSalt$")'
 
 - name: add users
-  user: name="{{ item.user }}"
-        createhome="{{ item.createhome }}"
-        uid="{{ item.uid }}"
-        group="{{ item.group }}"
-        groups="{{ item.groups }}"
-        password="{{ item.password }}"
+  user: 
+    name: "{{ item.user }}"
+    createhome: "{{ item.createhome }}"
+    uid: "{{ item.uid }}"
+    group: "{{ item.group }}"
+    groups: "{{ item.groups }}"
+    password: "{{ item.password }}"
   with_items: my_users
