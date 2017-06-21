@@ -50,7 +50,7 @@
   notify:
     - restart sshd
   when: ssh_user is defined
-    
+
 - name: Change ssh port number
   become: yes
   lineinfile:
@@ -63,6 +63,7 @@
     backup: yes
   notify:
     - restart sshd
+  when: ssh_port is defined
     
 #- name: Change acceptable tcp port for ssh on iptables
 #  become: yes
