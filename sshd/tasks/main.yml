@@ -49,7 +49,7 @@
     backup: yes
   notify:
     - restart sshd
-  when: ssh_user
+  when: ssh_user is defined
     
 - name: Change ssh port number
   become: yes
