@@ -4,7 +4,6 @@
   apt: pkg={{ item }} force=yes update_cache=yes state=latest
   with_items:
     - apache2
-    - libapache2-mod-php
 
 - name: start service apache2
   become: yes
