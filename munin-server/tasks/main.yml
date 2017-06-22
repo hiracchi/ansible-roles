@@ -1,0 +1,35 @@
+---
+- name: install Munin server
+  become: yes
+  apt: pkg={{ item }} force=yes update_cache=yes state=latest
+  with_items:
+    - munin
+    - libcgi-pm-perl
+    
+- name: edit munin server name
+  become: yes
+  lineinfile:
+    dest: /etc/munin/munin.conf
+    state: present
+    backrefs: yes
+    regexp: '^\[localhost\.localdomain\]'
+    line:  "[{{ ansible_hostname }}]"
+  notify: restart apache2  
+
+- name: edit /etc/munin/apache24.conf
+  become: yes
+  template:
+    src: apache24.conf.j2
+    dest: /etc/munin/apache24.conf
+  notify: restart apache2
+
+- name: enable munin conf for apache2
+  become: yes
+  command: "a2enconf munin"
+  notify: restart apache2
+
+- name: enable cgi for apache2
+  become: yes
+  command: "a2enmod cgi"
+  notify: restart apache2
+  
