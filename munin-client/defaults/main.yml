@@ -1,2 +1,3 @@
 ---
-munin_server_ip: 127.0.0.1
+munin_allowed_address: "127.0.0.1/32"
+

@@ -1,2 +1,6 @@
 ---
 munin_apache2_require: "local"
+munin_clients:
+  - name: "wacher;localhost"
+    address: "127.0.0.1"
+    use_node_name: yes
