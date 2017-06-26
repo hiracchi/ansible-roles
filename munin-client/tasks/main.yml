@@ -4,25 +4,14 @@
   apt: pkg={{ item }} force=yes update_cache=yes state=latest
   with_items:
     - munin-node
-    
-- name: edit munin node name
-  become: yes
-  lineinfile:
-    dest: /etc/munin/munin-node.conf
-    state: present
-    regexp: '^#/host_name.*'
-    line: "host_name {{ ansible_hostname }}"
-  notify: restart munin node
 
-- name: set munin server
+- name: set munin-node.conf
   become: yes
-  lineinfile:
+  template:
+    src: munin-node.conf.j2
     dest: /etc/munin/munin-node.conf
-    state: present
-    insertafter: "allow ^::1$"
-    line: "allow ^{{ munin_server_ip }}$"
   notify: restart munin node
-  
+    
 - name: start munin node
   become: yes
   service:
