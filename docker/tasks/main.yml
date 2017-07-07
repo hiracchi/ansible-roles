@@ -34,18 +34,6 @@
   command: "add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ubuntu_version.stdout }} stable\""
   # when: ansible_distribution_version == '16.04'
 
-#- name: check uname
-#  shell: uname -r
-#  register: uname_r
-
-#- name: debugout uname_r
-#  debug: var=uname_r.stdout_lines
-#  when: uname_r | success
-  
-#- name: apt update
-#  become: yes
-#  apt: pkg=linux-image-extra-{{ uname_r.stdout }} force=yes update_cache=yes state=latest
-
 - name: install docker
   become: yes
   apt: pkg={{ item }} update_cache=yes state=latest
@@ -64,7 +52,7 @@
   lineinfile:
     dest: /lib/systemd/system/docker.service
     regexp: "ExecStart="
-    line: "ExecStart=/usr/bin/docker daemon -H fd:// -g {{ docker_image_path  }}"
+    line: "ExecStart=/usr/bin/dockerd -H fd:// -g {{ docker_image_path }}"
   notify: restart docker server
   changed_when: True
     
