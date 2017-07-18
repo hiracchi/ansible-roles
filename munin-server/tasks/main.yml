@@ -30,3 +30,9 @@
   command: "a2enmod cgi"
   notify: restart apache2
   
+- name: setup cron for munin
+  become: yes
+  copy:
+    src: munin.cron
+    dest: /etc/cron.d/munin
+    

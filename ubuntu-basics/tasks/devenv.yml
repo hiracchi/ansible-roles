@@ -8,6 +8,10 @@
     - libgmp-dev
     - libboost-dev
     - gfortran
+
+    - clang
+    - libclang-dev
+
     - ruby
     - golang
 
@@ -19,6 +23,7 @@
     - pkg-config
 
     - git
+    - global
 
     - xorg-dev
     - libreadline-dev
