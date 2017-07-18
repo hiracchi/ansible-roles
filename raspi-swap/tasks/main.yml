@@ -1,9 +1,42 @@
 ---
 - name: swap off
   become: yes
-  command: "dphys-swapfile swapoff"
+  command: "swapoff --all"
+  # command: "dphys-swapfile swapoff"
 
 - name: stop swap service
   become: yes
-  command: "insserv -r dphys-swapfile"
+  apt: pkg="dphys-swapfile" state=absent
+  # command: "insserv -r dphys-swapfile"
+
+- name: /tmp using tmpfs
+  become: yes
+  mount:
+    path: /tmp
+    src: tmpfs
+    fstype: tmpfs
+    opts: "defaults,size=16m,noatime,mode=1777"
+    state: present
   
+- name: /var/tmp using tmpfs
+  become: yes
+  mount:
+    path: /var/tmp
+    src: tmpfs
+    fstype: tmpfs
+    opts: "defaults,size=16m,noatime,mode=1777"
+    state: present
+
+#- name: /var/log using tmpfs
+#  become: yes
+#  mount:
+#    path: /var/log
+#    src: tmpfs
+#    fstype: tmpfs
+#    opts: "defaults,size=16m,noatime,mode=1777"
+#    state: present
+  
+- name: install unionfs-fuse
+  become: yes
+  apt: pkg='unionfs-fuse' force=yes update_cache=yes state=latest
+
