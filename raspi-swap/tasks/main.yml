@@ -1,0 +1,9 @@
+---
+- name: swap off
+  become: yes
+  command: "dphys-swapfile swapoff"
+
+- name: stop swap service
+  become: yes
+  command: "insserv -r dphys-swapfile"
+  
