@@ -1,0 +1,27 @@
+- name: install packages for softether
+  become: yes
+  apt: pkg={{ item }} force=yes update_cache=yes state=latest
+  with_items:
+    - bridge-utils
+
+- name: prepare dir
+  become: yes
+  file:
+    path: /usr/local/archives
+    state: directory
+    mode: 0755
+
+- name: download softether
+  become: yes
+  get_url:
+    url: "http://jp.softether-download.com/files/softether/v4.22-9634-beta-2016.11.27-tree/Linux/SoftEther_VPN_Server/32bit_-_ARM_EABI/softether-vpnserver-v4.22-9634-beta-2016.11.27-linux-arm_eabi-32bit.tar.gz"
+    dest: /usr/local/archives/softether.tar.gz
+
+- name: unpack softether package
+  become: yes
+  command: tar zxvf /usr/local/archives/softether.tar.gz -C /usr/local
+
+- name: build softether
+  become: yes
+  shell: "(cd /usr/local/vpnserver; yes 1 | make)"
+
