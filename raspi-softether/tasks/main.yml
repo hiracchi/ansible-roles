@@ -25,3 +25,16 @@
   become: yes
   shell: "(cd /usr/local/vpnserver; yes 1 | make)"
 
+- name: copy softether boot script
+  become: yes
+  copy:
+    src: vpnserver
+    dest: /etc/init.d/vpnserver
+    mode: 0755
+
+- name: register softether boot script
+  become: yes
+  command: update-rc.d vpnserver defaults
+
+
+
