@@ -21,7 +21,7 @@
     src: main.cf.j2 
     dest: /etc/postfix/main.cf
 
-- name: set relay_password
+- name: setup relay(sasl) password
   become: yes
   template:
     src: sasl_password.j2
@@ -29,10 +29,22 @@
     mode: 0600 
     owner: root
 
-- name: postmap
+- name: update sasl password
   become: yes
   command: postmap /etc/postfix/sasl_passwd
 
+- name: setup aliases
+  become: yes
+  template:
+    src: aliases.j2
+    dest: /etc/aliases
+    mode: 0600
+    owner: root
+  
+- name: run newaliases
+  become: yes
+  command: newaliases
+    
 - name: restart service postfix
   become: yes
   service: name=postfix enabled=yes state=restarted
