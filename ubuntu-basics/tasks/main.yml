@@ -1,9 +1,9 @@
 ---
-- name: install sysv-rc-conf
-  become: yes
-  apt: pkg={{ item }} force=yes update_cache=yes state=latest
-  with_items:
-    - sysv-rc-conf
+# - name: install sysv-rc-conf
+#   become: yes
+#   apt: pkg={{ item }} force=yes update_cache=yes state=latest
+#   with_items:
+#     - sysv-rc-conf
 - name: install language-pack
   become: yes
   apt: pkg={{ item }} force=yes update_cache=yes state=latest
