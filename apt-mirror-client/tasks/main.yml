@@ -1,4 +1,5 @@
 - name: setup repository to my apt server
   become: yes
   template: src=sources.list.j2 dest=/etc/apt/sources.list
+  when: "ansible_distribution == 'Ubuntu'"
 
