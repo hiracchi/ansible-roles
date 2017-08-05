@@ -1,0 +1,8 @@
+---
+- name: make and mount ram disk
+  mount:
+    path: /mnt/ram
+    src: none
+    fstype: tmpfs
+    opts: "size={{ ramdisk_size }}"
+    state: mounted

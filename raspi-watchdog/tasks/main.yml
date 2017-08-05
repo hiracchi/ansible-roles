@@ -1,0 +1,45 @@
+---
+- name: install watchdog packages
+  become: yes
+  apt: 
+    pkg: "{{ item }}"
+    force: yes
+    update_cache: yes
+    state: latest
+  with_items:
+    - watchdog
+
+- name: update /lib/systemd/system/watchdog.service
+  become: yes
+  lineinfile:
+    path: /lib/systemd/system/watchdog.service
+    line: "WantedBy=multi-user.target"
+    insertafter: "[Install]"
+    state: present
+
+- name: edit watchdog.conf
+  become: yes
+  lineinfile:
+    path: /etc/watchdog.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+  with_items:
+    - regexp: '^#?max-load-1\s*=.*'
+      line: "max-load-1 = 24"
+    - regexp: '^#?watchdog-device\s*=.*'
+      line: "watchdog-device = /dev/watchdog"
+
+- name: setup timeout
+  become: yes
+  lineinfile:
+    path: /etc/watchdog.conf
+    line: "watchdog-timeout = 10"
+    state: present
+
+- name: enable watchdog service
+  become: yes
+  service:
+    name: watchdog
+    state: started
+    enabled: yes

@@ -1,0 +1,5 @@
+---
+softether_url: "http://jp.softether-download.com/files/softether/v4.22-9634-beta-2016.11.27-tree/Linux/SoftEther_VPN_Server/32bit_-_ARM_EABI/softether-vpnserver-v4.22-9634-beta-2016.11.27-linux-arm_eabi-32bit.tar.gz"
+softether_sha256sum: e947a7aea913a2080dd7cbf5e5774ef393818aa9a247449acf982086e9d5b828
+softether_root: /usr/local
+

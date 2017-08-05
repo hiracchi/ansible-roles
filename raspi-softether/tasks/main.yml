@@ -1,34 +1,41 @@
+- name: check installed softether
+  shell: "test -d {{ softether_root }}/vpnserver"
+  register: has_softether
+  ignore_errors: yes
+
+# - name: show has_softether
+#   debug: 
+#     var: has_softether
+
 - name: install packages for softether
   become: yes
   apt: pkg={{ item }} force=yes update_cache=yes state=latest
   with_items:
     - bridge-utils
 
-- name: prepare dir
-  become: yes
-  file:
-    path: /usr/local/archives
-    state: directory
-    mode: 0755
-
 - name: download softether
   become: yes
   get_url:
-    url: "http://jp.softether-download.com/files/softether/v4.22-9634-beta-2016.11.27-tree/Linux/SoftEther_VPN_Server/32bit_-_ARM_EABI/softether-vpnserver-v4.22-9634-beta-2016.11.27-linux-arm_eabi-32bit.tar.gz"
-    dest: /usr/local/archives/softether.tar.gz
+    url: "{{ softether_url }}"
+    dest: /tmp/softether.tar.gz
+    sha256sum: "{{ softether_sha256sum}}"
+    force: True
+  when: has_softether.rc != 0
 
 - name: unpack softether package
   become: yes
-  command: tar zxvf /usr/local/archives/softether.tar.gz -C /usr/local
+  command: tar zxvf /tmp/softether.tar.gz -C /usr/local
+  when: has_softether.rc != 0
 
 - name: build softether
   become: yes
   shell: "(cd /usr/local/vpnserver; yes 1 | make)"
+  when: has_softether.rc != 0
 
 - name: copy softether boot script
   become: yes
-  copy:
-    src: vpnserver
+  template:
+    src: vpnserver.j2
     dest: /etc/init.d/vpnserver
     mode: 0755
 

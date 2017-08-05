@@ -1,0 +1,23 @@
+---
+- name: check exist dest dir
+  command: test -d {{ movedir_dest }}
+  register: has_movedir_dest
+  ignore_errors: yes
+- name: copy 
+  become: yes
+  command: cp -a {{ movedir_src }} {{ movedir_dest }}
+  when: has_moveddir_dest.rc != 0
+
+
+- name: check src dir is link
+  command: test -L {{ movedir_src }}
+  register: has_movedir_src_link
+- name: rename src path
+  become: yes
+  command: mv {{ movedir_src }} {{ movedir_src }}.bak
+  when: has_movedir_src_link.rc != 0
+
+- name: link to dest dir 
+  become: yes
+  command: ln -sf {{ movedir_dest }} {{ movedir_src }}
+
