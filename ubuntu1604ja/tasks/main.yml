@@ -7,8 +7,8 @@
 - name: add sources.list
   become: yes
   shell: wget https://www.ubuntulinux.jp/sources.list.d/xenial.list -O /etc/apt/sources.list.d/ubuntu-ja.list 
-  args:
-    creates: /etc/apt/sources.list.d/ubuntu-ja.list
+  #args:
+  #  creates: /etc/apt/sources.list.d/ubuntu-ja.list
 - name: apt-get update
   become: yes
   apt: update_cache=yes state=latest
