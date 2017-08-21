@@ -2,8 +2,7 @@ pe_name            mpich
 slots              999
 user_lists         NONE
 xuser_lists        NONE
-start_proc_args    /usr/local/bin/gridengine-get-hostfile.py -m $pe_hostfile \
-                   /tmp/hostfile.$job_id
+start_proc_args    /usr/local/bin/gridengine-get-hostfile.py --mpich /tmp/machinefile.$job_id
 stop_proc_args     /bin/true
 allocation_rule    $fill_up
 control_slaves     TRUE

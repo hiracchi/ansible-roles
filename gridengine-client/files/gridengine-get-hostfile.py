@@ -9,11 +9,9 @@ import logging
 def main():
     # parse args
     parser = argparse.ArgumentParser(description='get hostsfile for MPI')
-    parser.add_argument('PE_HOSTFILE',
+    parser.add_argument('-p', '--pe_hostfile',
+                        nargs=1,
                         help='PE_HOSTFILE in SGE')
-    parser.add_argument('OUTPUT',
-                        nargs='?',
-                        help='output file')
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('-o', '--openmpi',
                        action='store_true')
@@ -22,17 +20,27 @@ def main():
     parser.add_argument('-D', '--debug',
                         action='store_true',
                         default=False)
+    parser.add_argument('OUTPUT',
+                        nargs='?',
+                        help='output file')
     args = parser.parse_args()
     
     # setting
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
-    PE_HOSTFILE = args.PE_HOSTFILE
+
+    PE_HOSTFILE = ""
+    if 'PE_HOSTFILE' in os.environ:
+        PE_HOSTFILE=os.environ['PE_HOSTFILE']
+    if args.pe_hostfile:
+        PE_HOSTFILE = args.pe_hostfile[0]
+    
     output_type = None
     if args.openmpi:
         output_type = 'OpenMPI'
     elif args.mpich:
         output_type = 'MPICH'
+
     output = None
     if args.OUTPUT:
         output = args.OUTPUT

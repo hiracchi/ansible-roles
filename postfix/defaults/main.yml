@@ -1,2 +1,4 @@
 ---
-postfix.alias_root: root
+postfix:
+  alias_root: root
+  transport_local: ".local"

@@ -30,7 +30,8 @@
 myhostname = {{ inventory_hostname }}
 alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
-#mydestination = vagrant, localhost.localdomain, localhost
+transport_maps = hash:/etc/postfix/transport
+#mydestination = localhost.localdomain, localhost
 
 relayhost = [{{ postfix.relay_host }}]:{{ postfix.relay_port }}
 smtp_use_tls = yes

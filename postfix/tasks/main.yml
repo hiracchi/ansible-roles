@@ -15,6 +15,10 @@
     - ca-certificates
     - libsasl2-modules
 
+#- name: display postfix vars
+#  debug:
+#    var: postfix
+  
 - name: set postfix config
   become: yes
   template: 
@@ -44,7 +48,21 @@
 - name: run newaliases
   become: yes
   command: newaliases
-    
+  notify: restart postfix
+
+- name: setup transport
+  become: yes
+  template:
+    src: transport.j2
+    dest: /etc/postfix/transport
+    mode: 0600
+    owner: root
+
+- name: run postmap transport
+  become: yes
+  command: postmap /etc/postfix/transport
+  notify: restart postfix
+  
 - name: restart service postfix
   become: yes
   service: name=postfix enabled=yes state=restarted
