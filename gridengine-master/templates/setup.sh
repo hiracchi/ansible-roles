@@ -55,6 +55,13 @@ init()
         done
     fi
 
+    if [ x"`qconf -sel`" != x ]; then
+        HOSTS=`qconf -sel`
+        for HOST in ${HOSTS}; do
+            qconf -de ${HOST}
+        done
+    fi
+    
     echo "initialize done."
     echo
 }
