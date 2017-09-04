@@ -20,3 +20,13 @@
 - include: python.yml
 - include: gdb.yml
 
+
+- name: set limits
+  become: yes
+  template:
+    src: limits.conf.j2
+    dest: /etc/security/limits.conf
+    owner: root
+    group: root
+    mode: 0644
+    

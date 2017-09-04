@@ -4,3 +4,13 @@ ntp_servers:
   - 2.ubuntu.pool.ntp.org
   - 3.ubuntu.pool.ntp.org
 
+limits:
+  - domain: '#*'
+    type: 'hard'
+    item: memlock
+    value: 3145728
+  - domain: '#*'
+    type: 'soft'
+    item: memlock
+    value: 3145728
+    
