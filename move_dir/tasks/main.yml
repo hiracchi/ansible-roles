@@ -6,7 +6,7 @@
 - name: copy 
   become: yes
   command: cp -a {{ movedir_src }} {{ movedir_dest }}
-  when: has_moveddir_dest.rc != 0
+  when: has_movedir_dest.rc != 0
 
 
 - name: check src dir is link

@@ -13,6 +13,8 @@
   with_items:
     - bridge-utils
 
+
+# build
 - name: download softether
   become: yes
   get_url:
@@ -24,24 +26,42 @@
 
 - name: unpack softether package
   become: yes
-  command: tar zxvf /tmp/softether.tar.gz -C /usr/local
+  command: tar zxvf /tmp/softether.tar.gz -C "{{ softether_root }}"
   when: has_softether.rc != 0
 
 - name: build softether
   become: yes
-  shell: "(cd /usr/local/vpnserver; yes 1 | make)"
+  shell: "(cd {{ softether_root }}/vpnserver; yes 1 | make)"
   when: has_softether.rc != 0
+
+- name: set mode files
+  become: yes
+  file:
+    dest: "{{ item.path }}"
+    mode: "{{ item.mode }}"
+  with_items:
+    - path: "{{ softether_root }}/vpnserver/vpncmd"
+      mode: "0700"
+    - path: "{{ softether_root }}/vpnserver/vpnserver"
+      mode: "0700"
 
 - name: copy softether boot script
   become: yes
   template:
-    src: vpnserver.j2
-    dest: /etc/init.d/vpnserver
-    mode: 0755
+   src: vpnserver.j2
+   dest: /etc/init.d/vpnserver
+   mode: 0755
+#  for systemd
+#    src: softether.service
+#    dest: /etc/systemd/system/softether.service
+#    mode: 0755
 
 - name: register softether boot script
   become: yes
   command: update-rc.d vpnserver defaults
-
-
-
+#- name: enable softether service
+#  become: yes
+#  service:
+#    name: softether
+#    state: started
+#    enabled: yes

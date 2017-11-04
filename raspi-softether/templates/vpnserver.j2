@@ -12,44 +12,45 @@
 DAEMON={{ softether_root }}/vpnserver/vpnserver
 LOCK=/var/lock/vpnserver
 
-# tun/tapモジュールのロード
+vpn_start() {
+    ${DAEMON} start
+    sleep 2
+    tap=`/sbin/ifconfig -a| awk '$1 ~ /^tap/ {print $1}'`
+    brctl addif br0 ${tap}
+}
+
+vpn_stop() {
+    ${DAEMON} stop
+}
+
+
+# main
 sudo modprobe tun
 
 . /lib/lsb/init-functions
 test -x $DAEMON || exit 0
 
+
 case "$1" in
 start)
-sleep 3
-log_daemon_msg "Starting SoftEther VPN Server" "vpnserver"
-$DAEMON start >/dev/null 2>&1
-touch $LOCK
-log_end_msg 0
-sleep 3
-
-# SoftEther VPNで追加した仮想tapデバイス名を調べる
-tap=`/sbin/ifconfig -a| awk '$1 ~ /^tap/ {print $1}'`
-/sbin/brctl addif br0 $tap
-;;
+    log_daemon_msg "Starting SoftEther VPN Server" "vpnserver"
+    vpn_start
+    touch $LOCK
+    log_end_msg 0
+    ;;
 
 stop)
-log_daemon_msg "Stopping SoftEther VPN Server" "vpnserver"
-$DAEMON stop >/dev/null 2>&1
-rm $LOCK
-log_end_msg 0
-sleep 2
-;;
+    log_daemon_msg "Stopping SoftEther VPN Server" "vpnserver"
+    vpn_stop
+    rm $LOCK
+    log_end_msg 0
+    ;;
 
 restart)
-$DAEMON stop
-sleep 2
-
-$DAEMON start
-sleep 5
-# SoftEther VPNで追加した仮想tapデバイス名を調べる
-tap=`/sbin/ifconfig -a| awk '$1 ~ /^tap/ {print $1}'`
-/sbin/brctl addif br0 $tap
-;;
+    vpn_stop
+    sleep 2
+    vpn_start
+    ;;
 
 status)
     if [ -e $LOCK ]
@@ -58,11 +59,12 @@ status)
     else
         echo "vpnserver is not running."
     fi
-;;
-*)
+    ;; 
 
-echo "Usage: $0 {start|stop|restart|status}"
-exit 1
+*)
+    echo "Usage: $0 {start|stop|restart|status}"
+    exit 1
+
 esac
 exit 0
 
