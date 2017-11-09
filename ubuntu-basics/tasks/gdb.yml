@@ -3,6 +3,8 @@
   shell: cat /etc/sysctl.d/10-ptrace.conf | grep -E 'kernel.yama.ptrace_scope\s+=\s+\w+' | awk '{ print $3 }'
   register: yama_ptrace_scope
   changed_when: false
+  # if you use before ansible-v2.4, enable 'always_run'
+  # always_run: yes 
   check_mode: no 
 
 - name: enable debug
