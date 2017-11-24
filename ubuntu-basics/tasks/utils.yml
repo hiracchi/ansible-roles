@@ -1,0 +1,6 @@
+- name: install utils 
+  become: yes
+  apt: pkg={{ item }} force=yes update_cache=yes state=latest
+  with_items:
+    - bc
+    

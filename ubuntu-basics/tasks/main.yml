@@ -11,6 +11,7 @@
     - language-pack-ja
 
 #- include: ubuntu1404ja.yml
+- include: utils.yml
 - include: systemtools.yml
 - include: shell.yml
 - include: ntp.yml
