@@ -1,0 +1,71 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:                 vpnserver
+# Required-Start:           $local_fs $network
+# Required-Stop:            $local_fs $network
+# Default-Start:            2 3 4 5
+# Default-Stop:             0 1 6
+# Short-Description:        SoftEther VPN RTM
+# Description:              Start vpnserver daemon SoftEther VPN Server
+### END INIT INFO
+
+DAEMON={{ softether_root }}/vpnserver/vpnserver
+LOCK=/var/lock/vpnserver
+
+vpn_start() {
+    ${DAEMON} start
+    sleep 2
+    tap=`/sbin/ifconfig -a| awk '$1 ~ /^tap/ {print $1}'`
+    brctl addif br0 ${tap}
+}
+
+vpn_stop() {
+    ${DAEMON} stop
+}
+
+
+# main
+sudo modprobe tun
+
+. /lib/lsb/init-functions
+test -x $DAEMON || exit 0
+
+
+case "$1" in
+start)
+    log_daemon_msg "Starting SoftEther VPN Server" "vpnserver"
+    vpn_start
+    touch $LOCK
+    log_end_msg 0
+    ;;
+
+stop)
+    log_daemon_msg "Stopping SoftEther VPN Server" "vpnserver"
+    vpn_stop
+    rm $LOCK
+    log_end_msg 0
+    ;;
+
+restart)
+    vpn_stop
+    sleep 2
+    vpn_start
+    ;;
+
+status)
+    if [ -e $LOCK ]
+    then
+        echo "vpnserver is running."
+    else
+        echo "vpnserver is not running."
+    fi
+    ;; 
+
+*)
+    echo "Usage: $0 {start|stop|restart|status}"
+    exit 1
+
+esac
+exit 0
+
+

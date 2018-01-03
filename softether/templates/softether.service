@@ -1,0 +1,11 @@
+[Unit]
+Description=SoftEther VPN Server
+After=network.target
+
+[Service]
+Type=forking
+ExecStart={{ softether_root }}/vpnserver/vpnserver start
+ExecStop={{ softether_root }}/vpnserver/vpnserver stop
+
+[Install]
+WantedBy=multi-user.target
