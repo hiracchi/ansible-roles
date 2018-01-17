@@ -7,6 +7,6 @@
     update_cache: yes
     state: latest
   with_items:
-    - ttf-kochi-gothic
+#    - ttf-kochi-gothic
     - jfbterm
 

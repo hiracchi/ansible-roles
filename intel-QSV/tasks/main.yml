@@ -1,0 +1,9 @@
+---
+- name: install intel QSV env
+  become: yes
+  apt: pkg={{ item }} force=yes update_cache=yes state=latest
+  with_items:
+    - i965-va-driver
+    - vainfo
+    - libva1
+
