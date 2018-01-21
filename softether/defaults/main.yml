@@ -2,8 +2,8 @@
 softether_root: /usr/local
 softether_url:
   ARM_EABI:
-    url: "http://jp.softether-download.com/files/softether/v4.22-9634-beta-2016.11.27-tree/Linux/SoftEther_VPN_Server/32bit_-_ARM_EABI/softether-vpnserver-v4.22-9634-beta-2016.11.27-linux-arm_eabi-32bit.tar.gz"
-    sha256sum: e947a7aea913a2080dd7cbf5e5774ef393818aa9a247449acf982086e9d5b828
+    url: "http://jp.softether-download.com/files/softether/v4.25-9656-rtm-2018.01.15-tree/Linux/SoftEther_VPN_Server/32bit_-_ARM_EABI/softether-vpnserver-v4.25-9656-rtm-2018.01.15-linux-arm_eabi-32bit.tar.gz"
+    sha256sum: 4d720b0757dd4d23acf7f73348d7bf48ea0b4adea8fee68f5062402583711fb3
   x86_64:
     url: "http://jp.softether-download.com/files/softether/v4.20-9608-rtm-2016.04.17-tree/Linux/SoftEther_VPN_Server/64bit_-_Intel_x64_or_AMD64/softether-vpnserver-v4.20-9608-rtm-2016.04.17-linux-x64-64bit.tar.gz"
     sha256sum: a9c952384b9c1aba4c5e025c3457920d3f47ac03dc157183c749a3a0497dcd4b

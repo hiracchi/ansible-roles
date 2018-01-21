@@ -15,14 +15,34 @@
 
 
 # build
-- name: download softether
+- name: show ansible_machine
+  debug:
+    var: ansible_machine
+- name: show ansible_architecture
+  debug:
+    var: ansible_architecture
+
+- name: download softether (x86_64)
   become: yes
   get_url:
     url: "{{ softether_url.x86_64.url }}"
     dest: /tmp/softether.tar.gz
     sha256sum: "{{ softether_url.x86_64.sha256sum}}"
     force: True
-  when: has_softether.rc != 0
+  when:
+    - has_softether.rc != 0
+    - ansible_machine == "x86_64"
+
+- name: download softether (armv7l)
+  become: yes
+  get_url:
+    url: "{{ softether_url.ARM_EABI.url }}"
+    dest: /tmp/softether.tar.gz
+    sha256sum: "{{ softether_url.ARM_EABI.sha256sum}}"
+    force: True
+  when: 
+    - has_softether.rc != 0
+    - ansible_machine == "armv7l"
 
 - name: unpack softether package
   become: yes
@@ -33,6 +53,8 @@
   become: yes
   shell: "(cd {{ softether_root }}/vpnserver; yes 1 | make)"
   when: has_softether.rc != 0
+
+
 
 - name: set mode files
   become: yes
@@ -65,3 +87,4 @@
     name: softether
     state: started
     enabled: yes
+
