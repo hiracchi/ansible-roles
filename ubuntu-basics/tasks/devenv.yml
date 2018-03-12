@@ -12,6 +12,7 @@
     - clang
     - libclang-dev
 
+    - python3-pip
     - ruby
     - golang
 
