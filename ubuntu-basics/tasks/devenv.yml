@@ -36,6 +36,7 @@
     - libsqlite3-dev
     - tk8.5-dev
     - liblzma-dev
+    - libeigen3-dev
     - liblapack-dev
     - libpng-dev
     - libjpeg8-dev
