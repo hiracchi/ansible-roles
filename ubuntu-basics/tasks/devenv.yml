@@ -50,4 +50,6 @@
     - flex
     - bison
     - clisp
+    - libgtest-dev
+
 
