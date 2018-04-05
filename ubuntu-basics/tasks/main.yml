@@ -15,10 +15,10 @@
 - import_tasks: shell.yml
 - import_tasks: ntp.yml
 - import_tasks: editor.yml
-- import_tasks: devenv.yml
-- import_tasks: devtools.yml
-- import_tasks: python.yml
-- import_tasks: gdb.yml
+#- include: devenv.yml
+#- include: devtools.yml
+#- include: python.yml
+#- include: gdb.yml
 
 
 - name: set limits
