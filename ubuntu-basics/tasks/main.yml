@@ -1,9 +1,9 @@
 ---
-- name: install sysv-rc-conf
-  become: yes
-  apt: pkg={{ item }} force=yes update_cache=yes state=latest
-  with_items:
-    - sysv-rc-conf
+#- name: install sysv-rc-conf
+#  become: yes
+#  apt: pkg={{ item }} force=yes update_cache=yes state=latest
+#  with_items:
+#    - sysv-rc-conf
 - name: install language-pack
   become: yes
   apt: pkg={{ item }} force=yes update_cache=yes state=latest
@@ -16,12 +16,11 @@
 #    - lsb-core
     - expect  
 
-#- include: ubuntu1404ja.yml
 - include: shell.yml
 - include: ntp.yml
 - include: editor.yml
-- include: devenv.yml
-- include: devtools.yml
-- include: python.yml
-- include: gdb.yml
+#- include: devenv.yml
+#- include: devtools.yml
+#- include: python.yml
+#- include: gdb.yml
 
