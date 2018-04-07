@@ -1,0 +1,15 @@
+---
+# see https://github.com/nodesource/distributions
+- name: add nodejs package source for 8.x
+  become: yes
+  shell: "curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -"
+
+- name: install nodejs
+  become: yes
+  apt:
+    pkg: "{{ item }}"
+    force: yes
+    update_cache: yes
+    state: latest
+  with_items:
+    - nodejs
