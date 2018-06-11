@@ -14,6 +14,30 @@
     - libgoogle-perftools-dev
     - libgtest-dev
 
+# -----------------------------------------------------------------------------
+# git
+# -----------------------------------------------------------------------------
+- name: add packages for git lfs
+  become: yes
+  apt: pkg={{ item }} force=yes update_cache=yes state=latest
+  with_items:
+    - software-properties-common
+
+- name: add apt repository for git lfs
+  become: yes
+  shell: add-apt-repository ppa:git-core/ppa
+
+- name: setup repository for git lfs
+  become: yes
+  shell: "curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash"
+
+- name: install git-lfs
+  become: yes
+  apt: pkg=git-lfs force=yes update_cache=yes state=latest
+
+# -----------------------------------------------------------------------------
+# google test
+# -----------------------------------------------------------------------------
 - name: check libgtest
   shell: "ls /usr/lib/libgtest.a /usr/lib/libgtest_main.a"
   register: has_libgtest
