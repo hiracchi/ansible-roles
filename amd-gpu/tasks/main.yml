@@ -1,4 +1,5 @@
 ---
+# https://support.amd.com/en-us/kb-articles/Pages/Radeon-Software-for-Linux-Release-Notes.aspx
 - name: fetch AMD GPU pro driver
   get_url:
     url: "https://www2.ati.com/drivers/linux/ubuntu/amdgpu-pro-{{ amdgpu_driver_version }}.tar.xz"
@@ -14,19 +15,19 @@
 
 - name: install AMD GPU pro driver
   become: yes
-  shell: "/tmp/mdgpu-pro-{{ amdgpu_driver_version }}/amdgpu-install -y"
+  shell: "/tmp/amdgpu-pro-{{ amdgpu_driver_version }}/amdgpu-install -y"
 
 # https://developer.amd.com/amd-accelerated-parallel-processing-app-sdk
-- name: make temp dir for AMD-APP-SDK
-  become: yes
-  file:
-    path: /tmp/amdappsdk
-    state: directory
-- name: put AMD APP SDK
-  unarchive:
-    src: AMD-APP-SDKInstaller-v3.0.130.136-GA-linux64.tar.bz2
-    dest: /tmp/amdappsdk/
-- name: install AMD-APP-SDK
-  become: yes
-  shell: "yes | /tmp/amdappsdk/AMD-APP-SDK-v3.0.130.136-GA-linux64.sh"
+#- name: make temp dir for AMD-APP-SDK
+#  become: yes
+#  file:
+#    path: /tmp/amdappsdk
+#    state: directory
+#- name: put AMD APP SDK
+#  unarchive:
+#    src: AMD-APP-SDKInstaller-v3.0.130.136-GA-linux64.tar.bz2
+#    dest: /tmp/amdappsdk/
+#- name: install AMD-APP-SDK
+#  become: yes
+#  shell: "yes | /tmp/amdappsdk/AMD-APP-SDK-v3.0.130.136-GA-linux64.sh"
 
