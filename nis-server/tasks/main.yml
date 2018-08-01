@@ -32,9 +32,9 @@
     line: "NISSERVER=true"
   notify: restart nis server
     
-- name: initialize nis database
-  become: yes
-  command: /usr/lib/yp/ypinit -m
+#- name: initialize nis database
+#  become: yes
+#  command: /usr/lib/yp/ypinit -m
 
 - name: add NIS group
   become: yes

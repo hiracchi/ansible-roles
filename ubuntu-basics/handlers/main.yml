@@ -1,4 +1,12 @@
 - name: restart ntp server
   become: yes
-  service: name=ntp state=restarted
+  service: 
+    name: ntp 
+    state: restarted
+
+- name: restart chrony server
+  become: yes
+  service:
+    name: chrony
+    state: restart
 

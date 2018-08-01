@@ -1,16 +1,21 @@
 ---
 - name: install ProteinDF devtools
   become: yes
-  apt: pkg={{ item }} force=yes update_cache=yes state=latest
-  with_items:
-    - build-essential
-    - libblas-dev
-    - liblapack-dev
-    - liblapacke-dev
-    - libblacs-mpi-dev
-    - libscalapack-mpi-dev
-
-    - libatlas-base-dev
-    - libopenblas-base
-    - libopenblas-dev
+  apt:
+    pkg: 
+      - build-essential
+      - libblas-dev
+      - liblapack-dev
+      - liblapacke-dev
+      - libblacs-mpi-dev
+      - libscalapack-mpi-dev
+      - libatlas-base-dev
+      - libopenblas-base
+      - libopenblas-dev
+      - libeigen3-dev
+      - libviennacl-dev
+      - libhdf5-dev
+    force: yes
+    update_cache: yes
+    state: latest
 

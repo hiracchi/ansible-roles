@@ -1,8 +1,8 @@
 - name: install system tools
   become: yes
-  apt: pkg={{ item }} force=yes update_cache=yes state=latest
-  with_items:
-    - smartmontools
-    - expect  
-    - lsof
+  apt: 
+    pkg: ['smartmontools', 'lsof', 'expect'] 
+    force: yes 
+    update_cache: yes 
+    state: latest
     

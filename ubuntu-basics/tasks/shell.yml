@@ -1,8 +1,7 @@
 - name: install shell packages
   become: yes
-  apt: pkg={{ item }} force=yes update_cache=yes state=latest
-  with_items:
-    - bash
-    - zsh
-    - tcsh
-    - ksh
+  apt:
+    pkg: ['bash', 'zsh', 'tcsh', 'ksh']
+    update_cache: yes
+    state: latest
+

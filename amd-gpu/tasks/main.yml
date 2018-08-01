@@ -1,10 +1,29 @@
 ---
 # https://support.amd.com/en-us/kb-articles/Pages/Radeon-Software-for-Linux-Release-Notes.aspx
-- name: fetch AMD GPU pro driver
+#
+#
+
+- name: add arch i386
+  become: yes
+  shell: dpkg --add-architecture i386
+
+- name: fetch AMD GPU pro driver (ubuntu 16.04)
   get_url:
     url: "https://www2.ati.com/drivers/linux/ubuntu/amdgpu-pro-{{ amdgpu_driver_version }}.tar.xz"
     headers: "Referer:https://support.amd.com/en-us/kb-articles/Pages/Radeon-Software-for-Linux-Release-Notes.aspx"
     dest: "/tmp/amdgpu-pro-{{ amdgpu_driver_version }}.tar.xz"
+  when:
+    - ansible_distribution == 'Ubuntu'
+    - ansible_distribution_version == "16.04"
+
+- name: fetch AMD GPU pro driver (ubuntu 18.04)
+  get_url:
+    url: "https://www2.ati.com/drivers/linux/ubuntu/18.04/amdgpu-pro-{{ amdgpu_driver_version }}.tar.xz"
+    headers: "Referer:https://support.amd.com/en-us/kb-articles/Pages/Radeon-Software-for-Linux-Release-Notes.aspx"
+    dest: "/tmp/amdgpu-pro-{{ amdgpu_driver_version }}.tar.xz"
+  when:
+    - ansible_distribution == 'Ubuntu'
+    - ansible_distribution_version == "18.04"
 
 - name: unpack AMD GPU pro driver
   become: yes
@@ -15,7 +34,16 @@
 
 - name: install AMD GPU pro driver
   become: yes
-  shell: "/tmp/amdgpu-pro-{{ amdgpu_driver_version }}/amdgpu-install -y"
+  shell: "/tmp/amdgpu-pro-{{ amdgpu_driver_version }}/amdgpu-pro-install -y"
+
+- name: install AMD OpenCL env
+  become: yes
+  apt:
+    pkg:
+      - opencl-amdgpu-pro-icd
+      - clinfo-amdgpu-pro
+    state: latest
+    update_cache: yes
 
 # https://developer.amd.com/amd-accelerated-parallel-processing-app-sdk
 #- name: make temp dir for AMD-APP-SDK

@@ -4,16 +4,24 @@
 #   apt: pkg={{ item }} force=yes update_cache=yes state=latest
 #   with_items:
 #     - sysv-rc-conf
+
 - name: install language-pack
   become: yes
-  apt: pkg={{ item }} force=yes update_cache=yes state=latest
-  with_items:
-    - language-pack-ja
+  apt: 
+    pkg: ['language-pack-ja']
+    force: yes
+    update_cache: yes
+    state: latest
 
 - import_tasks: utils.yml
 - import_tasks: systemtools.yml
 - import_tasks: shell.yml
+
 - import_tasks: ntp.yml
+  when: 
+    - ansible_distribution == 'Ubuntu'
+    - ansible_distribution_version == "16.04"
+
 - import_tasks: editor.yml
 #- include: devenv.yml
 #- include: devtools.yml
