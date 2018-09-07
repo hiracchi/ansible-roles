@@ -12,7 +12,7 @@
 - name: /tmp using tmpfs
   become: yes
   mount:
-    path: /tmp
+    name: /tmp
     src: tmpfs
     fstype: tmpfs
     opts: "defaults,size=16m,noatime,mode=1777"
@@ -21,7 +21,7 @@
 - name: /var/tmp using tmpfs
   become: yes
   mount:
-    path: /var/tmp
+    name: /var/tmp
     src: tmpfs
     fstype: tmpfs
     opts: "defaults,size=16m,noatime,mode=1777"
@@ -36,7 +36,7 @@
 #    opts: "defaults,size=16m,noatime,mode=1777"
 #    state: present
   
-- name: install unionfs-fuse
-  become: yes
-  apt: pkg='unionfs-fuse' force=yes update_cache=yes state=latest
+#- name: install unionfs-fuse
+#  become: yes
+#  apt: pkg='unionfs-fuse' force=yes update_cache=yes state=latest
 
