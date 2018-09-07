@@ -13,6 +13,9 @@
       - libopenblas-base
       - libopenblas-dev
       - libeigen3-dev
+      - ocl-icd-opencl-dev 
+      - libclc-dev 
+      - opencl-headers
       - libviennacl-dev
       - libhdf5-dev
     force: yes

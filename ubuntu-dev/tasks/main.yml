@@ -2,6 +2,9 @@
   become: yes
   apt: 
     pkg:
+      - build-essential
+      - gfortran
+      - cmake
       - subversion
       - doxygen
       - graphviz
@@ -10,6 +13,10 @@
       - google-perftools
       - libgoogle-perftools-dev
       - libgtest-dev
+      - python3
+      - python3-dev
+      - python3-pip
+      - python3-venv
   update_cache: yes
   state: latest
 

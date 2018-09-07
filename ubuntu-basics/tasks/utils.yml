@@ -1,7 +1,10 @@
 - name: install utils 
   become: yes
   apt: 
-    pkg: ['unzip', 'bc'] 
+    pkg: 
+      - unzip
+      - bc
+      - flex
     update_cache: yes
     state: latest
     

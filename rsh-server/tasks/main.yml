@@ -1,10 +1,13 @@
 ---
 - name: install rsh server
   become: yes
-  apt: pkg={{ item }} force=yes update_cache=yes state=latest
-  with_items:
-    - openbsd-inetd
-    - rsh-server
+  apt: 
+    pkg:
+     - openbsd-inetd
+     - rsh-server
+    force: yes
+    update_cache: yes
+    state: latest
 
 - name: update /etc/hosts.equiv
   become: yes
