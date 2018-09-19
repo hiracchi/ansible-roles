@@ -6,7 +6,7 @@
       - gcc
       - g++
       - libgmp-dev
-      - libboost-dev
+      - libboost-all-dev
       - gfortran
       - clang
       - libclang-dev
