@@ -1,0 +1,8 @@
+* Sample
+
+  - roles:
+    - name: ssh authorized keys for pdfadmin
+      role: ssh_authorized_keys
+      ssh_user: pdfadmin
+      pubkey_path: ./ssh/pdfadmin.pub
+
