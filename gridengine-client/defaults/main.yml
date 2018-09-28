@@ -1,0 +1,3 @@
+gridengine_deb_client: "gridengine-client_8.1.9+dfsg-8_amd64.deb"
+gridengine_deb_common: "gridengine-common_8.1.9+dfsg-8_all.deb"
+gridengine_deb_exec: "gridengine-exec_8.1.9+dfsg-8_amd64.deb"

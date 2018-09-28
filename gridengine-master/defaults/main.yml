@@ -1,4 +1,9 @@
 ---
+gridengine_deb_master: "gridengine-master_8.1.9+dfsg-8_amd64.deb"
+gridengine_deb_client: "gridengine-client_8.1.9+dfsg-8_amd64.deb"
+gridengine_deb_common: "gridengine-common_8.1.9+dfsg-8_all.deb"
+gridengine_deb_qmon: "gridengine-qmon_8.1.9+dfsg-8_amd64.deb"
+
 gridengine_admin_users: root
 gridengine_users: user1
 gridengine_master_host: master.local
