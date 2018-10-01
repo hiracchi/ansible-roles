@@ -6,6 +6,7 @@
       - gfortran
       - cmake
       - subversion
+      - clang-format
       - doxygen
       - graphviz
       - electric-fence
