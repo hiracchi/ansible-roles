@@ -52,7 +52,7 @@
   lineinfile:
     dest: /lib/systemd/system/docker.service
     regexp: "ExecStart="
-    line: "ExecStart=/usr/bin/dockerd -H fd:// -g {{ docker_image_path }}"
+    line: "ExecStart=/usr/bin/dockerd -H unix:// --data-root {{ docker_image_path }}"
   notify: restart docker server
   changed_when: True
     
