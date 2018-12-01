@@ -4,6 +4,7 @@
   apt:
     pkg: 
       - build-essential
+      - libgfortran3
       - libblas-dev
       - liblapack-dev
       - liblapacke-dev
