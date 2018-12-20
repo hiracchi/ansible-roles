@@ -61,7 +61,7 @@
   become: yes
   user:
     name: "{{ item.key }}"
-    password: "{{ item.value.password }}"
+    password: "{{ item.value.password | password_hash('sha512') }}"
   when:
     - item.value.password is defined
     - item.value.update_password is defined
