@@ -18,23 +18,23 @@
       - python3-dev
       - python3-pip
       - python3-venv
-  update_cache: yes
-  state: latest
+    update_cache: yes
+    state: latest
 
 - include_tasks: pyenv.yml
 
 # -----------------------------------------------------------------------------
 # git
 # -----------------------------------------------------------------------------
-- name: install devtools
+- name: install git
   become: yes
   apt:
     pkg:
       - git
       - git-flow
       - tig
-  update_cache: yes
-  state: latest
+    update_cache: yes
+    state: latest
 
 - include_tasks: git-lfs-ubuntu1604.yml
   when:
