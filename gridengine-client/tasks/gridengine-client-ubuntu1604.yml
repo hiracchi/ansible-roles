@@ -1,0 +1,10 @@
+---
+- name: install gridengine client
+  become: yes
+  apt: 
+    pkg:
+      - gridengine-client
+      - gridengine-exec 
+    update_cache: yes
+    state: latest
+

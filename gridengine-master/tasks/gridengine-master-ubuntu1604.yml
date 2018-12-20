@@ -1,0 +1,12 @@
+---
+- name: install gridengine packages
+  become: yes
+  apt: 
+    pkg: 
+    - gridengine-client
+    - gridengine-common
+    - gridengine-master
+    - gridengine-qmon
+    update_cache: yes
+    state: latest
+
