@@ -10,7 +10,8 @@
 - name: fetch AMD GPU pro driver (ubuntu 16.04)
   get_url:
     url: "https://drivers.amd.com/drivers/linux/amdgpu-pro-18.40-673869-ubuntu-16.04.tar.xz"
-    headers: "Referer:https://www.amd.com/en/support/kb/release-notes/rn-prorad-lin-18-40"
+    headers: 
+      Referer: "https://www.amd.com/en/support/kb/release-notes/rn-prorad-lin-18-40"
     dest: "/tmp/amdgpu-pro-18.40-673869-ubuntu-16.04.tar.xz"
 
 - name: unpack AMD GPU pro driver
