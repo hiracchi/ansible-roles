@@ -74,5 +74,9 @@
   
 - name: start service nis
   become: yes
-  service: name=nis enabled=yes state=started
+  service:
+    name: nis
+    enabled: yes
+    state: started
+
 
