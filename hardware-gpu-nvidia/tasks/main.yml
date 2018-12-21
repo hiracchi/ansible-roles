@@ -18,13 +18,13 @@
     
 - name: install CUDA packages
   become: yes
-  apt: pkg={{ item }} force=yes update_cache=yes state=latest
-  with_items:
-    - "nvidia-{{ nvidia_driver_version }}"
-    - cuda
-    - libclc-dev
-    - nvidia-opencl-dev
-    - "nvidia-libopencl1-{{ nvidia_driver_version }}"
-    - "nvidia-opencl-icd-{{ nvidia_driver_version }}"
+  apt: 
+    pkg:
+      #- "nvidia-{{ nvidia_driver_version }}"
+      - cuda
+      - libclc-dev
+      - nvidia-opencl-dev
+    update_cache: yes
+    state: latest
 
 
