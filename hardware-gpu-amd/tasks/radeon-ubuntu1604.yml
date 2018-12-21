@@ -1,0 +1,27 @@
+---
+# https://support.amd.com/en-us/kb-articles/Pages/Radeon-Software-for-Linux-Release-Notes.aspx
+#
+#
+
+- name: add arch i386
+  become: yes
+  shell: dpkg --add-architecture i386
+
+- name: fetch AMD GPU pro driver (ubuntu 16.04)
+  get_url:
+    url: "https://drivers.amd.com/drivers/linux/amdgpu-pro-18.40-673869-ubuntu-16.04.tar.xz"
+    headers: "Referer:https://www.amd.com/en/support/kb/release-notes/rn-prorad-lin-18-40"
+    dest: "/tmp/amdgpu-pro-18.40-673869-ubuntu-16.04.tar.xz"
+
+- name: unpack AMD GPU pro driver
+  become: yes
+  unarchive:
+    src: "/tmp/amdgpu-pro-18.40-673869-ubuntu-16.04.tar.xz"
+    dest: /tmp
+    remote_src: True
+
+- name: install AMD GPU pro driver
+  become: yes
+  shell: "/tmp/amdgpu-pro-18.40-673869-ubuntu-16.04/amdgpu-pro-install -y"
+
+
