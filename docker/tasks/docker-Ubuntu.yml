@@ -1,0 +1,48 @@
+---
+- name: uninstall old docker
+  become: yes
+  apt: pkg={{ item }} force=yes state=absent purge=yes
+  with_items:
+    - docker
+    - docker-engine
+    - docker-compose
+
+- name: update apt sources
+  become: yes
+  apt: pkg={{ item }} force=yes update_cache=yes state=latest
+  with_items:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - software-properties-common
+
+- name: download GPG key
+  get_url:
+    url: "https://download.docker.com/linux/ubuntu/gpg"
+    dest: /tmp/docker-gpg
+    
+- name: add new GPG key
+  become: yes
+  command: "apt-key add /tmp/docker-gpg"
+
+- name: ubuntu_version
+  shell: "lsb_release -cs"
+  register: ubuntu_version
+
+- name: add apt entry
+  become: yes
+  command: "add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ubuntu_version.stdout }} stable\""
+
+- name: install docker
+  become: yes
+  apt: pkg={{ item }} update_cache=yes state=latest
+  with_items:
+    - docker-ce
+
+- name: mkdir docker image path
+  become: yes
+  file:
+    path: "{{ docker_image_path }}"
+    state: directory
+    mode: 0711
+  

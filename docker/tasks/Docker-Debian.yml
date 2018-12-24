@@ -1,0 +1,53 @@
+---
+- name: install packages
+  become: yes
+  apt:
+    pkg:
+      - apt-transport-https 
+      - ca-certificates 
+      - curl 
+      - gnupg2 
+      - software-properties-common
+    state: latest
+    update_cache: yes
+
+- name: download GPG key
+  get_url:
+    url: "https://download.docker.com/linux/debian/gpg"
+    dest: /tmp/docker-gpg
+    
+- name: add new GPG key
+  become: yes
+  command: "apt-key add /tmp/docker-gpg"
+
+- name: debian_version
+  shell: "lsb_release -cs"
+  register: debian_version
+
+- name: add apt entry
+  become: yes
+  command: "add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/debian {{ debian_version.stdout }} stable\""
+  when:
+    - ansible_architecture == "armv7l"
+
+- name: check /etc/apt/sources.list.d/docker.list
+  stat:
+    path: /etc/apt/sources.list.d/docker.list
+  register: has_docker_list
+
+- name: debug
+  debug:
+    var: has_docker_list
+
+- name: add apt entry
+  become: yes
+  command: "echo \"deb [arch=armhf] https://download.docker.com/linux/debian $(lsb_release -cs) stable\" | tee /etc/apt/sources.list.d/docker.list"
+  when:
+    - not has_docker_list.stat.exists
+
+- name: install docker
+  become: yes
+  apt: pkg={{ item }} update_cache=yes state=latest
+  with_items:
+    - docker-ce
+
