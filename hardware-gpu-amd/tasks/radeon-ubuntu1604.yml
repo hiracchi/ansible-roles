@@ -7,6 +7,13 @@
   become: yes
   shell: dpkg --add-architecture i386
 
+- name: install HWE kernel
+  become: yes
+  apt:
+    name: linux-generic-hwe-16.04
+    state: latest
+    update_cache: yes
+
 - name: fetch AMD GPU pro driver (ubuntu 16.04)
   get_url:
     url: "https://drivers.amd.com/drivers/linux/amdgpu-pro-18.40-673869-ubuntu-16.04.tar.xz"
@@ -21,8 +28,13 @@
     dest: /tmp
     remote_src: True
 
+- name: uninstall old AMD GPU driver
+  become: yes
+  command: "amdgpu-pro-uninstall -y"
+  ignore_errors: yes
+
 - name: install AMD GPU pro driver
   become: yes
-  shell: "/tmp/amdgpu-pro-18.40-673869-ubuntu-16.04/amdgpu-pro-install -y"
+  shell: "/tmp/amdgpu-pro-18.40-673869-ubuntu-16.04/amdgpu-pro-install -y --opencl=pal,legacy --headless"
 
 
