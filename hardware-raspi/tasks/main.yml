@@ -1,0 +1,20 @@
+---
+- name: set locale to '{{ sys.locale }}'
+  become: yes
+  locale_gen:
+    name: '{{ sys.locale }}'
+    state: present
+
+- name: set timezone to '{{ sys.timezone }}'
+  become: yes
+  timezone:
+    name: '{{ sys.timezone }}'
+  
+- name: start & stop services
+  become: yes
+  service:
+    name: '{{ item.name }}'
+    enabled: '{{ item.enabled | default("yes") }}'
+    state: '{{ item.state | default("started") }}'
+  with_items: '{{ sys.services }}'
+
