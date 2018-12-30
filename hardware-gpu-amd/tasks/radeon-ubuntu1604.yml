@@ -28,10 +28,10 @@
     dest: /tmp
     remote_src: True
 
-- name: uninstall old AMD GPU driver
-  become: yes
-  command: "amdgpu-pro-uninstall -y"
-  ignore_errors: yes
+#- name: uninstall old AMD GPU driver
+#  become: yes
+#  command: "amdgpu-pro-uninstall -y"
+#  ignore_errors: yes
 
 - name: install AMD GPU pro driver
   become: yes
