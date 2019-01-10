@@ -1,11 +1,11 @@
 ---
-- name: uninstall old docker
-  become: yes
-  apt: pkg={{ item }} force=yes state=absent purge=yes
-  with_items:
-    - docker
-    - docker-engine
-    - docker-compose
+#- name: uninstall old docker
+#  become: yes
+#  apt: pkg={{ item }} force=yes state=absent purge=yes
+#  with_items:
+#    - docker
+#    - docker-engine
+#    - docker-compose
 
 - name: update apt sources
   become: yes
