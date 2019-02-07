@@ -22,9 +22,9 @@ init()
     fi
 
     if [ x"`qconf -shgrpl`" != x ]; then
-        GROUPS="`qconf -shgrpl`"
-        for GROUP in ${GROUPS}; do
-            qconf -dhgrp "${GROUP}"
+        GRPS=`qconf -shgrpl`
+        for GRP in ${GRPS}; do
+            qconf -dhgrp "${GRP}"
         done
     fi
 
