@@ -20,10 +20,11 @@
   become: yes
   apt: 
     pkg:
-      #- "nvidia-{{ nvidia_driver_version }}"
+      - "nvidia-{{ nvidia_driver_version }}"
       - cuda
       - libclc-dev
       - nvidia-opencl-dev
+      - clinfo
     update_cache: yes
     state: latest
 
