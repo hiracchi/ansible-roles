@@ -20,7 +20,12 @@
 - import_tasks: ntp.yml
   when: 
     - ansible_distribution == 'Ubuntu'
+    - ansible_distribution_version == "14.04"
+- import_tasks: ntp_1604.yml
+  when:
+    - ansible_distribution == 'Ubuntu'
     - ansible_distribution_version == "16.04"
+
 
 - import_tasks: editor.yml
 #- include: devenv.yml
