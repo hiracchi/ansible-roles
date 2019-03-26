@@ -1,0 +1,32 @@
+---
+- name: make temp dir
+  become: yes
+  file:
+    path: /opt/intel/OpenCL
+    state: directory
+    owner: root
+    mode: "0755"
+
+- name: download intel packages
+  become: yes
+  get_url:
+    dest: /opt/intel/OpenCL
+    url: "{{ item }}"
+  with_items:
+    - https://github.com/intel/compute-runtime/releases/download/19.11.12599/intel-gmmlib_18.4.1_amd64.deb
+    - https://github.com/intel/compute-runtime/releases/download/19.11.12599/intel-igc-core_19.11.1622_amd64.deb
+    - https://github.com/intel/compute-runtime/releases/download/19.11.12599/intel-igc-opencl_19.11.1622_amd64.deb
+    - https://github.com/intel/compute-runtime/releases/download/19.11.12599/intel-opencl_19.11.12599_amd64.deb
+    - https://github.com/intel/compute-runtime/releases/download/19.11.12599/intel-ocloc_19.11.12599_amd64.deb
+   
+- name: install intel OpenCL packages
+  become: yes
+  apt:
+    deb: "/opt/intel/OpenCL/{{ item }}"
+  with_items:
+    - intel-gmmlib_18.4.1_amd64.deb
+    - intel-igc-core_19.11.1622_amd64.deb
+    - intel-igc-opencl_19.11.1622_amd64.deb
+    - intel-opencl_19.11.12599_amd64.deb
+    - intel-ocloc_19.11.12599_amd64.deb
+

@@ -1,0 +1,8 @@
+---
+- name: install OpenCL minimal packages
+  become: yes
+  apt:
+    name:
+      - ocl-icd-libopencl1
+      - opencl-headers
+

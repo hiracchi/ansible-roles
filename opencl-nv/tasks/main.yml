@@ -21,10 +21,10 @@
   apt: 
     pkg:
       - "nvidia-{{ nvidia_driver_version }}"
-      - cuda
-      - libclc-dev
-      - nvidia-opencl-dev
-      - clinfo
+      - "nvidia-opencl-icd-{{ nvidia_driver_version }}"
+      #- cuda
+      #- libclc-dev
+      #- nvidia-opencl-dev
     update_cache: yes
     state: latest
 

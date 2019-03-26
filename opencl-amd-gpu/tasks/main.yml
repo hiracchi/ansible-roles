@@ -23,17 +23,4 @@
     state: latest
     update_cache: yes
 
-# https://developer.amd.com/amd-accelerated-parallel-processing-app-sdk
-#- name: make temp dir for AMD-APP-SDK
-#  become: yes
-#  file:
-#    path: /tmp/amdappsdk
-#    state: directory
-#- name: put AMD APP SDK
-#  unarchive:
-#    src: AMD-APP-SDKInstaller-v3.0.130.136-GA-linux64.tar.bz2
-#    dest: /tmp/amdappsdk/
-#- name: install AMD-APP-SDK
-#  become: yes
-#  shell: "yes | /tmp/amdappsdk/AMD-APP-SDK-v3.0.130.136-GA-linux64.sh"
 
