@@ -7,12 +7,12 @@
   become: yes
   shell: dpkg --add-architecture i386
 
-- name: install HWE kernel
-  become: yes
-  apt:
-    name: linux-generic-hwe-16.04
-    state: latest
-    update_cache: yes
+#- name: install HWE kernel
+#  become: yes
+#  apt:
+#    name: linux-generic-hwe-16.04
+#    state: latest
+#    update_cache: yes
 
 - name: fetch AMD GPU pro driver (ubuntu 16.04)
   get_url:

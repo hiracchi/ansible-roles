@@ -1,0 +1,27 @@
+---
+- name: add ROCm repos key
+  become: yes
+  apt_key:
+    url: http://repo.radeon.com/rocm/apt/debian/rocm.gpg.key
+    state: present
+
+- name: add ROCm repos 
+  become: yes
+  apt_repository:
+    repo: "deb [arch=amd64] http://repo.radeon.com/rocm/apt/debian/ xenial main"
+    state: present
+
+#- name: add graphic ppa
+#  become: yes
+#  apt_repository:
+#    repo: ppa:oibaf/graphics-drivers
+#    state: present
+
+- name: install ROCm packages
+  become: yes
+  apt:
+    name:
+      - rocm-dkms
+    state: latest
+    update_cache: yes
+

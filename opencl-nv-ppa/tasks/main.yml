@@ -1,0 +1,30 @@
+---
+- name: install nVidia apt key
+  become: yes
+  apt_key:
+    url: "http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/7fa2af80.pub"
+    state: present
+    
+- name: install CUDA deb package
+  become: yes
+  apt:
+    deb: "http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/cuda-repo-ubuntu1604_{{ cuda_version }}_amd64.deb"
+  ignore_errors: yes
+  
+- name: add nVidia graphics driver ppa
+  become: yes
+  apt_repository:
+    repo: 'ppa:graphics-drivers/ppa'
+    
+- name: install CUDA packages
+  become: yes
+  apt: 
+    pkg:
+      - "nvidia-{{ nvidia_driver_version }}"
+      - "nvidia-opencl-icd-{{ nvidia_driver_version }}"
+      #- cuda
+      #- libclc-dev
+    update_cache: yes
+    state: latest
+
+

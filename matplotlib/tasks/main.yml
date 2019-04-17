@@ -1,0 +1,12 @@
+---
+- name: install packages for pip-matplotlib
+  become: yes
+  apt:
+    pkg:
+      - libpng-dev
+      - libfreetype6-dev
+      - python3-matplotlib
+    force: yes
+    update_cache: yes
+    state: latest
+
