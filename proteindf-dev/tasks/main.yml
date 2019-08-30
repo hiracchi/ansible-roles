@@ -17,6 +17,7 @@
       - ocl-icd-opencl-dev 
       - libclc-dev 
       - opencl-headers
+      - libboost-all-dev
       - libviennacl-dev
       - libhdf5-dev
     force: yes
