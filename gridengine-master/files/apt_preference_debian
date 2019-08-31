@@ -1,0 +1,7 @@
+Package: gridengine-*
+Pin: release o=Debian
+Pin-Priority: 1000
+
+Package: *
+Pin: release o=Debian
+Pin-Priority: 10

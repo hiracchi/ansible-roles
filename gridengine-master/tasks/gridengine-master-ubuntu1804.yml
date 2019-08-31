@@ -1,35 +1,39 @@
 ---
-- name: gridengine-common | get deb file
-  get_url:
-    url: "http://ftp.jp.debian.org/debian/pool/main/g/gridengine/{{ gridengine_deb_common }}"
-    dest: "/tmp/{{ gridengine_deb_common }}"
-- name: gridengine-client | get deb file
-  get_url:
-    url: "http://ftp.jp.debian.org/debian/pool/main/g/gridengine/{{ gridengine_deb_client }}"
-    dest: "/tmp/{{ gridengine_deb_client }}"
-- name: gridengine-master | get deb file
-  get_url:
-    url: "http://ftp.jp.debian.org/debian/pool/main/g/gridengine/{{ gridengine_deb_master }}"
-    dest: "/tmp/{{ gridengine_deb_master }}"
-- name: gridengine-qmon | get deb file
-  get_url:
-    url: "http://ftp.jp.debian.org/debian/pool/main/g/gridengine/{{ gridengine_deb_qmon }}"
-    dest: "/tmp/{{ gridengine_deb_qmon }}"
+- name: add debian source 1
+  become: yes
+  apt_repository:
+    repo: deb http://ftp.debian.org/debian/ stretch main contrib non-free
+    state: present
 
-- name: install gridengine-common
+- name: add debian source 2
+  become: yes
+  apt_repository:
+    repo: deb http://security.debian.org/debian-security/ stretch/updates main contrib non-free
+    state: present
+
+- name: add file
+  become: yes
+  file:
+    src: apt_preference_debian
+    dest: /etc/apt/preferences.d/debian
+
+- name: add debian-archive-keyring
   become: yes
   apt:
-    deb: "/tmp/{{ gridengine_deb_common }}"
-- name: install gridengine-client
+    name: debian-archive-keyring
+    state: present
+    update_cache: yes
+
+- name: add key
+  become: yes
+  apt_key:
+    file: /usr/share/keyrings/debian-archive-keyring.gpg
+
+- name: install gridengine
   become: yes
   apt:
-    deb: "/tmp/{{ gridengine_deb_client }}"
-- name: install gridengine-master
-  become: yes
-  apt:
-    deb: "/tmp/{{ gridengine_deb_master }}"
-- name: install gridengine-qmon
-  become: yes
-  apt:
-    deb: "/tmp/{{ gridengine_deb_qmon }}"
+    name:
+      - gridengine-master 
+      - gridengine-qmon
+    update_cache: yes
 

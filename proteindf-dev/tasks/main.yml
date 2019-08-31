@@ -1,26 +1,11 @@
 ---
-- name: install ProteinDF devtools
-  become: yes
-  apt:
-    pkg: 
-      - build-essential
-      - libgfortran3
-      - libblas-dev
-      - liblapack-dev
-      - liblapacke-dev
-      - libblacs-mpi-dev
-      - libscalapack-mpi-dev
-      - libatlas-base-dev
-      - libopenblas-base
-      - libopenblas-dev
-      - libeigen3-dev
-      - ocl-icd-opencl-dev 
-      - libclc-dev 
-      - opencl-headers
-      - libboost-all-dev
-      - libviennacl-dev
-      - libhdf5-dev
-    force: yes
-    update_cache: yes
-    state: latest
+- include_tasks: proteindf-dev-ubuntu1604.yml
+  when: 
+    - ansible_distribution == 'Ubuntu'
+    - ansible_distribution_version == '16.04'
+
+- include_tasks: proteindf-dev-ubuntu1804.yml
+  when:
+    - ansible_distribution == 'Ubuntu'
+    - ansible_distribution_version == '18.04'
 

@@ -1,0 +1,22 @@
+---
+- name: install ProteinDF devtools
+  become: yes
+  apt:
+    pkg:
+      - libgfortran3
+      - libblas3
+      - liblapack3
+      - libscalapack-openmpi1
+      - openmpi-common
+      - openmpi-bin
+      - libopenblas-base
+      - python3-numpy
+      - python3-scipy
+      - python3-pandas
+      - python3-msgpack
+      - python3-yaml
+      - python3-sklearn
+    force: yes
+    update_cache: yes
+    state: latest
+
