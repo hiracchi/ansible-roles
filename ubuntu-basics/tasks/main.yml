@@ -28,7 +28,8 @@
 
 
 - import_tasks: editor.yml
-#- include: devenv.yml
+
+- include: devenv.yml
 #- include: devtools.yml
 #- include: python.yml
 #- include: gdb.yml

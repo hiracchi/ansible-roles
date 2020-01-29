@@ -14,5 +14,11 @@
   become: yes
   service:
     name: chrony
-    state: restart
+    state: restarted
+
+- name: restart procps
+  become: yes
+  service:
+    name: procps
+    state: restarted
 
