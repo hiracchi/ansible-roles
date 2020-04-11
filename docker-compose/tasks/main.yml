@@ -1,33 +1,40 @@
 ---
-#- name: check uname -s
-#  shell: uname -s
-#  register: uname_s
+- name: check uname -s
+  shell: uname -s
+  register: uname_s
 
-#- name: debugout uname_s
-#  debug: var=uname_s.stdout_lines
-#  when: uname_s | success 
+- name: debug out uname_s
+  debug: var=uname_s.stdout_lines
+  when: uname_s is defined 
 
-#- name: check uname -m
-#  shell: uname -m
-#  register: uname_m
+- name: check uname -m
+  shell: uname -m
+  register: uname_m
 
-#- name: debugout uname_m
-#  debug: var=uname_m.stdout_lines
-#  when: uname_m | success 
-
-#- name: install docker-compose
-#  become: yes
-#  get_url:
-#    url: "https://github.com/docker/compose/releases/download/1.12.0/docker-compose-{{ uname_s.stdout }}-{{ uname_m.stdout }}"
-#    dest: "/usr/local/bin/docker-compose"
-#    force: yes
-#    mode: "a+x"
+- name: debug out uname_m
+  debug: var=uname_m.stdout_lines
+  when: uname_m is defined
 
 - name: install docker-compose
   become: yes
   get_url:
-    url: "https://github.com/docker/compose/releases/download/1.23.2/run.sh"
+    url: "https://github.com/docker/compose/releases/download/1.25.4/docker-compose-{{ uname_s.stdout }}-{{ uname_m.stdout }}"
     dest: "/usr/local/bin/docker-compose"
     force: yes
     mode: "a+x"
+  when:
+    - uname_m == "Linux"
+
+#- name: build docker-compose
+#  become: yes
+  
+
+#- name: install docker-compose
+#  become: yes
+#  get_url:
+#    url: "https://github.com/docker/compose/releases/download/1.23.2/run.sh"
+#    url: "https://github.com/docker/compose/releases/download/1.25.4/docker-compose-$(uname -s)-$(uname -m)" 
+#    dest: "/usr/local/bin/docker-compose"
+#    force: yes
+#    mode: "a+x"
 
