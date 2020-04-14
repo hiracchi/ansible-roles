@@ -40,6 +40,14 @@
     mode: 0755
     force: yes
 
+- name: set SGE-show.sh
+  become: yes
+  template:
+    src: SGE-show.sh
+    dest: /usr/local/gridengine/bin/SGE-show.sh
+    mode: 0755
+    force: yes
+
 - name: replace rlogin_daemon
   become: yes
   shell: /usr/local/gridengine/bin/sge.conf.sh mconf rlogin_daemon builtin
