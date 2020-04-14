@@ -8,9 +8,10 @@
     - openmpi-bin
     - openmpi-common
     - libopenmpi-dev
-    - libscalapack-openmpi1
+    - libscalapack-openmpi2.0
     - libscalapack-mpi-dev
     - gromacs
-    - gromacs-dev
     - gromacs-data
     - gromacs-openmpi
+    - openbabel
+
