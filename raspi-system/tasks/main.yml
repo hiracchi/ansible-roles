@@ -7,5 +7,11 @@
     update_cache: yes
     state: latest
   with_items:
+    - git
+    - rsync
+    - gawk
+    - busybox
+    - bindfs
     - htop
     - lsof
+    - ruby

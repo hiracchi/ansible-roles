@@ -23,7 +23,8 @@
     force: yes
     mode: "a+x"
   when:
-    - uname_m == "Linux"
+    - uname_s == "Linux"
+    - uname_m == "x86_64"
 
 #- name: build docker-compose
 #  become: yes

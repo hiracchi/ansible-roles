@@ -1,31 +1,38 @@
 ---
 - name: swap off
   become: yes
-  command: "swapoff --all"
+  # command: "swapoff --all"
   # command: "dphys-swapfile swapoff"
+  command: "dphys-swapfile swapoff"
+
+- name: uninstall swap file
+  become: yes
+  command: "dphys-swapfile uninstall"
 
 - name: stop swap service
   become: yes
-  apt: pkg="dphys-swapfile" state=absent
-  # command: "insserv -r dphys-swapfile"
+  service: 
+    name: dphys-swapfile
+    state: stopped
+    enabled: no
 
-- name: /tmp using tmpfs
-  become: yes
-  mount:
-    name: /tmp
-    src: tmpfs
-    fstype: tmpfs
-    opts: "defaults,size=16m,noatime,mode=1777"
-    state: present
+#- name: /tmp using tmpfs
+#  become: yes
+#  mount:
+#    name: /tmp
+#    src: tmpfs
+#    fstype: tmpfs
+#    opts: "defaults,size=16m,noatime,mode=1777"
+#    state: present
   
-- name: /var/tmp using tmpfs
-  become: yes
-  mount:
-    name: /var/tmp
-    src: tmpfs
-    fstype: tmpfs
-    opts: "defaults,size=16m,noatime,mode=1777"
-    state: present
+#- name: /var/tmp using tmpfs
+#  become: yes
+#  mount:
+#    name: /var/tmp
+#    src: tmpfs
+#    fstype: tmpfs
+#    opts: "defaults,size=16m,noatime,mode=1777"
+#    state: present
 
 #- name: /var/log using tmpfs
 #  become: yes
