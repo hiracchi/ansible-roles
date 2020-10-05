@@ -1,0 +1,21 @@
+---
+- name: install apache2 CGI modules
+  become: yes
+  apt:
+    pkg:
+      - apache2-suexec-custom 
+      - libcgi-pm-perl
+    update_cache: yes
+    cache_valid_time: 3600
+    state: latest
+
+- name: enable apache2 suexec
+  become: yes
+  command: a2enmod suexec
+  notify: restart apache2
+
+- name: enable apache2 cgid
+  become: yes
+  command: a2enmod cgid
+  notify: restart apache2
+

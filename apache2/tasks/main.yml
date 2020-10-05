@@ -1,18 +1,25 @@
 ---
 - name: install apache2
   become: yes
-  apt: pkg={{ item }} force=yes update_cache=yes state=latest
-  with_items:
-    - apache2
+  apt: 
+    pkg:
+      - apache2
+    update_cache: yes 
+    cache_valid_time: 3600
+    state: latest
 
 - name: start service apache2
   become: yes
-  service: name=apache2 enabled=yes state=started 
+  service: 
+    name: apache2
+    enabled: yes 
+    state: started 
 
 - name: apache2 config site
   become: yes
   template: src=site.conf.j2 dest=/etc/apache2/sites-available/site.conf
   notify: restart apache2
+
 - name: apache2 config ssl-site
   become: yes
   template: src=site-ssl.conf.j2 dest=/etc/apache2/sites-available/site-ssl.conf
@@ -21,6 +28,7 @@
 - name: disable site 000-default
   become: yes
   command: a2dissite 000-default
+
 - name: disable site default-ssl
   become: yes
   command: a2dissite default-ssl
@@ -28,6 +36,7 @@
 - name: enable site
   become: yes
   command: a2ensite site
+
 - name: enable site-ssl
   become: yes
   command: a2ensite site-ssl
@@ -38,4 +47,8 @@
 
 - name: restart service apache2
   become: yes
-  service: name=apache2 enabled=yes state=restarted
+  service: 
+    name: apache2 
+    enabled: yes 
+    state: restarted
+
