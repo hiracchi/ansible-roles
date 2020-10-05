@@ -1,14 +1,21 @@
 - name: install shell packages
   become: yes
   apt:
-    pkg: ['bash', 'zsh', 'tcsh', 'ksh']
+    pkg: 
+      - bash
+      - zsh
+      - tcsh
+      - ksh
     update_cache: yes
+    cache_valid_time: 3600
     state: latest
 
 - name: install debconf-utils
   become: yes
   apt:
     pkg: debconf-utils
+    update_cache: yes
+    cache_valid_time: 3600
     state: latest
 
 - name: switch bash

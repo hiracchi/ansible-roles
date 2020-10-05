@@ -1,10 +1,11 @@
 - name: install editor packages
   become: yes
-  apt: pkg={{ item }} force=yes update_cache=yes state=latest
-  with_items:
-    - vim
-    - emacs
-    - emacs-goodies-el
-    - emacs-goodies-extra-el
-
-  
+  apt: 
+    pkg:
+      - vim
+      - emacs
+      - emacs-goodies-el
+      - emacs-goodies-extra-el
+    update_cache: yes
+    cache_valid_time: 3600
+    state: latest 

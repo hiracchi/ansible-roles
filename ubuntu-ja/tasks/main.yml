@@ -9,10 +9,12 @@
     - ansible_distribution == 'Ubuntu'
     - ansible_distribution_version == "16.04"
 
-#- include_tasks: 'roles/ubuntu-ja/tasks/ubuntu-ja-18.04.yml'
 - include_tasks: ubuntu-ja-1804.yml
   when:
     - ansible_distribution == 'Ubuntu'
     - ansible_distribution_version == "18.04"
 
-
+- include_tasks: ubuntu-ja-2004.yml
+  when:
+    - ansible_distribution == 'Ubuntu'
+    - ansible_distribution_version == "20.04"

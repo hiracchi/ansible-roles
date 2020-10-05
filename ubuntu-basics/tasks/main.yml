@@ -9,15 +9,16 @@
   become: yes
   apt: 
     pkg: ['language-pack-ja']
-    force: yes
     update_cache: yes
+    cache_valid_time: 3600
     state: latest
 
+- import_tasks: system.yml
 - import_tasks: utils.yml
 - import_tasks: systemtools.yml
 - import_tasks: shell.yml
 
-- import_tasks: ntp.yml
+- import_tasks: ntp_1404.yml
   when: 
     - ansible_distribution == 'Ubuntu'
     - ansible_distribution_version == "14.04"
@@ -25,15 +26,21 @@
   when:
     - ansible_distribution == 'Ubuntu'
     - ansible_distribution_version == "16.04"
-
+- import_tasks: ntp_1604.yml
+  when:
+    - ansible_distribution == 'Ubuntu'
+    - ansible_distribution_version == "18.04"
+- import_tasks: ntp_1604.yml
+  when:
+    - ansible_distribution == 'Ubuntu'
+    - ansible_distribution_version == "20.04"
 
 - import_tasks: editor.yml
 
-- include: devenv.yml
-#- include: devtools.yml
-#- include: python.yml
-#- include: gdb.yml
-
+# - include: devenv.yml
+# - include: devtools.yml
+# - include: python.yml
+# - include: gdb.yml
 
 - name: set limits
   become: yes

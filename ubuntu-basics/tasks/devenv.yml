@@ -45,6 +45,7 @@
       - clisp
       - libgtest-dev
     update_cache: yes
+    cache_valid_time: 3600
     state: latest
 
 - name: update max user watches
