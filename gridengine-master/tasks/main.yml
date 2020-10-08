@@ -9,6 +9,11 @@
     - ansible_distribution == 'Ubuntu'
     - ansible_distribution_version == "18.04"
 
+- include_tasks: gridengine-master-ubuntu2004.yml
+  when:
+    - ansible_distribution == 'Ubuntu'
+    - ansible_distribution_version == "20.04"
+
 
 - name: start gridengine-master daemon
   service: name=gridengine-master state=started enabled=yes
