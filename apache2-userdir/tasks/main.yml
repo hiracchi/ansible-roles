@@ -1,0 +1,6 @@
+---
+- name: enable apache2 userdir
+  become: yes
+  command: a2enmod userdir
+  notify: restart apache2
+

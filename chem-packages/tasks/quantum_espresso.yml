@@ -1,0 +1,10 @@
+---
+- name: install quantum-espresso
+  become: yes
+  apt: 
+    pkg:
+      - quantum-espresso 
+    update_cache: yes
+    cache_valid_time: 3600
+    state: latest
+
