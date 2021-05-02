@@ -1,33 +1,33 @@
 ---
-- name: add debian source 1
-  become: yes
-  apt_repository:
-    repo: deb http://ftp.debian.org/debian/ stretch main contrib non-free
-    state: present
+# - name: add debian source 1
+#   become: yes
+#   apt_repository:
+#     repo: deb http://ftp.debian.org/debian/ stretch main contrib non-free
+#     state: present
 
-- name: add debian source 2
-  become: yes
-  apt_repository:
-    repo: deb http://security.debian.org/debian-security/ stretch/updates main contrib non-free
-    state: present
+# - name: add debian source 2
+#   become: yes
+#   apt_repository:
+#     repo: deb http://security.debian.org/debian-security/ stretch/updates main contrib non-free
+#     state: present
 
-- name: add file
-  become: yes
-  file:
-    src: apt_preference_debian
-    dest: /etc/apt/preferences.d/debian
+# - name: add file
+#   become: yes
+#   file:
+#     src: apt_preference_debian
+#     dest: /etc/apt/preferences.d/debian
 
-- name: add debian-archive-keyring
-  become: yes
-  apt:
-    name: debian-archive-keyring
-    state: present
-    update_cache: yes
+# - name: add debian-archive-keyring
+#   become: yes
+#   apt:
+#     name: debian-archive-keyring
+#     state: present
+#     update_cache: yes
 
-- name: add key
-  become: yes
-  apt_key:
-    file: /usr/share/keyrings/debian-archive-keyring.gpg
+# - name: add key
+#   become: yes
+#   apt_key:
+#     file: /usr/share/keyrings/debian-archive-keyring.gpg
 
 - name: install gridengine
   become: yes
