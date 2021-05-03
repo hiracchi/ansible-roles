@@ -1,0 +1,12 @@
+---
+- name: reload slurmctld
+  become: yes
+  service:
+    name: slurmctld
+    state: reloaded
+
+- name: restart munge
+  become: yes
+  service: 
+    name: munge
+    state: restarted

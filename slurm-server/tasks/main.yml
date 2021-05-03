@@ -1,0 +1,67 @@
+---
+- name: install slurm server packages
+  become: yes
+  apt:
+    name:
+      - slurm-wlm
+    state: latest
+
+- name: setup slurm.conf
+  become: yes
+  ansible.builtin.template:
+    src: slurm.conf.tmpl
+    dest: /etc/slurm-llnl/slurm.conf
+    mode: '0755'
+  notify:
+    - reload slurmctld
+  
+- name: make spool dir for slurm
+  become: yes
+  ansible.builtin.file:
+    path: /var/spool/slurmd.spool
+    state: directory
+    mode: '0755'
+    owner: slurm
+    group: slurm
+
+- name: make spool dir for slurm state
+  become: yes
+  ansible.builtin.file:
+    path: /var/spool/slurm.state
+    state: directory
+    mode: '0755'
+    owner: slurm
+    group: slurm
+
+- name: copy cgroup file
+  become: yes
+  ansible.builtin.copy:
+    src: cgroup.conf
+    dest: /etc/slurm-llnl/cgroup.conf
+
+- name: start munge
+  become: yes
+  ansible.builtin.service:
+    name: munge
+    state: started
+
+- name: fetch munge.key
+  become: yes
+  fetch:
+    src: /etc/munge/munge.key
+    dest: ./files/
+    flat: yes
+
+# - name: start slurmd
+#   become: yes
+#   ansible.builtin.service:
+#     name: slurmd
+#     state: started
+
+- name: start slurmctld
+  become: yes
+  ansible.builtin.service:
+    name: slurmctld
+    state: started
+
+

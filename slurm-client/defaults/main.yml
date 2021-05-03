@@ -1,0 +1,10 @@
+slurmctld_host: slurmctld_host
+
+slurm_nodes:
+  - "workder[00-08] CPUs=2"
+  - "workder[10-18] CPUs=4"
+
+slurm_partitions:
+  - "debug Nodes=workder[00-08] MaxTime=120 State=UP Default=YES"
+  - "long  Nodes=workder[10-18] MaxTime=INFINITE State=UP"
+
