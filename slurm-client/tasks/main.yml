@@ -15,23 +15,23 @@
   notify:
     - reload slurmctld
   
-- name: make spool dir for slurm
-  become: yes
-  ansible.builtin.file:
-    path: /var/spool/slurmd.spool
-    state: directory
-    mode: '0755'
-    owner: slurm
-    group: slurm
+# - name: make spool dir for slurm
+#   become: yes
+#   ansible.builtin.file:
+#     path: /var/spool/slurmd.spool
+#     state: directory
+#     mode: '0755'
+#     owner: slurm
+#     group: slurm
 
-- name: make spool dir for slurm state
-  become: yes
-  ansible.builtin.file:
-    path: /var/spool/slurm.state
-    state: directory
-    mode: '0755'
-    owner: slurm
-    group: slurm
+# - name: make spool dir for slurm state
+#   become: yes
+#   ansible.builtin.file:
+#     path: /var/spool/slurm.state
+#     state: directory
+#     mode: '0755'
+#     owner: slurm
+#     group: slurm
 
 - name: copy cgroup file
   become: yes

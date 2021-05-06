@@ -1,17 +1,18 @@
 ---
 - name: install nis client
   become: yes
-  apt: pkg={{ item }} force=yes update_cache=yes state=latest
-  with_items:
-    - nis
+  apt:
+    pkg:
+      - nis
+    state: latest
 
 - name: edit yp.conf
   become: yes
-  lineinfile:
+  ansible.builtin.template:
+    src: yp.conf.tmpl
     dest: /etc/yp.conf
-    regexp: '^ypserver'
-    line: 'ypserver {{ nis_servername }}'
   notify: restart nis service
+
 - name: edit nssiwtch.conf for passwd
   become: yes
   lineinfile:
@@ -19,6 +20,7 @@
     regexp: '^passwd: .*'
     line: 'passwd: compat nis'
   notify: restart nis service
+
 - name: edit nssiwtch.conf for group
   become: yes
   lineinfile:
@@ -26,6 +28,7 @@
     regexp: '^group: .*'
     line: 'group: compat nis'
   notify: restart nis service
+
 - name: edit nssiwtch.conf for shadow
   become: yes
   lineinfile:
@@ -33,6 +36,7 @@
     regexp: '^shadow: .*'
     line: 'shadow: compat nis'
   notify: restart nis service
+
 - name: edit nssiwtch.conf for hosts
   become: yes
   lineinfile:
@@ -40,6 +44,7 @@
     regexp: '^hosts: .*'
     line: 'hosts: files dns nis'
   notify: restart nis service
+
 - name: edit /etc/passwd
   become: yes
   lineinfile:
@@ -47,6 +52,7 @@
     regexp: '^\+'
     line: '+::::::'
   notify: restart nis service
+
 - name: edit /etc/group
   become: yes
   lineinfile:
@@ -54,6 +60,7 @@
     regexp: '^\+'
     line: '+:::'
   notify: restart nis service
+
 - name: edit /etc/shadow
   become: yes
   lineinfile:

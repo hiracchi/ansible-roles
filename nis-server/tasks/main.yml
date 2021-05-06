@@ -4,37 +4,55 @@
 ---
 - name: install nis server
   become: yes
-  apt: pkg={{ item }} force=yes update_cache=yes state=latest
-  with_items:
-    - nis
+  apt: 
+    pkg:
+      - nis
+    state: latest
 
 - name: edit yp.conf
   become: yes
-  lineinfile:
+  ansible.builtin.template:
+    src: yp.conf.tmpl
     dest: /etc/yp.conf
-    regexp: '^ypserver'
-    line: 'ypserver {{ nis_servername }}'
   notify: restart nis server
+
 - name: setup ypserv.securenets
   become: yes
   template: src=ypserv.securenets.tmpl dest=/etc/ypserv.securenets
   notify: restart nis server
+
 - name: setup nis Makefile
   become: yes
   template: src=Makefile.tmpl dest=/var/yp/Makefile
   notify: restart nis server
 
-- name: setup nis default
+- name: debug var nis_task
+  debug:
+    msg: "nis_task = {{ nis_task }}"
+
+- name: setup nis role
   become: yes
   lineinfile:
     dest: /etc/default/nis
     regexp: "^NISSERVER=*"
-    line: "NISSERVER=true"
+    line: "NISSERVER={{ nis_task }}"
   notify: restart nis server
     
-#- name: initialize nis database
-#  become: yes
-#  command: /usr/lib/yp/ypinit -m
+- name: initialize nis database for master
+  become: yes
+  command: /usr/lib/yp/ypinit -m
+  notify: restart nis server
+  when: 
+    - nis_initialize | bool
+    - nis_task == "master"
+
+- name: initialize nis database for slave
+  become: yes
+  command: /usr/lib/yp/ypinit -s
+  notify: restart nis server
+  when:
+    - nis_initialize | bool
+    - nis_task == "slave"
 
 - name: add NIS group
   become: yes
@@ -43,6 +61,8 @@
     gid: "{{ item.value.gid }}"
     state: present
   with_dict: "{{ nis_groups | default({}) }}"
+  when:
+    - nis_task == "master"
     
 - name: add NIS users
   become: yes
@@ -56,6 +76,8 @@
     shell: "{{ item.value.shell | default('/bin/bash') }}"
     createhome: no
   with_dict: "{{ nis_users | default({}) }}"
+  when:
+    - nis_task == "master"
       
 - name: update NIS user password
   become: yes
@@ -66,12 +88,22 @@
     - item.value.password is defined
     - item.value.update_password is defined
     - item.value.update_password
+    - nis_task == "master"
   with_dict: "{{ nis_users | default({}) }}"
         
 - name: update nis database
   become: yes
   command: make -C /var/yp
-  
+  when:
+    - nis_task == "master"
+
+- name: start service rpcbind
+  become: yes
+  service:
+    name: rpcbind
+    enabled: yes  
+    state: started
+
 - name: start service nis
   become: yes
   service:
