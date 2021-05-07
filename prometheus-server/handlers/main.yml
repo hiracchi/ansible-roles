@@ -1,0 +1,6 @@
+- name: reload prometheus server
+  become: yes
+  service:
+    name: prometheus
+    state: reloaded
+

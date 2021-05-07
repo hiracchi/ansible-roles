@@ -1,0 +1,57 @@
+---
+- name: install prometheus
+  become: yes
+  apt:
+    pkg:
+      - prometheus
+    state: latest
+
+- name: setup prometheus.yml
+  become: yes
+  ansible.builtin.template:
+    src: prometheus.yml.templ
+    dest: /etc/prometheus/prometheus.yml
+  notify: reload prometheus server
+
+- name: prepare grafana 
+  become: yes
+  apt:
+    pkg:
+      - apt-transport-https
+      - software-properties-common 
+      - wget
+    state: latest
+
+- name: add grafana key 
+  become: yes
+  ansible.builtin.apt_key:
+    url: https://packages.grafana.com/gpg.key
+    state: present
+
+- name: grafana repo
+  become: yes
+  ansible.builtin.apt_repository:
+    repo: "deb https://packages.grafana.com/oss/deb stable main"
+    state: present
+
+- name: install grafana
+  become: yes
+  apt:
+    pkg:
+      - grafana
+    state: latest
+    update_cache: yes
+
+- name: start prometheus service
+  become: yes
+  service:
+    name: prometheus 
+    state: started
+
+- name: start grafana service
+  become: yes
+  service:
+    name: grafana-server
+    state: started
+
+
