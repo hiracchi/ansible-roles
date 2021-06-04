@@ -1,0 +1,12 @@
+---
+- name: install ProteinDF devtools
+  become: yes
+  apt:
+    pkg:
+      - libopenblas-openmp-dev
+      - openmpi-common
+      - openmpi-bin
+      - libopenmpi-dev
+      - libscalapack-openmpi-dev
+    state: latest
+

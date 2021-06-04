@@ -21,6 +21,8 @@
     line: 'passwd: compat nis'
   notify: restart nis service
 
+  # - meta: flush_handlers
+
 - name: edit nssiwtch.conf for group
   become: yes
   lineinfile:

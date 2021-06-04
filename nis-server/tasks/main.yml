@@ -68,7 +68,7 @@
   become: yes
   user:
     name: "{{ item.key }}"
-    groups: "{{ item.value.groups }}"
+    groups: "{{ item.value.groups | default('') }}"
     group: "{{ item.value.group }}"
     state: present
     uid: "{{ item.value.uid }}"
