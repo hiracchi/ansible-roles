@@ -49,11 +49,29 @@
     group: munge
   notify: restart munge
 
-- name: start munge
+- name: add slurm group
+  become: yes
+  ansible.builtin.group:
+    name: slurm
+    gid: 64030
+    system: yes
+
+- name: add slurm user
+  become: yes
+  ansible.builtin.user:
+    name: slurm
+    uid: 64030
+    group: slurm
+    state: present
+    system: yes
+    home: /nonexistent
+    shell: /usr/sbin/nologin
+
+- name: restart munge
   become: yes
   ansible.builtin.service:
     name: munge
-    state: started
+    state: restarted
 
 - name: start slurmd
   become: yes

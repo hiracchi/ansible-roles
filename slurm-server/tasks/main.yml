@@ -39,11 +39,11 @@
     src: cgroup.conf
     dest: /etc/slurm-llnl/cgroup.conf
 
-- name: start munge
+- name: restart munge
   become: yes
   ansible.builtin.service:
     name: munge
-    state: started
+    state: restarted
 
 - name: fetch munge.key
   become: yes
