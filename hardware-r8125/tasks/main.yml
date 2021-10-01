@@ -1,0 +1,13 @@
+---
+- name: Add r8125 repository from PPA
+  become: yes
+  ansible.builtin.apt_repository:
+    repo: ppa:hardkernel/ppa
+
+- name: install r8125 package
+  become: yes
+  apt:
+    name: realtek-r8125-dkms
+    state: latest
+    update_cache: yes
+    
