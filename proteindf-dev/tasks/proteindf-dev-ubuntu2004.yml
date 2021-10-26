@@ -1,0 +1,23 @@
+---
+- name: install ProteinDF devtools
+  become: yes
+  apt:
+    pkg: 
+      - build-essential
+      - libopenblas-openmp-dev
+      - libopenmpi-dev
+      - libscalapack-openmpi-dev
+      - libeigen3-dev
+
+      - python3-autopep8
+
+      - ocl-icd-opencl-dev 
+      - libclc-dev 
+      - opencl-headers
+      - libboost-all-dev
+      - libviennacl-dev
+      - libhdf5-dev
+    force: yes
+    update_cache: yes
+    state: latest
+
