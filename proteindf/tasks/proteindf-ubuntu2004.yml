@@ -14,11 +14,16 @@
       - python3-bs4
       - python3-h5py
       - python3-jinja2
+
       - libeigen3-dev
+
       - libopenblas-openmp-dev
+
       - openmpi-common
       - openmpi-bin
       - libopenmpi-dev
+
       - libscalapack-openmpi-dev
+
     state: latest
 
