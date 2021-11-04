@@ -8,7 +8,7 @@
 
 - name: setup slurm.conf
   become: yes
-  ansible.builtin.template:
+  template:
     src: slurm.conf.tmpl
     dest: /etc/slurm-llnl/slurm.conf
     mode: '0755'
@@ -35,13 +35,13 @@
 
 - name: copy cgroup file
   become: yes
-  ansible.builtin.copy:
+  copy:
     src: cgroup.conf
     dest: /etc/slurm-llnl/cgroup.conf
 
 - name: copy munge.key
   become: yes
-  ansible.builtin.copy:
+  copy:
     src: ./files/munge.key
     dest: /etc/munge/munge.key
     mode: '0600'
@@ -51,14 +51,14 @@
 
 - name: add slurm group
   become: yes
-  ansible.builtin.group:
+  group:
     name: slurm
     gid: 64030
     system: yes
 
 - name: add slurm user
   become: yes
-  ansible.builtin.user:
+  user:
     name: slurm
     uid: 64030
     group: slurm
@@ -69,13 +69,13 @@
 
 - name: restart munge
   become: yes
-  ansible.builtin.service:
+  service:
     name: munge
     state: restarted
 
 - name: start slurmd
   become: yes
-  ansible.builtin.service:
+  service:
     name: slurmd
     state: started
 

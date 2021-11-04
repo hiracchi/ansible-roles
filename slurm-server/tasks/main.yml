@@ -8,7 +8,7 @@
 
 - name: setup slurm.conf
   become: yes
-  ansible.builtin.template:
+  template:
     src: slurm.conf.tmpl
     dest: /etc/slurm-llnl/slurm.conf
     mode: '0755'
@@ -17,7 +17,7 @@
   
 - name: make spool dir for slurm
   become: yes
-  ansible.builtin.file:
+  file:
     path: /var/spool/slurmd.spool
     state: directory
     mode: '0755'
@@ -26,7 +26,7 @@
 
 - name: make spool dir for slurm state
   become: yes
-  ansible.builtin.file:
+  file:
     path: /var/spool/slurm.state
     state: directory
     mode: '0755'
@@ -35,13 +35,13 @@
 
 - name: copy cgroup file
   become: yes
-  ansible.builtin.copy:
+  copy:
     src: cgroup.conf
     dest: /etc/slurm-llnl/cgroup.conf
 
 - name: restart munge
   become: yes
-  ansible.builtin.service:
+  service:
     name: munge
     state: restarted
 
@@ -60,7 +60,7 @@
 
 - name: start slurmctld
   become: yes
-  ansible.builtin.service:
+  service:
     name: slurmctld
     state: started
 

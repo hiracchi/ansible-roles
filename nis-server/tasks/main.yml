@@ -11,7 +11,7 @@
 
 - name: edit yp.conf
   become: yes
-  ansible.builtin.template:
+  template:
     src: yp.conf.tmpl
     dest: /etc/yp.conf
   notify: restart nis server

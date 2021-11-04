@@ -8,7 +8,7 @@
 
 - name: setup prometheus.yml
   become: yes
-  ansible.builtin.template:
+  template:
     src: prometheus.yml.templ
     dest: /etc/prometheus/prometheus.yml
   notify: reload prometheus server
@@ -24,13 +24,13 @@
 
 - name: add grafana key 
   become: yes
-  ansible.builtin.apt_key:
+  apt_key:
     url: https://packages.grafana.com/gpg.key
     state: present
 
 - name: grafana repo
   become: yes
-  ansible.builtin.apt_repository:
+  apt_repository:
     repo: "deb https://packages.grafana.com/oss/deb stable main"
     state: present
 
