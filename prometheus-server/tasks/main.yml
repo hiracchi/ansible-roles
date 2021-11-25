@@ -11,6 +11,7 @@
   template:
     src: prometheus.yml.templ
     dest: /etc/prometheus/prometheus.yml
+    force: yes
   notify: reload prometheus server
 
 - name: prepare grafana 
