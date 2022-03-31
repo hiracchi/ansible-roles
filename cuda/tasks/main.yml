@@ -1,0 +1,31 @@
+---
+- name: download repository pin
+  become: yes
+  get_url:
+    url: "https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin"
+    dest: "/etc/apt/preferences.d/cuda-repository-pin-600"
+    mode: "0644"
+
+- name: apt key
+  become: yes
+  command: "apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/7fa2af80.pub"
+
+- name: add apt repository
+  become: yes
+  apt_repository:
+    repo: "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/ /"
+    state: present
+
+- name: install cuda
+  become: yes
+  apt:
+    name:
+      - cuda
+    update_cache: yes
+    state: latest
+
+- name: disable graphical
+  become: yes
+  command: "systemctl set-default multi-user"
+  when:
+    - disable_graphical

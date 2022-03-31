@@ -1,0 +1,9 @@
+---
+- name: install ganglia-monitor
+  become: yes
+  apt: 
+    pkg:
+      - ganglia-monitor 
+    state: latest
+
+

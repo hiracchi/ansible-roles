@@ -1,0 +1,14 @@
+---
+- name: install ganglia-webfrontent
+  become: yes
+  apt: 
+    pkg:
+      - ganglia-webfrontend
+    state: latest
+
+- name: copy apache2 conf
+  become: yes
+  copy:
+    dest: /etc/apache2/sites-enabled/ganglia.conf
+    src: /etc/ganglia-webfrontend/apache.conf
+

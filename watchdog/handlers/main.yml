@@ -1,0 +1,6 @@
+- name: reload watchdog server
+  become: yes
+  service:
+    name: watchdog
+    state: reloaded
+

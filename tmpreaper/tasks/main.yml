@@ -1,0 +1,14 @@
+---
+- name: install tmpreaper
+  become: yes
+  apt:
+    pkg: tmpreaper
+    state: latest
+
+- name: setup tmpreaper.conf
+  become: yes
+  template:
+    src: 'tmpreaper.conf.templ'
+    dest: '/etc/tmpreaper.conf'
+    mode: '0644'
+
