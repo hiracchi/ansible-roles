@@ -3,6 +3,8 @@
 
 ## check
 
+- docker
+- docker-compose
 - hostname
 - hosts
 - locale

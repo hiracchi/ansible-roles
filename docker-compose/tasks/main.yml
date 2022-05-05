@@ -1,41 +1,14 @@
 ---
-- name: check uname -s
-  shell: uname -s
-  register: uname_s
-
-- name: debug out uname_s
-  debug: var=uname_s.stdout_lines
-  when: uname_s is defined 
-
-- name: check uname -m
-  shell: uname -m
-  register: uname_m
-
-- name: debug out uname_m
-  debug: var=uname_m.stdout_lines
-  when: uname_m is defined
+- name: install Docker compose on various os
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "vars-{{ ansible_system }}-{{ ansible_machine }}.yml"
 
 - name: install docker-compose
   become: yes
   get_url:
-    url: "https://github.com/docker/compose/releases/download/1.25.4/docker-compose-{{ uname_s.stdout }}-{{ uname_m.stdout }}"
+    url: "https://github.com/docker/compose/releases/download/v2.2.3/docker-compose-{{ docker_system }}-{{ docker_machine }}"
     dest: "/usr/local/bin/docker-compose"
     force: yes
     mode: "a+x"
-  when:
-    - uname_s == "Linux"
-    - uname_m == "x86_64"
-
-#- name: build docker-compose
-#  become: yes
-  
-
-#- name: install docker-compose
-#  become: yes
-#  get_url:
-#    url: "https://github.com/docker/compose/releases/download/1.23.2/run.sh"
-#    url: "https://github.com/docker/compose/releases/download/1.25.4/docker-compose-$(uname -s)-$(uname -m)" 
-#    dest: "/usr/local/bin/docker-compose"
-#    force: yes
-#    mode: "a+x"
 
