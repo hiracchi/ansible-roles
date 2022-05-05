@@ -1,0 +1,19 @@
+---
+- name: install packages
+  become: yes
+  apt:
+    pkg:
+      - locales
+    state: latest
+- name: edit locale.gen
+  become: yes
+  lineinfile:
+    path: /etc/locale.gen
+    regexp: '^# ja_JP.UTF-8 UTF-8'
+    line: '  ja_JP.UTF-8 UTF-8'
+- name: update locale
+  become: yes
+  command:
+    cmd: | 
+      locale-gen
+      update-locale LANG=ja_JP.UTF-8

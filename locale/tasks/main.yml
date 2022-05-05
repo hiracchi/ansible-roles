@@ -1,0 +1,10 @@
+---
+- include: ubuntu.yml
+  when:
+    - ansible_distribution == "Ubuntu"
+#   - ansible_distribution_major_version == "16"
+
+- include: debian.yml
+  when:
+    - ansible_distribution == "Debian"
+
