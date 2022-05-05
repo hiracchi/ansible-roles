@@ -1,0 +1,15 @@
+# This role require followinf vars:
+# vars:
+#   - my_groups:
+#     - group: hoge
+#       gid: 10000
+#       
+---
+- name: update groups
+  become: yes
+  group:
+    name: "{{ item.group }}"
+    gid: "{{ item.gid }}"
+    state: present
+  with_items: "{{ my_groups }}" 
+
