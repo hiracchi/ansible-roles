@@ -3,7 +3,9 @@
 # See the slurm.conf man page for more information.
 # 
 
-SlurmctldHost={{ slurmctld_host }}
+{% for host in slurmctld_hosts %}
+SlurmctldHost={{ host }}
+{% endfor %}
 # 
 #DisableRootJobs=NO
 #EnforcePartLimits=NO
