@@ -1,7 +1,29 @@
 ---
-- name: restart nis server
+# - name: restart nis server
+#   become: yes
+#   service: 
+#     name: "{{ nis_service_name | default('ypserv') }}"
+#     state: restarted
+
+
+- name: restart apache on 22
   become: yes
   service: 
-    name: nis
+    name: ypserv
     state: restarted
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_distribution_major_version >= 22
+  listen: "restart nis server"
+
+- name: restart apache on 22
+  become: yes
+  service: 
+    name: nis 
+    state: restarted
+  when:
+    - ansible_distribution == "Ubuntu" 
+    - ansible_distribution_major_version < 22
+  listen: "restart nis server"
+
   
