@@ -1,13 +1,39 @@
 ---
-- name: Add r8125 repository from PPA
-  become: yes
-  apt_repository:
-    repo: ppa:hardkernel/ppa
+#- name: Add r8125 repository from PPA
+#  become: yes
+#  apt_repository:
+#    repo: ppa:hardkernel/ppa
+#
+#- name: install r8125 package
+#  become: yes
+#  apt:
+#    name: realtek-r8125-dkms
+#    state: latest
+#    update_cache: yes
 
-- name: install r8125 package
+
+- name: install packages for r8125
   become: yes
-  apt:
-    name: realtek-r8125-dkms
+  apt: 
+    pkg:
+    - linux-headers-generic
+    - build-essential
+    - dkms
+    - r8125-dkms 
     state: latest
-    update_cache: yes
+
+- name: add blacklist
+  become: yes
+  lineinfile:
+    dest: /etc/modprobe.d/blacklist.conf
+    line: 'blacklist r8169'
+
+#- name: remove modules
+#  become: yes
+#  command: "modprobe -rfv r8125"
+#  ignore_errors: yes
+- name: update modules
+  become: yes
+  command: "modprobe -v r8125"
+
     
