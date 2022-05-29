@@ -26,6 +26,13 @@
   template: src=Makefile.tmpl dest=/var/yp/Makefile
   notify: restart nis server
 
+- name: setup /etc/defaultdomain
+  become: yes
+  template: 
+    src: defaultdomain.tmpl
+    dest: /etc/defaultdomain
+  notify: restart nis server  
+
 - name: debug var nis_task
   debug:
     msg: "nis_task = {{ nis_task }}"
@@ -107,8 +114,21 @@
 - name: start service nis
   become: yes
   service:
+    name: ypserv
+    enabled: yes
+    state: started
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_distribution_major_version >= "22"
+
+
+- name: start service nis
+  become: yes
+  service:
     name: nis
     enabled: yes
     state: started
-
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_distribution_major_version < "22"
 

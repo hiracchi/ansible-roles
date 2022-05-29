@@ -5,6 +5,7 @@
 
 - docker
 - docker-compose
+- hardware-r8168
 - hostname
 - hosts
 - locale
@@ -14,4 +15,5 @@
 - system.groups
 - system.users
 - timezone
+- tmpreaper
 
