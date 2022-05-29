@@ -1,0 +1,43 @@
+# vars
+#   hdd_spindown
+#     uuid:
+#       - sdb
+---
+- name: setup script
+  become: yes
+  copy:
+    dest: /usr/local/sbin/hdd-spindown.sh
+    src: hdd-spindown.sh
+    owner: root
+    mode: "0755"
+
+- name: setup service
+  become: yes
+  template:
+    src: user_hdd_spindown.templ
+    dest: "/lib/systemd/system/user_hdd_spindown.{{ item }}.service"
+  with_items: "{{ hdd_spindown.uuid }}"
+
+- name: systemd daemon-reload
+  become: yes
+  command: systemctl daemon-reload
+
+- name: register service
+  become: yes
+  command: "systemctl enable user_hdd_spindown.{{ item }}.service"
+  with_items: "{{ hdd_spindown.uuid }}"
+
+- name: enable service
+  become: yes
+  service:
+    name: "user_hdd_spindown.{{ item }}"
+    enabled: yes
+  with_items: "{{ hdd_spindown.uuid }}"
+
+- name: start service
+  become: yes
+  service:
+    name: "user_hdd_spindown.{{ item }}"
+    state: started
+  with_items: "{{ hdd_spindown.uuid }}"
+

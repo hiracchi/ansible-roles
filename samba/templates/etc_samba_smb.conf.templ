@@ -1,0 +1,27 @@
+[global]
+  workgroup = {{ samba.workgroup }}
+  server string = %h server %v
+  netbios name = ubuntu
+  dns proxy = no
+  security = user
+  map to guest = bad user
+
+
+{% for item in samba.public %}
+[{{ item.name }}]
+  path = {{ item.path }}
+  browsable = yes
+  writable = yes
+  guest ok = yes
+  read only = no
+{% endfor %}
+
+
+{% for item in samba.private %}
+[{{ item.name }}]
+  path = {{ item.path }}
+  writable = yes
+  valid users = {{ item.users}} 
+{% endfor %}
+
+

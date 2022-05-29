@@ -1,0 +1,7 @@
+samba_workgroup: WORKGROUP
+samba_public_share_name: public
+samba_public_share_path: /samba/public
+smaba_users:
+  - { name: 'arbab', smbpasswd: 'pass123' }
+  - { name: 'hussain', smbpasswd: 'password' }
+

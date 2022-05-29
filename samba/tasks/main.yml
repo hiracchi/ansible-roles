@@ -1,0 +1,21 @@
+---
+- name: install samba
+  become: yes
+  apt:
+    pkg: 
+      - samba
+    state: latest
+
+- name: setup smb.conf 
+  become: yes
+  template: 
+    src: etc_samba_smb.conf.templ
+    dest: /etc/samba/smb.conf
+  notify:
+    - restart samba
+
+- name: create samba password 
+  become: yes
+  shell: '(echo "{{ item.smbpasswd }}"; echo "{{ item.smbpasswd }}") | smbpasswd -s -a "{{ item.name }}"'
+  with_items: "{{ samba.users | default({}) }}"
+

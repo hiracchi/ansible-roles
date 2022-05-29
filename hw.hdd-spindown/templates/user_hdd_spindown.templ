@@ -1,0 +1,12 @@
+[Unit]
+Description=hdd spindown by sdparm
+
+[Service]
+ExecStart=/usr/local/sbin//hdd-spindown.sh {{ item }} 1800 > /dev/null 2>&1
+KillMode=process
+Type=simple
+Restart=no
+
+[Install]
+WantedBy=multi-user.target
+
