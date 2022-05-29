@@ -1,0 +1,19 @@
+# Set default values for all following accounts.
+defaults
+port 587
+tls on
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+syslog on
+aliases /etc/aliases
+
+# gmail
+account gmail
+host {{ msmtp.host }} 
+port {{ msmtp.port }}
+from {{ msmtp.from }}
+auth on
+user {{ msmtp.user }}
+password {{ msmtp.password }}
+
+# Set a default account
+account default : gmail

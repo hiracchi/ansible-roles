@@ -1,0 +1,27 @@
+---
+- name: install msmtp
+  become: yes
+  apt: 
+    pkg:
+      - msmtp
+      - msmtp-mta
+    state: latest
+
+- name: setup /etc/msmtprc
+  become: yes
+  template:
+    src: msmtprc.templ
+    dest: /etc/msmtprc
+
+- name: setup aliases
+  become: yes
+  template:
+    src: aliases.templ
+    dest: /etc/aliases
+
+- name: update aliases
+  become: yes
+  command:
+    cmd: "/usr/bin/newaliases"
+
+
