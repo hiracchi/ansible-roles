@@ -6,24 +6,24 @@
 #     state: restarted
 
 
-- name: restart apache on 22
+- name: "restart nis server on Ubuntu >= 22"
   become: yes
   service: 
     name: ypserv
     state: restarted
   when:
     - ansible_distribution == "Ubuntu"
-    - ansible_distribution_major_version >= 22
+    - ansible_distribution_major_version | int >= 22
   listen: "restart nis server"
 
-- name: restart apache on 22
+- name: "restart nis server on Ubuntu < 22"
   become: yes
   service: 
     name: nis 
     state: restarted
   when:
     - ansible_distribution == "Ubuntu" 
-    - ansible_distribution_major_version < 22
+    - ansible_distribution_major_version | int < 22
   listen: "restart nis server"
 
   

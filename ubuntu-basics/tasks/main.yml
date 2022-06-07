@@ -8,9 +8,8 @@
 - name: install language-pack
   become: yes
   apt: 
-    pkg: ['language-pack-ja']
-    update_cache: yes
-    cache_valid_time: 3600
+    pkg: 
+      - language-pack-ja
     state: latest
 
 - import_tasks: system.yml
@@ -21,19 +20,11 @@
 - import_tasks: ntp_1404.yml
   when: 
     - ansible_distribution == 'Ubuntu'
-    - ansible_distribution_version == "14.04"
+    - ansible_distribution_major_version == 14
 - import_tasks: ntp_1604.yml
   when:
     - ansible_distribution == 'Ubuntu'
-    - ansible_distribution_version == "16.04"
-- import_tasks: ntp_1604.yml
-  when:
-    - ansible_distribution == 'Ubuntu'
-    - ansible_distribution_version == "18.04"
-- import_tasks: ntp_1604.yml
-  when:
-    - ansible_distribution == 'Ubuntu'
-    - ansible_distribution_version == "20.04"
+    - ansible_distribution_major_version | int >= 16 
 
 - import_tasks: editor.yml
 

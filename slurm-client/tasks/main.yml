@@ -6,6 +6,17 @@
       - slurm-wlm
     state: latest
 
+
+- name: make /etc/slurm-llnl
+  become: yes
+  file:
+    path: /etc/slurm-llnl
+    state: directory
+    mode: '0755'
+    owner: slurm
+    group: slurm
+    
+
 - name: setup slurm.conf
   become: yes
   template:
@@ -14,6 +25,7 @@
     mode: '0755'
   notify:
     - reload slurmctld
+
   
 # - name: make spool dir for slurm
 #   become: yes
@@ -39,15 +51,6 @@
     src: cgroup.conf
     dest: /etc/slurm-llnl/cgroup.conf
 
-- name: copy munge.key
-  become: yes
-  copy:
-    src: ./files/munge.key
-    dest: /etc/munge/munge.key
-    mode: '0600'
-    owner: munge
-    group: munge
-  notify: restart munge
 
 - name: add slurm group
   become: yes
@@ -55,6 +58,7 @@
     name: slurm
     gid: 64030
     system: yes
+
 
 - name: add slurm user
   become: yes
@@ -67,15 +71,10 @@
     home: /nonexistent
     shell: /usr/sbin/nologin
 
-- name: restart munge
-  become: yes
-  service:
-    name: munge
-    state: restarted
 
-- name: start slurmd
+- name: restart slurmd
   become: yes
   service:
     name: slurmd
-    state: started
+    state: restarted
 

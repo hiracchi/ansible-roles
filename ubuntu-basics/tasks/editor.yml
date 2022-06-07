@@ -6,6 +6,4 @@
       - emacs
       - emacs-goodies-el
       - emacs-goodies-extra-el
-    update_cache: yes
-    cache_valid_time: 3600
     state: latest 

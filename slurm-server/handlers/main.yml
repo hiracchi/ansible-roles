@@ -11,9 +11,3 @@
     name: slurmctld
     state: reloaded
 
-- name: restart munge
-  become: yes
-  service:
-    name: munge
-    state: restarted
-

@@ -1,0 +1,50 @@
+---
+- name: install munge
+  become: yes
+  apt:
+    pkg:
+      - munge
+    state: latest
+
+
+- name: find munge.key on local
+  debug:
+    var: found_munge_key
+  with_first_found:
+    - files:
+        - ./files/munge.key
+      skip: true
+  register: found_munge_key
+
+
+- debug:
+    var: found_munge_key
+
+
+- name: fetch munge.key
+  become: yes
+  fetch:
+    src: /etc/munge/munge.key
+    dest: ./files/
+    flat: yes
+  when:
+    - found_munge_key is skipped
+
+
+- name: put munge.key
+  become: yes
+  copy:
+    src: ./files/munge.key
+    dest: /etc/munge/munge.key
+    mode: '0600'
+    owner: munge
+    group: munge
+  notify: restart munge 
+
+
+- name: start munge
+  become: yes
+  service:
+    name: munge
+    state: started
+
