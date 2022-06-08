@@ -7,10 +7,10 @@
     state: latest
 
 
-- name: make /etc/slurm-llnl 
+- name: make /etc/slurm 
   become: yes
   file:
-    path: /etc/slurm-llnl
+    path: /etc/slurm
     state: directory
     mode: '0755'
     owner: slurm
@@ -21,7 +21,7 @@
   become: yes
   template:
     src: slurm.conf.tmpl
-    dest: /etc/slurm-llnl/slurm.conf
+    dest: /etc/slurm/slurm.conf
     mode: '0755'
   notify:
     - reload slurmctld
@@ -51,7 +51,7 @@
   become: yes
   copy:
     src: cgroup.conf
-    dest: /etc/slurm-llnl/cgroup.conf
+    dest: /etc/slurm/cgroup.conf
 
 
 # - name: start slurmd

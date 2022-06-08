@@ -3,7 +3,9 @@
 # See the slurm.conf man page for more information.
 # 
 
-SlurmctldHost={{ slurmctld_host }}
+{% for host in slurmctld_hosts %}
+SlurmctldHost={{ host }}
+{% endfor %}
 # 
 #DisableRootJobs=NO
 #EnforcePartLimits=NO
@@ -29,7 +31,7 @@ MpiDefault=none
 #PluginDir=
 #PlugStackConfig=
 #PrivateData=jobs
-ProctrackType=proctrack/cgroup
+ProctrackType=proctrack/linuxproc
 #Prolog=
 #PrologFlags=
 #PrologSlurmctld=
@@ -44,15 +46,17 @@ SlurmctldPort=6817
 SlurmdPidFile=/var/run/slurmd.pid
 SlurmdPort=6818
 SlurmdSpoolDir=/var/spool/slurmd.spool
+# SlurmdSpoolDir=/tmp/slurmd
 SlurmUser=slurm
 #SlurmdUser=root
 #SrunEpilog=
 #SrunProlog=
 StateSaveLocation=/var/spool/slurm.state
+# StateSaveLocation=/tmp
 SwitchType=switch/none
 #TaskEpilog=
 TaskPlugin=task/affinity
-TaskPluginParam=Sched
+#TaskPluginParam=autobind
 #TaskProlog=
 #TopologyPlugin=topology/tree
 #TmpFS=/tmp
@@ -114,7 +118,7 @@ SelectTypeParameters=CR_Core
 #AccountingStoragePort=
 AccountingStorageType=accounting_storage/none
 #AccountingStorageUser=
-AccountingStoreJobComment=YES
+AccountingStoreFlags=job_comment
 ClusterName=cluster
 #DebugFlags=
 #JobCompHost=
