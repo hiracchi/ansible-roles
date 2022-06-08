@@ -1,7 +1,7 @@
-- name: install devtools
+- name: install ruby
   become: yes
   apt: 
     pkg:
-      - python3
+      - ruby
     state: latest
 

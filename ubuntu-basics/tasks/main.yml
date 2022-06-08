@@ -30,7 +30,8 @@
 
 # - include: devenv.yml
 # - include: devtools.yml
-# - include: python.yml
+- include: python.yml
+- include: ruby.yml
 # - include: gdb.yml
 
 - name: set limits
