@@ -1,0 +1,33 @@
+# variables
+#   nfs-clients:
+#     - host: nfsserver:/mnt/disk1
+#       mount_point: /mnt/disk1
+
+---
+- name: install autofs
+  become: yes
+  apt: 
+    pkg:
+      - autofs 
+    state: latest
+
+
+- name: add direct map
+  become: yes
+  lineinfile:
+    dest: /etc/auto.master
+    line: "/-    /etc/auto.mount"
+  notify: 
+    - restart autofs
+
+
+- name: setup /etc/auto.mount
+  become: yes
+  template:
+    src: auto.mount.j2
+    dest: /etc/auto.mount
+    mode: "0644"
+  notify:
+    - restart autofs
+
+

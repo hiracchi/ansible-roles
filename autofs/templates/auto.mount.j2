@@ -1,0 +1,4 @@
+{% for item in autofs_items %}
+{{ item.mount_point }} {{ item.options }} {{ item.location }}
+{% endfor %}
+

@@ -3,6 +3,7 @@
 
 ## check
 
+- autofs
 - docker
 - docker-compose
 - hardware-r8168
