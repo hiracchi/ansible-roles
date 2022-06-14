@@ -6,7 +6,6 @@
       - gfortran
       - libboost-all-dev
       - cmake
-      - subversion
       - clang-format
       - doxygen
       - graphviz
@@ -21,10 +20,9 @@
       - python3-venv
       - ruby
       - sysstat
-    update_cache: yes
     state: latest
 
-- include_tasks: pyenv.yml
+# - include_tasks: pyenv.yml
 
 # -----------------------------------------------------------------------------
 # git
@@ -34,47 +32,8 @@
   apt:
     pkg:
       - git
+      - git-lfs
       - git-flow
       - tig
-    update_cache: yes
     state: latest
 
-- include_tasks: git-lfs-ubuntu1604.yml
-  when:
-    - ansible_distribution == 'Ubuntu'
-    - ansible_distribution_version == "16.04"
-
-- name: install git-lfs
-  become: yes
-  apt:
-    pkg: ['git-lfs']
-    force: yes
-    update_cache: yes
-    state: latest
-  when:
-    - ansible_distribution == 'Ubuntu'
-    - ansible_distribution_version == "18.04" 
-    
-# -----------------------------------------------------------------------------
-# google test
-# -----------------------------------------------------------------------------
-#- name: check libgtest
-#  shell: "ls /usr/lib/libgtest.a /usr/lib/libgtest_main.a"
-#  register: has_libgtest
-#  ignore_errors: yes
-#  #changed_when: false
-#  #failed_when: false
-#
-#- debug:
-#    msg: "{{ has_libgtest }}"
-#
-#- copy:
-#    src: build_gtest.sh
-#    dest: /tmp/build_gtest.sh
-#    mode: 0755
-#  when: has_libgtest.failed
-#
-#- name: build Google Test
-#  become: yes
-#  shell: /tmp/build_gtest.sh
-#  when: has_libgtest.failed

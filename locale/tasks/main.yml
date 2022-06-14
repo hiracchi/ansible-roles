@@ -1,10 +1,27 @@
 ---
-- include: ubuntu.yml
-  when:
-    - ansible_distribution == "Ubuntu"
+- name: "update locale.gen"
+  become: yes
+  lineinfile:
+    dest: /etc/locale.gen
+    state: present
+    backrefs: yes
+    regexp: '{{ item.regexp }}'
+    line: '{{ item.line }}'
+  with_items: "{{ generate_locales | default() }}"
+
+
+- name: "do locale-gen"
+  become: yes
+  command:
+    cmd: "locale-gen"
+
+# - include: ubuntu.yml
+#   when:
+#     - ansible_distribution == "Ubuntu"
 #   - ansible_distribution_major_version == "16"
 
-- include: debian.yml
-  when:
-    - ansible_distribution == "Debian"
+
+# - include: debian.yml
+#   when:
+#     - ansible_distribution == "Debian"
 

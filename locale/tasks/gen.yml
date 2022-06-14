@@ -1,0 +1,11 @@
+---
+- name: "update locale.gen"
+  lineinfile:
+    dest: /etc/locale.gen
+    state: present
+    backrefs: yes
+    regexp: '{{ item.regexp }}'
+    line: '{{ item.line }}'
+  with_items: "{{ generate_locales | default() }}"
+
+

@@ -19,6 +19,5 @@
       - tk-dev 
       - libffi-dev 
       - liblzma-dev
-    update_cache: yes
     state: latest
 
