@@ -1,8 +1,8 @@
 generate_locales:
-  - regexp: "# C.UTF-8 UTF-8"
+  - regexp: '^#?\s*C.UTF-8 UTF-8'
     line: "C.UTF-8 UTF-8"
-#   - regexp: "^#?\s*ja_JP.EUC-JP EUC-JP"
-#     line: "ja_JP.EUC-JP EUC-JP"
+  - regexp: '^#?\s*en_US.UTF-8 UTF-8'
+    line: "en_US.UTF-8 UTF-8"
   - regexp: '^#?\s*ja_JP.UTF-8 UTF-8'
     line: "ja_JP.UTF-8 UTF-8"
 
