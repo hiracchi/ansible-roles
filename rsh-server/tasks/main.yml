@@ -11,9 +11,14 @@
 
 - name: update /etc/hosts.equiv
   become: yes
-  template: src=hosts.equiv.tmpl dest=/etc/hosts.equiv
+  template: 
+    src: hosts.equiv.tmpl 
+    dest: /etc/hosts.equiv
   
 - name: start openbsd-inetd server
   become: yes
-  service: name=openbsd-inetd state=started enabled=yes
+  service: 
+    name: openbsd-inetd 
+    state: started 
+    enabled: yes
   
