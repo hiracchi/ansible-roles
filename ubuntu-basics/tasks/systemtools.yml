@@ -5,5 +5,11 @@
       - smartmontools
       - lsof
       - expect 
+
+      - screenfetch
+      - neofetch
+      - htop
+      - btop
+      - crazydiskinfo
     state: latest
     

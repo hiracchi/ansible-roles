@@ -6,6 +6,7 @@
       - zsh
       - tcsh
       - ksh
+      - fish
     state: latest
 
 - name: install debconf-utils
