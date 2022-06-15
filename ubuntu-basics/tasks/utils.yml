@@ -5,5 +5,7 @@
       - unzip
       - bc
       - flex
+
+      - direnv
     state: latest
     
