@@ -1,0 +1,27 @@
+---
+- name: install ProteinDF devtools
+  become: yes
+  apt:
+    pkg:
+      - python3-numpy
+      - python3-scipy
+      - python3-pandas
+      - python3-matplotlib
+      - python3-sklearn
+      - python3-yaml
+      - python3-msgpack
+      - libmsgpack-dev
+      - python3-bs4
+      - python3-h5py
+      - python3-jinja2
+
+      - libeigen3-dev
+      - libopenblas-openmp-dev
+      - openmpi-common
+      - openmpi-bin
+      - libopenmpi-dev
+      - libscalapack-openmpi-dev
+      - libopenblas-base
+
+    state: latest
+

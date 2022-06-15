@@ -14,3 +14,8 @@
     - ansible_distribution == 'Ubuntu'
     - ansible_distribution_version == "20.04"
 
+- include_tasks: proteindf-ubuntu2204.yml
+  when:
+    - ansible_distribution == 'Ubuntu'
+    - ansible_distribution_version == "22.04"
+

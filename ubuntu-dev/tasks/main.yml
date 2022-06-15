@@ -4,6 +4,7 @@
     pkg:
       - build-essential
       - gfortran
+      - clang
       - libboost-all-dev
       - cmake
       - clang-format
