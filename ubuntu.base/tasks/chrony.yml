@@ -10,7 +10,7 @@
 - name: copy chrony setting file
   become: yes
   template: 
-    src: ntp.conf.j2 
+    src: chrony.conf.j2 
     dest: /etc/chrony/chrony.conf
     owner: root 
     mode: "0644"
