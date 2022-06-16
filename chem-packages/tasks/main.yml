@@ -1,13 +1,12 @@
 ---
 - name: install chem packages
   become: yes
-  apt: pkg={{ item }} force=yes update_cache=yes state=latest
-  with_items:
-    - openbabel
+  apt: 
+    pkg:
+      - openbabel
+    state: latest
 
 
 - include_tasks: quantum_espresso.yml
-
-
 - include_tasks: gromacs.yml
 
