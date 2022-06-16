@@ -10,18 +10,16 @@
       - python3-sklearn
       - python3-yaml
       - python3-msgpack
-      - libmsgpack-dev
       - python3-bs4
       - python3-h5py
       - python3-jinja2
 
-      - libeigen3-dev
-      - libopenblas-openmp-dev
+      - libomp5
+      - libopenblas0-openmp
+
       - openmpi-common
       - openmpi-bin
-      - libopenmpi-dev
-      - libscalapack-openmpi-dev
-      - libopenblas-base
+      - libscalapack-openmpi2.1
 
     state: latest
 

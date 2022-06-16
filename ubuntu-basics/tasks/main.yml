@@ -5,35 +5,14 @@
 #   with_items:
 #     - sysv-rc-conf
 
-- name: install language-pack
+- name: setup timeout for shutdown
   become: yes
-  apt: 
-    pkg: 
-      - language-pack-ja
-    state: latest
+  shell: sed -i 's/#DefaultTimeoutStopSec=90s/DefaultTimeoutStopSec=10s/g' /etc/systemd/system.conf
 
-- import_tasks: system.yml
-- import_tasks: utils.yml
-- import_tasks: systemtools.yml
-- import_tasks: shell.yml
 
-- import_tasks: ntp_1404.yml
-  when: 
-    - ansible_distribution == 'Ubuntu'
-    - ansible_distribution_major_version == 14
-- import_tasks: ntp_1604.yml
-  when:
-    - ansible_distribution == 'Ubuntu'
-    - ansible_distribution_major_version | int >= 16 
-
-- import_tasks: editor.yml
-
-# - include: devenv.yml
-# - include: devtools.yml
-- include: python.yml
-- include: ruby.yml
-# - include: gdb.yml
-
+# =============================================================================
+# limit
+# =============================================================================
 - name: set limits
   become: yes
   template:
@@ -41,4 +20,47 @@
     dest: /etc/security/limits.conf
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
+
+# =============================================================================
+# debug
+# =============================================================================
+- name: check enable debug
+  become: yes
+  shell: cat /etc/sysctl.d/10-ptrace.conf | grep -E 'kernel.yama.ptrace_scope\s+=\s+\w+' | awk '{ print $3 }'
+  register: yama_ptrace_scope
+  changed_when: false
+  # if you use before ansible-v2.4, enable 'always_run'
+  # always_run: yes
+  check_mode: no
+
+
+- name: enable debug
+  become: yes
+  shell: sed -E 's/kernel.yama.ptrace_scope\s+=\s+\w+/kernel.yama.ptrace_scope = 0/g' /etc/sysctl.d/10-ptrace.conf
+  when: yama_ptrace_scope.stdout == 1
+
+
+# =============================================================================
+# VS Code
+# =============================================================================
+- name: update max user watches
+  become: yes
+  copy:
+    src: 60-max-user-watches.conf
+    dest: /etc/sysctl.d/60-max-user-watches.conf
+  notify: restart procps
+
+
+# =============================================================================
+# import
+# =============================================================================
+- import_tasks: chrony.yml
+- import_tasks: shell.yml
+- import_tasks: systemtools.yml
+
+- import_tasks: python.yml
+- import_tasks: ruby.yml
+
+
+

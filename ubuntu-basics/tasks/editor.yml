@@ -1,9 +1,0 @@
-- name: install editor packages
-  become: yes
-  apt: 
-    pkg:
-      - vim
-      - emacs
-      - emacs-goodies-el
-      - emacs-goodies-extra-el
-    state: latest 

@@ -1,0 +1,40 @@
+---
+- name: install ProteinDF devtools
+  become: yes
+  apt:
+    pkg:
+      - libboost-all-dev
+
+      - libeigen3-dev
+      - libhdf5-dev
+
+      - libopenblas-openmp-dev
+      
+      - libopenmpi-dev
+      - libscalapack-openmpi-dev
+
+      - libmsgpack-dev
+
+      - python3-autopep8
+
+      # ViennaCL
+      # - ocl-icd-opencl-dev 
+      # - libclc-dev 
+      # - opencl-headers
+      # - libviennacl-dev
+
+      # develop
+      - git-flow
+      - tig
+      - doxygen
+      - graphviz
+
+      # debug
+      - electric-fence
+      - ddd
+      - google-perftools
+      - libgoogle-perftools-dev
+      - libgtest-dev
+
+    state: latest
+

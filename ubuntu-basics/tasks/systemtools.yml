@@ -2,14 +2,25 @@
   become: yes
   apt: 
     pkg: 
+      - vim
+      - wget
+      - curl
+      - openssl
+
+      - unzip
+      - xz-utils
+
+      - bc
+      - expect
+      - flex
+      - bison
+      - clisp
+      - jq
+
+      - direnv
+
+      - sysstat
       - smartmontools
       - lsof
-      - expect 
-
-      - screenfetch
-      - neofetch
-      - htop
-      - btop
-      - crazydiskinfo
     state: latest
     

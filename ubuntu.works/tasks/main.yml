@@ -1,0 +1,25 @@
+---
+- name: install packages (works)
+  become: yes
+  apt:
+    pkg:
+      # editor
+      - vim
+      - emacs
+      - emacs-goodies-el
+      - emacs-goodies-extra-el
+
+      # tools
+      - exa
+      - bat
+      - fd-find
+      - hexyl
+      - ripgrep
+
+      # system monitor
+      - screenfetch
+      - neofetch
+      - htop
+      - btop
+      - crazydiskinfo
+

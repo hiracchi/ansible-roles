@@ -1,7 +1,9 @@
-- name: install devtools
+- name: install python3
   become: yes
   apt: 
     pkg:
       - python3
+      - python3-pip
+      - python3-venv
     state: latest
 

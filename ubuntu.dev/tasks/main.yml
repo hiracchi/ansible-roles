@@ -1,0 +1,24 @@
+- name: install devtools
+  become: yes
+  apt: 
+    pkg:
+      - build-essential
+      - clang
+      - llvm
+      - gfortran
+
+      - make
+      - automake
+      - autoconf
+      - libtool
+      - pkg-config
+      - cmake
+
+      - git
+      - git-lfs
+
+      # python
+      - python3-dev
+
+    state: latest
+
