@@ -6,13 +6,23 @@
       - prometheus
     state: latest
 
+- name: setup args for prometheus
+  become: yes
+  lineinfile:
+    path: /etc/default/prometheus
+    regexp: '^ARGS=".*"'
+    line: 'ARGS="--web.enable-admin-api"'
+    state: present
+  notify:
+    - restart prometheus server
+
 - name: setup prometheus.yml
   become: yes
   template:
-    src: prometheus.yml.templ
+    src: prometheus.yml.j2
     dest: /etc/prometheus/prometheus.yml
     force: yes
-  notify: reload prometheus server
+  notify: restart prometheus server
 
 - name: prepare grafana 
   become: yes
@@ -29,11 +39,11 @@
     url: https://packages.grafana.com/gpg.key
     state: present
 
-# - name: grafana repo
-#   become: yes
-#   apt_repository:
-#     repo: "deb https://packages.grafana.com/oss/deb stable main"
-#     state: present
+- name: grafana repo
+  become: yes
+  apt_repository:
+    repo: "deb https://packages.grafana.com/oss/deb stable main"
+    state: present
 
 - name: install grafana
   become: yes
