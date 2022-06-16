@@ -4,9 +4,3 @@
     name: prometheus
     state: restarted
 
-- name: restart grafana 
-  become: yes
-  service:
-    name: grafana-server
-    state: restarted
-

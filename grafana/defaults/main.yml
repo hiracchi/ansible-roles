@@ -1,0 +1,9 @@
+grafana:
+  smtp:
+    enabled: "false"
+    host: smtp.gmail.com:587
+    user: example@gmail.com
+    password: password
+    from_address: example@gmail.com
+    from_name: example
+
