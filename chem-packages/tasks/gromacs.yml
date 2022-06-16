@@ -5,6 +5,6 @@
     pkg:
       - gromacs
       - gromacs-data
-      - gromacs-openmpi 
+      - gromacs-mpi 
     state: latest
 
