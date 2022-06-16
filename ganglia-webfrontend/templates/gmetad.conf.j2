@@ -42,8 +42,8 @@
 # data_source "another source" 1.3.4.7:8655  1.3.4.8
 
 # data_source "my cluster" localhost
-{% for node in ganglia_monitors %}
-data_source "{{ node.name }}" {{ node.polling_interval }} {{ node.address}}:{{ node.port }}
+{% for grp in ganglia_monitors %}
+data_source "{{ grp.name }}" {{ grp.polling_interval | default() }} {% for node in grp.nodes %} {{ node }} {% endfor %}
 {% endfor %}
 
 #

@@ -17,12 +17,16 @@
 
 - name: apache2 config site
   become: yes
-  template: src=site.conf.j2 dest=/etc/apache2/sites-available/site.conf
+  template: 
+    src: site.conf.j2 
+    dest: /etc/apache2/sites-available/site.conf
   notify: restart apache2
 
 - name: apache2 config ssl-site
   become: yes
-  template: src=site-ssl.conf.j2 dest=/etc/apache2/sites-available/site-ssl.conf
+  template: 
+    src: site-ssl.conf.j2 
+    dest: /etc/apache2/sites-available/site-ssl.conf
   notify: restart apache2
 
 - name: disable site 000-default
@@ -45,10 +49,4 @@
   become: yes
   command: a2enmod rewrite
 
-- name: restart service apache2
-  become: yes
-  service: 
-    name: apache2 
-    enabled: yes 
-    state: restarted
 

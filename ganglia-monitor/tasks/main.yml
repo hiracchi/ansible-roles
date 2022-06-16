@@ -3,7 +3,16 @@
   become: yes
   apt: 
     pkg:
+      - rrdtool
       - ganglia-monitor 
     state: latest
 
+- name: set /etc/ganglia/gmond.conf
+  become: yes
+  template:
+    dest: /etc/ganglia/gmond.conf
+    src: gmond.conf.j2
+    mode: "0644"
+  notify:
+    - restart ganglia-monitor
 

@@ -2,17 +2,7 @@
 - name: install apache2-mod-php
   become: yes
   apt:
-    pkg: libapache2-mod-php
-    force: yes
-    update_cache: yes
+    pkg: 
+      - libapache2-mod-php
     state: latest
-  when: "ansible_lsb.id == 'Ubuntu'"
 
-- name: install apache2-mod-php
-  become: yes
-  apt:
-    pkg: libapache2-mod-php
-    force: yes
-    update_cache: yes
-    state: latest
-  when: "ansible_lsb.id == 'Raspbian'"

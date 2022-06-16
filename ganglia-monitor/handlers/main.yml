@@ -1,0 +1,6 @@
+- name: restart ganglia-monitor
+  become: yes
+  service:
+    name: ganglia-monitor
+    state: restarted
+

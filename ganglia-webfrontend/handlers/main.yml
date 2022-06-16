@@ -1,0 +1,13 @@
+- name: restart ganglia-monitor
+  become: yes
+  service:
+    name: ganglia-monitor
+    state: restarted
+
+- name: restart gmetad
+  become: yes
+  service:
+    name: gmetad
+    state: restarted
+
+

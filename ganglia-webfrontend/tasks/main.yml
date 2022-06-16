@@ -1,14 +1,28 @@
 ---
-- name: install ganglia-webfrontent
+- name: install ganglia server
   become: yes
   apt: 
     pkg:
+      - gmetad
       - ganglia-webfrontend
     state: latest
+
+- name: set gmetad.conf
+  become: yes
+  template:
+    dest: /etc/ganglia/gmetad.conf
+    src: gmetad.conf.j2
+    mode: "0644"
+  notify: 
+    - restart gmetad
+    - restart ganglia-monitor
 
 - name: copy apache2 conf
   become: yes
   copy:
     dest: /etc/apache2/sites-enabled/ganglia.conf
     src: /etc/ganglia-webfrontend/apache.conf
+  notify:
+    - restart apache2
+
 
