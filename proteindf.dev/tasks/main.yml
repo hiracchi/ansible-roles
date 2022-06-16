@@ -1,6 +1,4 @@
 ---
-- include_tasks: builder.yml
-
 - include_tasks: proteindf-dev-ubuntu1604.yml
   when: 
     - ansible_distribution == 'Ubuntu'
