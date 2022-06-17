@@ -1,4 +1,7 @@
 grafana:
+  anonymous:
+    enabled: "false"
+    org_name: "Main Org."
   smtp:
     enabled: "false"
     host: smtp.gmail.com:587
