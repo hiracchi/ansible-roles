@@ -9,6 +9,7 @@
       - nis
     state: latest
 
+
 - name: edit yp.conf
   become: yes
   template:
@@ -16,15 +17,18 @@
     dest: /etc/yp.conf
   notify: restart nis server
 
+
 - name: setup ypserv.securenets
   become: yes
   template: src=ypserv.securenets.tmpl dest=/etc/ypserv.securenets
   notify: restart nis server
 
+
 - name: setup nis Makefile
   become: yes
   template: src=Makefile.tmpl dest=/var/yp/Makefile
   notify: restart nis server
+
 
 - name: setup /etc/defaultdomain
   become: yes
@@ -33,9 +37,11 @@
     dest: /etc/defaultdomain
   notify: restart nis server  
 
+
 - name: debug var nis_task
   debug:
     msg: "nis_task = {{ nis_task }}"
+
 
 - name: setup nis role
   become: yes
@@ -44,6 +50,7 @@
     regexp: "^NISSERVER=*"
     line: "NISSERVER={{ nis_task }}"
   notify: restart nis server
+
     
 - name: initialize nis database for master
   become: yes
@@ -53,6 +60,7 @@
     - nis_initialize | bool
     - nis_task == "master"
 
+
 - name: initialize nis database for slave
   become: yes
   command: /usr/lib/yp/ypinit -s
@@ -60,6 +68,7 @@
   when:
     - nis_initialize | bool
     - nis_task == "slave"
+
 
 - name: add NIS group
   become: yes

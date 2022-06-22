@@ -71,4 +71,21 @@
     line: '+::::::::'
   notify: restart nis service
 
+- name: set /etc/domainname
+  become: yes
+  template:
+    src: domainname.tmpl
+    dest: /etc/defaultdomain
+
+- name: enable ypbind service
+  become: yes
+  service:
+    name: ypbind
+    state: enabled
+
+- name: start ypbind service
+  become: yes
+  service:
+    name: ypbind
+    state: started
   
