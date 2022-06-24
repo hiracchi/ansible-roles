@@ -8,6 +8,7 @@
       - emacs
       - emacs-goodies-el
       - emacs-goodies-extra-el
+      - source-highlight
 
       # tools
       - exa
