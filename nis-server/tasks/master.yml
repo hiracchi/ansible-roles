@@ -1,0 +1,57 @@
+# {{ nis_securentes_netmask }}         {{ nis_securenets_network }}
+# nis_domainname
+# nis_servername
+---
+- name: setup nis role
+  become: yes
+  lineinfile:
+    dest: /etc/default/nis
+    regexp: "^NISSERVER=*"
+    line: "NISSERVER=master"
+  notify: restart nis server
+
+
+- name: initialize nis database for master
+  become: yes
+  command: /usr/lib/yp/ypinit -m
+  notify: restart nis server
+  when: 
+    - nis_initialize | bool
+
+
+- name: add NIS group
+  become: yes
+  group:
+    name: "{{ item.key }}"
+    gid: "{{ item.value.gid }}"
+    state: present
+  with_dict: "{{ nis_groups | default({}) }}"
+
+ 
+- name: add NIS users
+  become: yes
+  user:
+    name: "{{ item.key }}"
+    groups: "{{ item.value.groups | default('') }}"
+    group: "{{ item.value.group }}"
+    state: present
+    uid: "{{ item.value.uid }}"
+    home: "{{ item.value.home }}"
+    shell: "{{ item.value.shell | default('/bin/bash') }}"
+    createhome: no
+  with_dict: "{{ nis_users | default({}) }}"
+
+ 
+- name: update NIS user password
+  become: yes
+  user:
+    name: "{{ item.key }}"
+    password: "{{ item.value.password | password_hash('sha512') }}"
+  when:
+    - item.value.password is defined
+    - item.value.update_password is defined
+    - item.value.update_password
+    - nis_task == "master"
+  with_dict: "{{ nis_users | default({}) }}"
+
+

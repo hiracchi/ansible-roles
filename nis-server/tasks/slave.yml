@@ -1,0 +1,30 @@
+# {{ nis_securentes_netmask }}         {{ nis_securenets_network }}
+# nis_domainname
+# nis_servername
+---
+- name: setup nis role
+  become: yes
+  lineinfile:
+    dest: /etc/default/nis
+    regexp: "^NISSERVER=*"
+    line: "NISSERVER=slave"
+  notify: restart nis server
+
+
+- name: update /etc/default/nis
+  become: yes
+  lineinfile:
+    dest: /etc/default/nis
+    regexp: "^NISMASTER=.*"
+    line: "NISMASTER={{ nis_master_node }}"
+  notify: restart nis server
+
+
+- name: initialize nis database for slave
+  become: yes
+  command: "/usr/lib/yp/ypinit -s {{ nis_master_node }}"
+  notify: restart nis server
+  when:
+    - nis_initialize | bool
+
+
