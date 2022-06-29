@@ -9,11 +9,11 @@
       - r8168-dkms
     state: latest
 
-# - name: add blacklist
-#   become: yes
-#   lineinfile:
-#     dest: /etc/modprobe.d/blacklist.conf
-#     line: 'blacklist r8169'
+- name: add blacklist
+  become: yes
+  copy:
+    src: blacklist-r8169.conf
+    dest: /etc/modprobe.d/blacklist-r8169.conf
 
 # - name: remove modules
 #   become: yes
@@ -23,4 +23,9 @@
 # - name: update modules
 #   become: yes
 #   command: "modprobe -v r8168"
+
+- name: update initramfs
+  become: yes
+  command:
+    cmd: update-initramfs -u
 

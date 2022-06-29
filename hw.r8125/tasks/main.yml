@@ -1,0 +1,30 @@
+---
+- name: install packages for r8125
+  become: yes
+  apt: 
+    pkg:
+    - linux-headers-generic
+    - build-essential
+    - dkms
+    - r8125-dkms 
+    state: latest
+
+- name: add blacklist
+  become: yes
+  copy:
+    src: blacklist-r8169.conf
+    dest: /etc/modprobe.d/blacklist-r8169.conf
+
+#- name: remove modules
+#  become: yes
+#  command: "modprobe -rfv r8125"
+#  ignore_errors: yes
+# - name: update modules
+#   become: yes
+#   command: "modprobe -v r8125"
+
+- name: update initramfs
+  become: yes
+  command:
+    cmd: update-initramfs -u
+    
