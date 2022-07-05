@@ -14,8 +14,15 @@
       - pkg-config
       - cmake
 
+      - flex 
+      - bison 
+      - patch
+      - bc
+
       - git
       - git-lfs
+
+      - libbz2-dev
 
       # python
       - python3-dev
