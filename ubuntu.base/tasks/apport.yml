@@ -1,0 +1,16 @@
+---
+- name: disable apport
+  become: yes
+  lineinfile:
+    path: /etc/default/apport
+    regexp: '^enabled=1'
+    line: 'enabled=0'
+
+- name: set core dump filename format
+  become: yes
+  copy:
+    src: 90-core-dump.conf
+    dest: /etc/sysctl.d/90-core-dump.conf
+    mode: '0644'
+  notify: restart procps
+
