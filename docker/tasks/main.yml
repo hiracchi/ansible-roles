@@ -16,3 +16,12 @@
 
 - include: docker-storage.yml
 
+- name: add docker group
+  become: yes
+  user:
+    name: "{{ item }}"
+    append: yes
+    groups: docker
+    state: present
+  with_items: "{{ docker_users | default([]) }}"
+
