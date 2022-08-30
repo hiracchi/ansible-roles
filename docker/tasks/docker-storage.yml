@@ -1,24 +1,30 @@
 ---
-- name: mkdir docker image path
+- name: mkdir docker_data_root
   become: yes
   file:
-    path: "{{ docker_image_path }}"
+    path: "{{ docker_data_root }}"
     state: directory
     mode: 0711
-    
+   
+
 - name: setup docker image path
   become: yes
   lineinfile:
     dest: /lib/systemd/system/docker.service
     regexp: "ExecStart="
-    line: "ExecStart=/usr/bin/dockerd -H unix:// --data-root {{ docker_image_path }}"
+    line: "ExecStart=/usr/bin/dockerd -H unix:// --data-root {{ docker_data_root }}"
   notify: restart docker server
   changed_when: True
     
+
 - name: start docker daemon
   become: yes
-  service: name=docker enabled=yes state=started
+  service: 
+    name: docker 
+    enabled: yes 
+    state: started
   notify: restart docker server
+
 
 - name: add users to docker group
   become: yes

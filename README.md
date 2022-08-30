@@ -1,5 +1,13 @@
 # ansible-roles
 
+Link this directory to `~/.ansible/roles` before using:
+
+```
+$ ln -s `pwd` ~/.ansible/roles
+```
+
+or check Environment Variable; ANSIBLE_ROLES_PATH
+
 
 ## check
 

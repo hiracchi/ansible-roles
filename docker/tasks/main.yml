@@ -6,7 +6,7 @@
 #    - "docker-{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
 #    - "docker-{{ ansible_distribution }}.yml"
 
-- include: docker-Ubuntu.yml
+- include: docker-ubuntu.yml
   when:
     - ansible_distribution == "Ubuntu"
 
