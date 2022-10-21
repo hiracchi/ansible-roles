@@ -1,6 +1,6 @@
-- name: reload watchdog server
+- name: restart watchdog server
   become: yes
   service:
     name: watchdog
-    state: reloaded
+    state: restarted
 
