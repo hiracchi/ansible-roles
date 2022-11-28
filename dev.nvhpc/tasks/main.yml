@@ -1,0 +1,29 @@
+---
+- name: fetch nvidia PGP key
+  uri:
+    url: "https://developer.download.nvidia.com/hpc-sdk/ubuntu/DEB-GPG-KEY-NVIDIA-HPC-SDK"
+    return_content: yes
+  register: nvidia_pgp
+
+
+- name: regist PGP
+  become: yes
+  shell:
+    cmd: "gpg --dearmor -o /usr/share/keyrings/nvidia-hpcsdk-archive-keyring.gpg"
+    stdin: "{{ nvidia_pgp.content }}"
+
+
+- name: set nvhpc source list
+  become: yes
+  copy:
+    dest: /etc/apt/sources.list.d/nvhpc.list
+    content: "deb [signed-by=/usr/share/keyrings/nvidia-hpcsdk-archive-keyring.gpg] https://developer.download.nvidia.com/hpc-sdk/ubuntu/amd64 /"
+
+- name: install nvhpc
+  become: yes
+  apt:
+    pkg:
+      - nvhpc-22-9
+    state: latest
+    update_cache: yes
+
