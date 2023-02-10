@@ -1,0 +1,34 @@
+---
+- name: install development tools
+  become: yes
+  apt:
+    pkg:
+      - automake
+      - autoconf
+      - cmake
+      - make
+      - gcc
+      - gfortran
+      - clang
+      - clang-format
+      - python3
+      - golang
+
+      - git-flow
+      - tig
+
+      - direnv
+
+      - doxygen
+      - graphviz
+
+      # debug
+      - electric-fence
+      - ddd
+      - google-perftools
+      - libgoogle-perftools-dev
+      - libgtest-dev
+
+    state: latest
+
+
