@@ -76,4 +76,16 @@
 #    backup: yes
 #  notify:
 #    - restart iptables
-  
+
+- name: setup MACs
+  become: yes
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    state: present
+    line: "Macs umac-128-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128@openssh.com,hmac-sha2-512,hmac-sha2-256"
+    regexp: "^#?Macs"
+    validate: "sshd -T -f %s"
+    backup: yes
+  notify:
+    - restart sshd
+ 
