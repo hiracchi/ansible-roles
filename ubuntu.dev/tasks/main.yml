@@ -27,5 +27,7 @@
       # python
       - python3-dev
 
+      - rust-all
+
     state: latest
 
