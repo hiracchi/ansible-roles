@@ -1,0 +1,25 @@
+# vars:
+#   mount_disks:
+#     - path:
+#       src:
+#       fstype
+#       opts:
+#       state:
+---
+- name: make mount points
+  become: yes
+  file:
+    path: "{{ item['path'] }}"
+    state: directory
+  loop: "{{ mount_disks }}"
+
+- name: mount disks
+  become: yes
+  mount:
+    path: "{{ item['path'] }}"
+    src: "{{ item['src'] }}"
+    fstype: "{{ item['fstype'] }}"
+    opts: "{{ item['opts'] }}"
+    state: "{{ item['state'] }}"
+  loop: "{{ mount_disks }}"
+
