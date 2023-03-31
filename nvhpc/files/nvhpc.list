@@ -1,0 +1,2 @@
+deb [trusted=yes] https://developer.download.nvidia.com/hpc-sdk/ubuntu/amd64 /
+
