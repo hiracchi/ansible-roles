@@ -3,6 +3,9 @@
   become: yes
   apt:
     pkg:
+      # network
+      - connect-proxy
+
       # editor
       - vim
       - emacs
