@@ -19,7 +19,6 @@
 
       - direnv
 
-      - sysstat
       - smartmontools
       - lsof
     state: latest
