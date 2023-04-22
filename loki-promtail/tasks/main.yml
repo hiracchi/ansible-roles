@@ -1,0 +1,48 @@
+---
+- include: protmail-amd64.yml
+  when:
+    - ansible_architecture == "x86_64"
+
+- include: protmail-arm64.yml
+  when:
+    - ansible_architecture == "aarch64"
+
+
+- name: group add promtail
+  become: yes
+  ansible.builtin.user:
+    name: promtail
+    groups: adm,root
+    append: yes
+  notify: restart promtail
+
+
+- name: setup protmail config
+  become: yes
+  template:
+    src: config.yml
+    dest: /etc/promtail/config.yml
+  notify: restart promtail
+
+
+#- name: setup promtail service
+#  become: yes
+#  ansible.builtin.copy:
+#    src: promtail.service
+#    dest: /etc/systemd/system/promtail.service
+#    owner: root
+#    group: root
+#    mode: '0644'
+#  notify: restart promtail
+
+
+#- name: service promtail
+#  become: yes
+#  ansible.builtin.service:
+#    name: promtail
+#    enabled: yes
+#  notify: restart promtail
+
+
+
+

@@ -1,0 +1,21 @@
+---
+#- name: download and unzip promtai binary
+#  ansible.builtin.unarchive:
+#    dest: /tmp/
+#    url: "https://github.com/grafana/loki/releases/download/{{ promtail_ver }}/promtail-linux-amd64.zip"
+#    remote_src: yes
+
+#- name: install promtail binary
+#  become: yes
+#  ansible.builtin.copy:
+#    src: /tmp/promtail-linux-amd64
+#    dest: /usr/local/bin/promtail
+#    mode: "0755"
+
+
+- name: install promtail deb
+  become: yes
+  ansible.builtin.apt:
+    deb: "https://github.com/grafana/loki/releases/download/v{{ promtail_ver }}/promtail_{{ promtail_ver }}_amd64.deb"
+
+

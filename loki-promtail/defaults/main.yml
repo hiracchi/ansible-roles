@@ -1,0 +1,5 @@
+promtail_ver: 2.8.0
+promtail_listen_port: 9080
+promtail_loki_host: localhost
+promtail_loki_port: 3100
+
