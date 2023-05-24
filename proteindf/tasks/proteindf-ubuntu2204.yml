@@ -15,11 +15,61 @@
       - python3-jinja2
 
       - libomp5
-      - libopenblas0-openmp
+
+      - libblas-dev
+      - liblapack-dev
+      
+      - libopenblas-openmp-dev
+      - libblis-dev
 
       - openmpi-common
       - openmpi-bin
-      - libscalapack-openmpi2.1
+      - libscalapack-openmpi-dev
 
     state: latest
+
+- name: switch libopenblas.so
+  become: yes
+  community.general.alternatives:
+    name: libopenblas.so-x86_64-linux-gnu
+    path: /usr/lib/x86_64-linux-gnu/openblas-openmp/libopenblas.so
+
+- name: switch libopenblas.so.0
+  become: yes
+  community.general.alternatives:
+    name: libopenblas.so.0-x86_64-linux-gnu
+    path: /usr/lib/x86_64-linux-gnu/openblas-openmp/libopenblas.so.0
+
+- name: switch liblapack.so-x86_64-linux-gnu
+  become: yes
+  community.general.alternatives:
+    name: liblapack.so-x86_64-linux-gnu
+    path: /usr/lib/x86_64-linux-gnu/openblas-openmp/liblapack.so
+
+- name: switch liblapack.so.3-x86_64-linux-gnu
+  become: yes
+  community.general.alternatives:
+    name: liblapack.so.3-x86_64-linux-gnu
+    path: /usr/lib/x86_64-linux-gnu/openblas-openmp/liblapack.so.3
+
+- name: switch liblapack.so.3-x86_64-linux-gnu
+  become: yes
+  community.general.alternatives:
+    name: liblapack.so.3-x86_64-linux-gnu
+    path: /usr/lib/x86_64-linux-gnu/openblas-openmp/liblapack.so.3
+
+- name: switch libblas.so-x86_64-linux-gnu
+  become: yes
+  community.general.alternatives:
+    name: libblas.so-x86_64-linux-gnu
+    path: /usr/lib/x86_64-linux-gnu/openblas-openmp/libblas.so
+
+- name: switch libblas.so.3-x86_64-linux-gnu
+  become: yes
+  community.general.alternatives:
+    name: libblas.so.3-x86_64-linux-gnu
+    path: /usr/lib/x86_64-linux-gnu/openblas-openmp/libblas.so.3
+
+
+
 
