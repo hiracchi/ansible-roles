@@ -25,3 +25,19 @@
     state: present
   with_items: "{{ docker_users | default([]) }}"
 
+- name: setup insecure repositries
+  become: yes
+  template:
+    src: daemon.json.tmpl
+    dest: /etc/docker/daemon.json
+  notify: restart docker server
+
+#- name: start docker daemon
+#  become: yes
+#  service:
+#    name: docker
+#    # enabled: yes
+#    state: started
+#  # notify: restart docker server
+
+
