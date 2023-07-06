@@ -9,6 +9,7 @@
 
       - unzip
       - xz-utils
+      - pigz
 
       - bc
       - expect
