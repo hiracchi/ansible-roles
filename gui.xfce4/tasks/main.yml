@@ -1,0 +1,7 @@
+---
+- name: install packages
+  become: yes
+  ansible.builtin.apt:
+    pkg:
+      - xfce4 
+      - xfce4-goodies
