@@ -1,0 +1,42 @@
+---
+- name: install packages
+  become: yes
+  apt:
+    pkg:
+      - wget
+      - gpg
+
+- name: add keyrings
+  become: yes
+  shell: "wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /tmp/packages.microsoft.gpg"
+  args:
+    creates: /tmp/packages.microsoft.gpg
+
+- name: install gpg
+  become: yes
+  shell: "install -D -o root -g root -m 644 /tmp/packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg"
+
+- name: copy vscode.list
+  become: yes
+  copy:
+    dest: /etc/apt/sources.list.d/vscode.list
+    src: vscode.list
+
+- name: remove temporary files
+  become: yes
+  shell: "rm /tmp/packages.microsoft.gpg"
+
+- name: update apt
+  become: yes
+  apt:
+    update_cache: yes
+    state: latest
+
+- name: install packages
+  become: yes
+  apt:
+    pkg:
+      - apt-transport-https
+      - code
+
+
