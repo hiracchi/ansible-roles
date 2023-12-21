@@ -1,0 +1,19 @@
+---
+- name: install sar
+  become: yes
+  apt:
+    pkg:
+      - sysstat
+    state: latest
+
+
+- name: enable sar command
+  become: yes
+  lineinfile:
+    dest: /etc/default/sysstat
+    line: 'ENABLED="true"'
+    regexp: "^ENABLED="
+    backup: yes
+  notify:
+    - restart sysstat
+
