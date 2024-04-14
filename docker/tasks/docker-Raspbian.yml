@@ -4,9 +4,9 @@
   register: is_installed_docker
   ignore_errors: yes
 
-# - name: debug 
-#   debug:
-#     msg: "{{ is_installed_docker }}"
+- name: debug 
+  debug:
+    msg: "{{ is_installed_docker }}"
 
 - name: install docker
   become: yes

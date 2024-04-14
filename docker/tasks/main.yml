@@ -6,15 +6,21 @@
 #    - "docker-{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
 #    - "docker-{{ ansible_distribution }}.yml"
 
-- include: docker-ubuntu.yml
-  when:
-    - ansible_distribution == "Ubuntu"
+# - include: docker-ubuntu.yml
+#   when:
+#     - ansible_distribution == "Ubuntu"
 
-- include: docker-Raspbian.yml
-  when:
-    - ansible_lsb.id == "Raspbian"
+# - include: docker-Raspbian.yml
+#   when:
+#     - ansible_lsb.id == "Raspbian"
+
+- name: install docker
+  become: yes
+  shell: "curl -sSL https://get.docker.com | bash"
+
 
 - include: docker-storage.yml
+
 
 - name: add docker group
   become: yes
@@ -31,13 +37,5 @@
     src: daemon.json.tmpl
     dest: /etc/docker/daemon.json
   notify: restart docker server
-
-#- name: start docker daemon
-#  become: yes
-#  service:
-#    name: docker
-#    # enabled: yes
-#    state: started
-#  # notify: restart docker server
 
 
