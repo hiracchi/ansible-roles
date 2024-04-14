@@ -1,0 +1,28 @@
+---
+- name: add gpg key directory
+  become: yes
+  ansible.builtin.file:
+    path: /usr/share/keyrings
+    state: directory
+    mode: "0755"
+
+- name: add gpg key
+  become: yes
+  ansible.builtin.get_url:
+    url: "https://pkg.cloudflare.com/cloudflare-main.gpg"   
+    dest: /usr/share/keyrings/cloudflare-main.gpg 
+
+- name: set repo
+  become: yes
+  ansible.builtin.copy:
+    src: cloudflared.list
+    dest: /etc/apt/sources.list.d/cloudflared.list
+
+- name: install cloudflared
+  become: yes
+  ansible.builtin.apt:
+    pkg:
+      - cloudflared
+    state: latest
+    update_cache: yes
+
