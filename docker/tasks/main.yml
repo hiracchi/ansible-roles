@@ -19,7 +19,7 @@
   shell: "curl -sSL https://get.docker.com | bash"
 
 
-- include: docker-storage.yml
+- include_tasks: docker-storage.yml
 
 
 - name: add docker group
