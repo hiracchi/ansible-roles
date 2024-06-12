@@ -1,0 +1,14 @@
+---
+# tasks file for raspi-ntp
+- name: update timesyncd.conf
+  become: yes
+  ansible.builtin.lineinfile:
+    dest: '/etc/systemd/timesyncd.conf'
+    state: present
+    backrefs: yes
+    regexp: '{{ item.regexp }}'
+    line: '{{ item.line }}'
+  with_items:
+    - regexp: '^#?\s*NTP='
+      line: 'NTP=ntp.nict.jp'
+  notify: restart systemd-timesyncd

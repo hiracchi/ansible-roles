@@ -1,0 +1,11 @@
+---
+- name: install packages
+  become: yes
+  ansible.builtin.apt:
+    pkg:
+      - tigervnc-scraping-server
+
+- name: setup x0vnc.service
+  become: yes
+  
+

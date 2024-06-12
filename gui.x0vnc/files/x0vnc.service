@@ -1,0 +1,24 @@
+[Unit]
+Description=Remote desktop service (VNC)
+After=syslog.target
+After=network-online.target
+After=x11-common.service
+
+[Service]
+Type=forking
+Environment=XAUTHORITY=/var/run/lightdm/root/:0
+Environment=DISPLAY=:0
+Environment=HOME=/root
+
+# ExecStartPre=/usr/bin/sleep 30
+ExecStart=/usr/bin/x0vncserver -verbose -SecurityTypes VncAuth -PasswordFile /etc/x0vnc.passwd -display :0 -localhost no
+
+ExecStop=/usr/bin/x0vncserver -kill :0
+
+# ExecReload=/bin/kill -HUP $MAINPID
+# KillMode=control-group
+# Restart=on-failure
+
+[Install]
+WantedBy=graphical.target
+

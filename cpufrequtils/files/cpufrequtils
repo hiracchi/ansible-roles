@@ -1,0 +1,5 @@
+ENABLE="true"
+GOVERNOR="powersave"
+# MAX_SPEED="0"
+# MIN_SPEED="0"
+

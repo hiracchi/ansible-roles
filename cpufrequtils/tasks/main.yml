@@ -1,0 +1,24 @@
+---
+- name: install packages
+  become: yes
+  apt:
+    pkg:
+      - cpufrequtils
+    state: latest
+
+
+- name: copy config file
+  become: yes
+  ansible.builtin.copy:
+    src: cpufrequtils
+    dest: /etc/default/cpufrequtils
+  notify:
+    - restart cpufrequtils
+
+
+- name: Enable service cpufrequtils
+  ansible.builtin.service:
+    name: cpufrequtils
+    enabled: yes
+
+

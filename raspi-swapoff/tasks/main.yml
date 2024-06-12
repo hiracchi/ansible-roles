@@ -11,10 +11,16 @@
 
 - name: stop swap service
   become: yes
-  service: 
+  service:
     name: dphys-swapfile
     state: stopped
     enabled: no
+
+- name: remove swap file
+  become: yes
+  ansible.builtin.file:
+    path: /var/swap
+    state: absent
 
 #- name: /tmp using tmpfs
 #  become: yes
@@ -24,7 +30,7 @@
 #    fstype: tmpfs
 #    opts: "defaults,size=16m,noatime,mode=1777"
 #    state: present
-  
+
 #- name: /var/tmp using tmpfs
 #  become: yes
 #  mount:
@@ -42,7 +48,7 @@
 #    fstype: tmpfs
 #    opts: "defaults,size=16m,noatime,mode=1777"
 #    state: present
-  
+
 #- name: install unionfs-fuse
 #  become: yes
 #  apt: pkg='unionfs-fuse' force=yes update_cache=yes state=latest

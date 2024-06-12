@@ -31,11 +31,20 @@
     state: present
   with_items: "{{ docker_users | default([]) }}"
 
+
+- name: remove docker/daemon.json
+  become: yes
+  ansible.builtin.file:
+    path: /etc/docker/daemon.json
+    state: absent
+
+
 - name: setup insecure repositries
   become: yes
   template:
     src: daemon.json.tmpl
     dest: /etc/docker/daemon.json
+  when: docker_insecure_registry
   notify: restart docker server
 
 
