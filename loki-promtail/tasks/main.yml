@@ -1,9 +1,9 @@
 ---
-- include: protmail-amd64.yml
+- ansible.builtin.include_tasks: protmail-amd64.yml
   when:
     - ansible_architecture == "x86_64"
 
-- include: protmail-arm64.yml
+- ansible.builtin.include_tasks: protmail-arm64.yml
   when:
     - ansible_architecture == "aarch64"
 
