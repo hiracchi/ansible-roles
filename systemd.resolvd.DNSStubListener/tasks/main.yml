@@ -1,0 +1,11 @@
+---
+# tasks file for systemd.resolvd.DNSStubListener
+- name: disable DNSStubListener
+  become: yes
+  lineinfile:
+    dest: '/etc/systemd/resolved.conf'
+    state: present
+    regexp: '^#?DNSStubListener'
+    line: 'DNSStubListener=no'
+  notify: restart systemd-resolved 
+
