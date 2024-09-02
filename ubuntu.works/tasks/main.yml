@@ -14,7 +14,8 @@
       - source-highlight
 
       # tools
-      - exa
+      # - exa
+      # - eza
       - bat
       - fd-find
       - hexyl

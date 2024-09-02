@@ -1,0 +1,25 @@
+---
+# tasks file for hardware-nvidia
+- name: disable nouveau
+  become: yes
+  ansible.builtin.copy:
+    src: blacklist-nouveau.conf
+    dest: /etc/modprobe.d/blacklist-nouveau.conf
+
+- name: update initramfs
+  become: yes
+  ansible.builtin.command: "update-initramfs -u"
+
+- name: add nvidia graphic driver repository
+  become: yes
+  ansible.builtin.apt_repository:
+    repo: ppa:graphics-drivers/ppa
+
+- name: install nvidia driver
+  become: yes
+  ansible.builtin.apt:
+    pkg:
+      - nvidia-driver-{{ nvidia_driver_ver }}
+    state: latest
+
+

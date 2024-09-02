@@ -1,0 +1,28 @@
+---
+- name: install cuda on various os
+  ansible.builtin.include_tasks:
+    file: "{{ item }}"
+  with_first_found:
+    # - "cuda-{{ ansible_lsb.id }}.yml"
+    - "cuda-{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
+    - "cuda-{{ ansible_distribution }}.yml"
+  ignore_errors: true
+
+
+- name: install cuda-toolkit
+  become: yes
+  ansible.builtin.apt:
+    pkg:
+      - cuda-toolkit-12-6
+      - nvidia-open
+      # - cuda-drivers
+    state: latest
+    update_cache: yes
+
+
+- name: disable graphical
+  become: yes
+  command: "systemctl set-default multi-user"
+  when:
+    - disable_graphical
+

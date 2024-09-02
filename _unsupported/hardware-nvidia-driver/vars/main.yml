@@ -1,0 +1,4 @@
+---
+# vars file for hardware-nvidia
+nvidia_driver_ver: 535
+

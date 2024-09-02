@@ -11,7 +11,5 @@
   template:
     src: watchdog.conf.templ
     dest: /etc/watchdog.conf
-  notify: reload watchdog server
-
-
+  notify: restart watchdog server
 
