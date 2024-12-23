@@ -1,0 +1,24 @@
+---
+# tasks file for font.hackgen
+
+- name: install font tools
+  become: yes
+  apt:
+    pkg:
+      - fontconfig
+    state: latest
+
+- name: install hackgen
+  become: yes
+  ansible.builtin.copy:
+    dest: /usr/local/share/fonts/
+    src: "{{ item }}"
+  loop:
+    - HackGenConsoleNF-Regular.ttf
+    - HackGenConsoleNF-Bold.ttf
+
+- name: update font cache
+  become: yes
+  ansible.builtin.command:
+    cmd: fc-cache -fv
+

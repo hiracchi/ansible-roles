@@ -1,0 +1,2 @@
+deb [signed-by=/etc/apt/keyrings/wezterm-fury.asc] https://apt.fury.io/wez/ * *
+

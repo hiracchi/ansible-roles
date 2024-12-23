@@ -1,0 +1,14 @@
+---
+# tasks file for flatpak
+
+- name: install flatpack
+  become: yes
+  ansible.builtin.apt:
+    pkg:
+      - flatpak
+
+- name: add Flathub
+  become: yes
+  command:
+    cmd: "flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo"
+

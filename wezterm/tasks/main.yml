@@ -1,0 +1,20 @@
+---
+# tasks file for wezterm
+- name: setup key
+  become: yes
+  ansible.builtin.get_url:
+    url: https://apt.fury.io/wez/gpg.key
+    dest: /etc/apt/keyrings/wezterm-fury.asc
+
+- name: copy wezterm.list
+  become: yes
+  ansible.builtin.copy:
+    dest: /etc/apt/sources.list.d/wezterm.list
+    src: wezterm.list
+
+- name: install wezterm
+  become: yes
+  ansible.builtin.apt:
+    pkg: wezterm
+    update_cache: yes
+
