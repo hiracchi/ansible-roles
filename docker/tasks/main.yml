@@ -14,6 +14,12 @@
 #   when:
 #     - ansible_lsb.id == "Raspbian"
 
+- name: install packages
+  become: yes
+  ansible.builtin.apt:
+    pkg:
+      - curl
+
 - name: install docker
   become: yes
   shell: "curl -sSL https://get.docker.com | bash"
