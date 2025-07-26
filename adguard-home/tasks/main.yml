@@ -1,0 +1,18 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for adguard-home
+- name: install snap
+  become: yes
+  apt:
+    pkg:
+      - snapd 
+      - dnsutils
+    state: latest
+
+- name: 
+  become: yes
+  community.general.snap:
+    name:
+      - adguard-home
+
+

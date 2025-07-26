@@ -14,9 +14,10 @@
 
 - name: add direct map
   become: yes
-  lineinfile:
-    dest: /etc/auto.master
-    line: "/-    /etc/auto.mount"
+  copy:
+    src: user_disk.autofs
+    dest: /etc/auto.master.d/user_disk.autofs
+    mode: "0644"
   notify: 
     - restart autofs
 
@@ -24,8 +25,8 @@
 - name: setup /etc/auto.mount
   become: yes
   template:
-    src: auto.mount.j2
-    dest: /etc/auto.mount
+    src: auto.user_disk.j2
+    dest: /etc/auto.master.d/auto.user_disk
     mode: "0644"
   notify:
     - restart autofs
