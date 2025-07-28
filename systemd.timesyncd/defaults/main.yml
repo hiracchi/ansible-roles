@@ -1,0 +1,4 @@
+---
+# defaults file for systemd.timesyncd
+NTP_SERVER: 'ntp.nict.jp'
+

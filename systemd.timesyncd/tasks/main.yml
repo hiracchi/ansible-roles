@@ -1,0 +1,22 @@
+---
+# tasks file for systemd.timesyncd
+- name: install systemd-timesyncd
+  become: yes
+  apt:
+    pkg: systemd-timesyncd
+    state: latest
+
+- name: update /etc/systemd/timesyncd.conf
+  become: yes
+  lineinfile:
+    dest: '/etc/systemd/timesyncd.conf'
+    state: present
+    backrefs: yes
+    regexp: '^#?NTP=.*'
+    line: 'NTP={{ NTP_SERVER }}'
+  notify: restart systemd-timesyncd
+
+- name: enable set-ntp
+  become: yes
+  command: 'timedatectl set-ntp true'
+
