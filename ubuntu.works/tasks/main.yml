@@ -14,17 +14,16 @@
       - source-highlight
 
       # tools
-      # - exa
-      # - eza
+      - eza
       - bat
       - fd-find
       - hexyl
       - ripgrep
 
       # system monitor
-      - screenfetch
-      - neofetch
       - htop
       - btop
       #- crazydiskinfo
 
+- name: install github-cli
+  import_tasks: github_cli.yml
