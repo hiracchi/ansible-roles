@@ -1,0 +1,8 @@
+---
+# handlers file for qemu-guest-agent
+
+- name: restart qemu-guest-agent
+  service:
+    name: qemu-guest-agent
+    state: restarted
+  when: qemu_guest_agent_config_changed is defined and qemu_guest_agent_config_changed | bool

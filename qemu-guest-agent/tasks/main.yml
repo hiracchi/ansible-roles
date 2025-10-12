@@ -1,0 +1,16 @@
+---
+# tasks file for qemu-guest-agent
+
+- name: Install qemu-guest-agent
+  become: yes
+  apt:
+    name: qemu-guest-agent
+    state: present
+    update_cache: yes
+
+- name: Ensure qemu-guest-agent service is running
+  systemd:
+    name: qemu-guest-agent
+    state: started
+    enabled: yes
+
