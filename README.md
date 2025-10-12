@@ -1,5 +1,6 @@
 # ansible-roles
 
+## usage
 Link this directory to `~/.ansible/roles` before using:
 
 ```
@@ -7,6 +8,13 @@ $ ln -s `pwd` ~/.ansible/roles
 ```
 
 or check Environment Variable; ANSIBLE_ROLES_PATH
+
+
+## develop a new role
+
+```
+ansible-galaxy init  new_role
+```
 
 
 ## check
@@ -27,4 +35,6 @@ or check Environment Variable; ANSIBLE_ROLES_PATH
 - system.users
 - timezone
 - tmpreaper
+
+
 
