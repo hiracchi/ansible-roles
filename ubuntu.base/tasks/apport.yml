@@ -1,10 +1,17 @@
 ---
+- name: check /etc/default/apport
+  stat:
+    path: /etc/default/apport
+  register: etc_default_apport_file_status
+
 - name: disable apport
   become: yes
   lineinfile:
     path: /etc/default/apport
     regexp: '^enabled=1'
     line: 'enabled=0'
+  when: etc_default_apport_file_status.stat.exists
+
 
 - name: set core dump filename format
   become: yes
