@@ -1,4 +1,15 @@
 ---
+- name: disable nouveau driver
+  become: yes
+  ansible.builtin.copy:
+    src: blacklist-nouveau.conf
+    dest: /etc/modprobe.d/blacklist-nouveau.conf
+
+- name: update initramfs
+  become: yes
+  ansible.builtin.command: "update-initramfs -u"
+
+
 - name: install cuda on various os
   ansible.builtin.include_tasks:
     file: "{{ item }}"
@@ -7,17 +18,6 @@
     - "cuda-{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
     - "cuda-{{ ansible_distribution }}.yml"
   ignore_errors: true
-
-
-- name: install cuda-toolkit
-  become: yes
-  ansible.builtin.apt:
-    pkg:
-      - cuda-toolkit-12-6
-      - nvidia-open
-      # - cuda-drivers
-    state: latest
-    update_cache: yes
 
 
 - name: disable graphical

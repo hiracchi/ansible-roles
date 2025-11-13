@@ -3,7 +3,7 @@
 - name: install cuda-keyring
   become: yes
   ansible.builtin.apt:
-    deb: "https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb"
+    deb: "https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb"
 
 - name: install cuda-toolkit
   become: yes
@@ -14,4 +14,3 @@
       - cuda-drivers
     state: latest
     update_cache: yes
-
