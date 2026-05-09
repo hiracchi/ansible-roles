@@ -7,7 +7,7 @@
 ---
 - name: update groups
   become: yes
-  group:
+  ansible.builtin.group:
     name: "{{ item.group }}"
     gid: "{{ item.gid }}"
     state: present

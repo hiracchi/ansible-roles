@@ -1,7 +1,7 @@
 ---
 - name: update users
   become: yes
-  user: 
+  ansible.builtin.user: 
     name: "{{ item.user }}"
     uid: "{{ item.uid }}"
     group: "{{ item.group }}"

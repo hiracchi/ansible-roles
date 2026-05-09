@@ -1,4 +1,10 @@
 ---
+hosts_table: []
+
+hosts_allow_table:
+  - daemon_list: sshd
+    host_list: ALL
+
 hosts_deny_table:
   - daemon_list: ALL
     host_list: ALL

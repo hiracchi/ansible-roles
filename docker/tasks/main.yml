@@ -28,7 +28,7 @@
 - include_tasks: docker-storage.yml
 
 
-- name: add docker group
+- name: Add docker users to the docker group
   become: yes
   user:
     name: "{{ item }}"
@@ -50,7 +50,5 @@
   template:
     src: daemon.json.tmpl
     dest: /etc/docker/daemon.json
-  when: docker_insecure_registry
+  when: docker_insecure_registry | length > 0
   notify: restart docker server
-
-
