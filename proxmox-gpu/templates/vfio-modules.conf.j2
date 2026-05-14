@@ -1,0 +1,6 @@
+# VFIO modules to be loaded at boot time
+# On current Proxmox VE kernels, vfio_virqfd usually does not need to be
+# loaded explicitly, so this role only lists the core VFIO modules.
+{% for module_name in proxmox_gpu_vfio_modules %}
+{{ module_name }}
+{% endfor %}

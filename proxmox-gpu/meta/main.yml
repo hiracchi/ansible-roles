@@ -1,0 +1,30 @@
+#SPDX-License-Identifier: MIT-0
+galaxy_info:
+  author: Ansible Community
+  description: Configure GPU passthrough on Proxmox VE hosts
+  company: Proxmox Community
+
+  license: MIT-0
+
+  min_ansible_version: 2.9
+
+  galaxy_tags:
+    - proxmox
+    - gpu
+    - passthrough
+    - nvidia
+    - vfio
+    - iommu
+    - virtualization
+
+  platforms:
+    - name: Debian
+      versions:
+        - bullseye
+        - bookworm
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+
+dependencies: []

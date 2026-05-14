@@ -1,0 +1,33 @@
+#SPDX-License-Identifier: MIT-0
+---
+# IOMMU setup tasks
+
+- name: Check if system supports IOMMU
+  shell: |
+    if grep -q "flags.*iommu" /proc/cpuinfo; then
+      echo "supported"
+    else
+      echo "unsupported"
+    fi
+  register: iommu_support
+  changed_when: false
+
+- name: Debug IOMMU support
+  debug:
+    msg: "IOMMU support: {{ iommu_support.stdout }}"
+
+- name: Warn if IOMMU is not supported
+  debug:
+    msg: "WARNING: IOMMU may not be supported on this system"
+  when: iommu_support.stdout == "unsupported"
+
+- name: Check BIOS/UEFI IOMMU setting via dmesg
+  shell: dmesg | grep -i iommu | head -5
+  register: iommu_dmesg
+  changed_when: false
+  failed_when: false
+
+- name: Display IOMMU dmesg output
+  debug:
+    msg: "{{ iommu_dmesg.stdout_lines }}"
+  when: iommu_dmesg.stdout | length > 0

@@ -1,0 +1,60 @@
+#SPDX-License-Identifier: MIT-0
+---
+# VFIO setup tasks
+
+- name: Install required packages
+  become: yes
+  apt:
+    name: "{{ proxmox_gpu_packages }}"
+    state: present
+    update_cache: yes
+  tags:
+    - packages
+
+- name: Create VFIO modprobe configuration
+  become: yes
+  template:
+    src: vfio.conf.j2
+    dest: "{{ proxmox_gpu_modprobe_config }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: update-initramfs
+  tags:
+    - modprobe
+
+- name: Create host GPU driver blacklist configuration
+  become: yes
+  template:
+    src: gpu-blacklist.conf.j2
+    dest: "{{ proxmox_gpu_blacklist_config }}"
+    owner: root
+    group: root
+    mode: "0644"
+  when: proxmox_gpu_blacklist_host_drivers
+  notify: update-initramfs
+  tags:
+    - modprobe
+    - blacklist
+
+- name: Check if VFIO modules are loaded
+  shell: lsmod | grep vfio
+  register: vfio_check
+  changed_when: false
+  failed_when: false
+
+- name: Display VFIO module status
+  debug:
+    msg: "VFIO modules status: {{ vfio_check.stdout or 'not loaded' }}"
+
+- name: Create VFIO modules load file
+  become: yes
+  template:
+    src: vfio-modules.conf.j2
+    dest: /etc/modules-load.d/vfio.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: update-initramfs
+  tags:
+    - modules

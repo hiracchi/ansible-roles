@@ -1,0 +1,19 @@
+# VFIO configuration for GPU passthrough
+# This configuration enables VFIO support for GPU passthrough on Proxmox
+# Supported vendors: AMD and NVIDIA
+
+# Load VFIO modules
+options vfio enable_unsafe_noiommu_mode=0
+
+# VFIO PCI configuration
+options vfio-pci disable_idle_d3=1
+
+{% if proxmox_gpu_disable_vga %}
+# Disable VGA arbiter if VGA passthrough is used
+options vfio-pci disable_vga=1
+{% endif %}
+
+{% if proxmox_gpu_reset_method %}
+# GPU reset method
+options vfio-pci reset_method="{{ proxmox_gpu_reset_method }}"
+{% endif %}

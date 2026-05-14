@@ -1,0 +1,89 @@
+#!/bin/bash
+# VFIO device binding helper script for GPU passthrough
+# This script helps manually bind and unbind GPU devices to/from VFIO driver
+
+set -e
+
+DEVICE_BDF="${1:?Device BDF required (e.g., 05:00.0)}"
+ACTION="${2:-bind}"
+
+# Convert BDF to full PCI address
+PCI_ADDR="0000:${DEVICE_BDF}"
+PCI_PATH="/sys/bus/pci/devices/${PCI_ADDR}"
+
+if [ ! -d "$PCI_PATH" ]; then
+    echo "ERROR: Device ${DEVICE_BDF} not found"
+    exit 1
+fi
+
+case "$ACTION" in
+    unbind)
+        echo "Unbinding ${DEVICE_BDF} from current driver..."
+        if [ -L "${PCI_PATH}/driver" ]; then
+            DRIVER=$(basename $(readlink "${PCI_PATH}/driver"))
+            echo "${DEVICE_BDF}" > "${PCI_PATH}/driver/unbind"
+            echo "Successfully unbound from $DRIVER"
+        else
+            echo "Device not bound to any driver"
+        fi
+        ;;
+    
+    bind)
+        echo "Binding ${DEVICE_BDF} to VFIO..."
+        # Get vendor and device ID
+        VENDOR=$(cat "${PCI_PATH}/vendor")
+        DEVICE=$(cat "${PCI_PATH}/device")
+        
+        echo "Device vendor:device = ${VENDOR}:${DEVICE}"
+        
+        # First unbind if already bound
+        if [ -L "${PCI_PATH}/driver" ]; then
+            DRIVER=$(basename $(readlink "${PCI_PATH}/driver"))
+            echo "Unbinding from $DRIVER..."
+            echo "${DEVICE_BDF}" > "${PCI_PATH}/driver/unbind"
+        fi
+        
+        # Bind to VFIO
+        echo "Binding to VFIO..."
+        echo "${VENDOR} ${DEVICE}" > /sys/bus/pci/drivers/vfio-pci/new_id
+        sleep 1
+        
+        # Verify binding
+        if [ -L "${PCI_PATH}/driver" ]; then
+            NEW_DRIVER=$(basename $(readlink "${PCI_PATH}/driver"))
+            echo "Successfully bound to $NEW_DRIVER"
+        else
+            echo "ERROR: Binding failed"
+            exit 1
+        fi
+        ;;
+    
+    status)
+        echo "Device status for ${DEVICE_BDF}:"
+        if [ -L "${PCI_PATH}/driver" ]; then
+            DRIVER=$(basename $(readlink "${PCI_PATH}/driver"))
+            echo "  Driver: $DRIVER"
+        else
+            echo "  Driver: Not bound"
+        fi
+        
+        if [ -f "${PCI_PATH}/iommu_group" ]; then
+            IOMMU=$(basename $(readlink "${PCI_PATH}/iommu_group"))
+            echo "  IOMMU Group: $IOMMU"
+        fi
+        
+        VENDOR=$(cat "${PCI_PATH}/vendor")
+        DEVICE=$(cat "${PCI_PATH}/device")
+        echo "  Vendor:Device: ${VENDOR}:${DEVICE}"
+        ;;
+    
+    *)
+        echo "Usage: $0 <BDF> [unbind|bind|status]"
+        echo "  BDF: PCI device address (e.g., 05:00.0)"
+        echo "  Actions:"
+        echo "    unbind - Unbind device from current driver"
+        echo "    bind   - Bind device to VFIO driver (default)"
+        echo "    status - Show device status"
+        exit 1
+        ;;
+esac

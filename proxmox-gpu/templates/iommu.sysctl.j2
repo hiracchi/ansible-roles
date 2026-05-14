@@ -1,0 +1,10 @@
+# IOMMU sysctl configuration for AMD systems
+# Enable IOMMU for GPU passthrough
+
+# AMD IOMMU configuration
+{% if proxmox_gpu_iommu_type == 'amd' %}
+vm.iommu_group_show_all=1
+{% endif %}
+
+# IOMMU memory management
+vm.max_map_count=262144

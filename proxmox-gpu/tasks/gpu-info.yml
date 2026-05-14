@@ -1,0 +1,50 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks/gpu-info.yml - GPU device information gathering
+
+- name: Get GPU device information
+  shell: |
+    lspci -nn | grep -Ei 'vga|3d|display' | grep -Ei '{{ proxmox_gpu_vendor_pattern_map[proxmox_gpu_vendor] }}' | head -20
+  register: gpu_devices
+  changed_when: false
+  failed_when: false
+
+- name: Display available GPU devices
+  debug:
+    msg: |
+      Available GPU devices:
+      {{ gpu_devices.stdout or ('No ' ~ proxmox_gpu_vendor ~ ' GPU found') }}
+    verbosity: 1
+
+- name: Get detailed GPU information
+  shell: |
+    lspci -vvs $(lspci -nn | grep -Ei '{{ proxmox_gpu_vendor_pattern_map[proxmox_gpu_vendor] }}' | grep -Ei 'vga|3d|display' | head -1 | cut -d' ' -f1) 2>/dev/null || echo "No GPU details available"
+  register: gpu_details
+  changed_when: false
+  failed_when: false
+
+- name: Extract GPU BUS:SLOT.FUNCTION
+  shell: |
+    lspci -nn | grep -Ei '{{ proxmox_gpu_vendor_pattern_map[proxmox_gpu_vendor] }}' | grep -Ei 'vga|3d|display' | head -1 | awk '{print $1}'
+  register: gpu_bdf
+  changed_when: false
+  failed_when: false
+
+- name: Display GPU BUS:SLOT.FUNCTION
+  debug:
+    msg: "GPU BDF address: {{ gpu_bdf.stdout or 'Not found' }}"
+    verbosity: 1
+
+- name: Check current GPU driver
+  shell: |
+    if [ -n "{{ gpu_bdf.stdout }}" ]; then
+      lspci -k -s {{ gpu_bdf.stdout }} 2>/dev/null | grep "Kernel driver" || echo "Not bound to any driver"
+    fi
+  register: gpu_driver
+  changed_when: false
+  failed_when: false
+
+- name: Display current GPU driver
+  debug:
+    msg: "Current driver binding: {{ gpu_driver.stdout or 'No binding found' }}"
+    verbosity: 1

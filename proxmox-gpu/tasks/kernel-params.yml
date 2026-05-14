@@ -1,0 +1,64 @@
+#SPDX-License-Identifier: MIT-0
+---
+# Kernel parameters setup tasks
+
+- name: Check current kernel parameters
+  command: cat /proc/cmdline
+  register: current_cmdline
+  changed_when: false
+
+- name: Display current kernel parameters
+  debug:
+    msg: "Current kernel parameters: {{ current_cmdline.stdout }}"
+
+- name: Check GRUB configuration file
+  become: yes
+  stat:
+    path: /etc/default/grub
+  register: grub_stat
+
+- name: Read current GRUB_CMDLINE_LINUX_DEFAULT
+  become: yes
+  shell: >
+    grep '^GRUB_CMDLINE_LINUX_DEFAULT=' /etc/default/grub |
+    sed 's/^GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/\1/'
+  register: grub_cmdline_current
+  changed_when: false
+  when: grub_stat.stat.exists
+
+- name: Build required GRUB kernel parameters
+  set_fact:
+    _required_grub_params: "{{ proxmox_gpu_grub_params }}"
+    _iommu_kernel_param: "{{ 'amd_iommu=on' if proxmox_gpu_iommu_type == 'amd' else 'intel_iommu=on' }}"
+
+- name: Create IOMMU sysctl configuration
+  become: yes
+  template:
+    src: iommu.sysctl.j2
+    dest: "{{ proxmox_gpu_sysctl_config }}"
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Update GRUB_CMDLINE_LINUX_DEFAULT for GPU passthrough
+  become: yes
+  lineinfile:
+    path: /etc/default/grub
+    regexp: '^GRUB_CMDLINE_LINUX_DEFAULT='
+    line: 'GRUB_CMDLINE_LINUX_DEFAULT="{{ grub_cmdline_current.stdout | trim }} {{ _required_grub_params }}"'
+    backup: yes
+  notify:
+    - update-grub
+    - update-initramfs
+  when:
+    - grub_stat.stat.exists
+    - not (grub_cmdline_current.stdout is search(_iommu_kernel_param))
+
+- name: Display reboot requirement notice
+  debug:
+    msg: >
+      GRUB configuration has been updated with: {{ _required_grub_params }}.
+      Please reboot the system to apply the new kernel parameters.
+  when:
+    - grub_stat.stat.exists
+    - not (current_cmdline.stdout is search(_iommu_kernel_param))

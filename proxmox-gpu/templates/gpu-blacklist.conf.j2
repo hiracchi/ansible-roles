@@ -1,0 +1,5 @@
+# Host GPU drivers to blacklist for passthrough
+# Disable this behavior by setting proxmox_gpu_blacklist_host_drivers=false.
+{% for module_name in proxmox_gpu_vendor_blacklist_map[proxmox_gpu_vendor] %}
+blacklist {{ module_name }}
+{% endfor %}
