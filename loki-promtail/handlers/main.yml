@@ -1,7 +1,0 @@
----
-- name: restart promtail
-  become: yes
-  service:
-    name: promtail
-    state: restarted
-

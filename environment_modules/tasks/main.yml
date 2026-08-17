@@ -1,0 +1,27 @@
+---
+# tasks file for environment_modules
+
+- name: Setup Environment Modules
+  when: environment_modules_enabled | bool
+  block:
+    - name: Assert distribution is Debian/Ubuntu family
+      ansible.builtin.assert:
+        that:
+          - ansible_facts['os_family'] == "Debian"
+        fail_msg: "This role only supports Debian/Ubuntu family hosts."
+
+    - name: Install Environment Modules package
+      become: true
+      ansible.builtin.apt:
+        name: environment-modules
+        state: present
+        update_cache: true
+
+    - name: Ensure modulefiles directory exists
+      become: true
+      ansible.builtin.file:
+        path: "{{ environment_modules_dir }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"

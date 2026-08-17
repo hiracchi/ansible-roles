@@ -1,0 +1,5 @@
+---
+promtail_version: "2.9.8"
+promtail_loki_url: "http://10.79.1.51:3100/loki/api/v1/push"
+promtail_user: "promtail"
+promtail_group: "promtail"

@@ -1,0 +1,31 @@
+# Managed by Ansible role: chrony
+# Template: ansible-hirano-lab/roles/chrony/templates/chrony.conf.j2
+
+driftfile {{ chrony_driftfile }}
+makestep {{ chrony_makestep }}
+
+# NTP servers
+{% for server in chrony_ntp_servers %}
+server {{ server }}
+{% endfor %}
+
+{% if chrony_allow_networks %}
+# Allow NTP clients from these networks
+{% for net in chrony_allow_networks %}
+allow {{ net }}
+{% endfor %}
+{% endif %}
+
+# Local stratum (useful if you want this host to serve time when no upstream available)
+local stratum {{ chrony_local_stratum }}
+
+{% if chrony_log_tracking %}
+# Logging (tracking/statistics) and directory
+log tracking statistics
+logdir {{ chrony_logdir }}
+{% endif %}
+
+{% if chrony_enable_rtc_sync %}
+# Synchronize system clock to hardware clock periodically
+rtcsync
+{% endif %}

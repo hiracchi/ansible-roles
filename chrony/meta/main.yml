@@ -1,0 +1,18 @@
+---
+galaxy_info:
+  author: hirano-lab
+  description: "Ansible role to install and configure Chrony (NTP client/server)."
+  company: "Hirano Lab"
+  license: MIT
+  min_ansible_version: 2.9
+  platforms:
+    - name: EL
+      versions:
+        - 7
+        - 8
+    - name: Debian
+      versions:
+        - buster
+        - bullseye
+
+dependencies: []

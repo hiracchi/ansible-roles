@@ -1,0 +1,8 @@
+---
+# defaults file for environment_modules
+
+# Set to true to enable this role
+environment_modules_enabled: true
+
+# The default path to store environment modulefiles
+environment_modules_dir: "/usr/share/modules/modulefiles"

@@ -1,0 +1,40 @@
+---
+# Default variables for chrony role
+# List of NTP servers. Each item will be inserted into chrony.conf as-is
+chrony_manage_package: true
+chrony_package_name: chrony
+# Default service name. Override when the distribution uses a different name (e.g. "chrony" vs "chronyd").
+chrony_service_name: chronyd
+
+# NTP servers (string items; you can include options like "iburst")
+chrony_ntp_servers:
+  - 0.pool.ntp.org iburst
+  - 1.pool.ntp.org iburst
+  - 2.pool.ntp.org iburst
+
+# Path to driftfile
+chrony_driftfile: /var/lib/chrony/drift
+
+# makestep directive (value copied verbatim into config)
+chrony_makestep: "1.0 3"
+
+# Networks allowed to query this host as an NTP server (empty list = no allow entries)
+chrony_allow_networks: []
+
+# If acting as a fallback/local server, set a local stratum (comment out in strict setups)
+chrony_local_stratum: 10
+
+# Logging
+chrony_logdir: /var/log/chrony
+chrony_log_tracking: false
+
+# Enable rtc sync (write time to RTC)
+chrony_enable_rtc_sync: true
+
+# Destination path for the generated chrony configuration file.
+# Some OSes (e.g. Ubuntu 26.04+) expect fragment files under /etc/chrony/conf.d
+# You can override this in your playbook. Default is the classic single-file location.
+chrony_conf_dest: /etc/chrony.conf
+
+# Filename to use when writing into conf.d (full path will be conf.d/{{ chrony_conf_d_filename }})
+chrony_conf_d_filename: chrony-ansible.conf
