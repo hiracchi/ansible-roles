@@ -2,4 +2,4 @@
 - hosts: localhost
   remote_user: root
   roles:
-    - hardware-nvidia
+    - hardware_nvidia_driver
