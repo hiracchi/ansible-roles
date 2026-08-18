@@ -5,7 +5,8 @@ Environment Modules (Tcl版) をシステムにインストールし、共通の
 
 ## 特徴
 
-- **Debian/Ubuntu ファミリー対応**: OSファミリを確認するアサーションを含みます。
+- **Debian/Ubuntu ファミリー対応**: OSファミリを確認するアサーションを含みます（`ansible_facts['os_family'] == "Debian"` はUbuntuでも真になるため、Debian・Ubuntu双方でそのまま利用できます）。
+- **対応プラットフォーム**: `meta/main.yml` にてDebian（buster/bullseye/bookworm）およびUbuntu（bionic/focal/jammy/noble）を対応プラットフォームとして明示しています。
 - **モジュールディレクトリの自動構成**: 各種ツールやライブラリのモジュールファイルを配置するベースディレクトリをパーミッション `0755` で作成します。
 - **ログイン時自動ロード**: `environment-modules` のインストールにより、シェルログイン時に自動で `module` コマンドがインポートされます。
 

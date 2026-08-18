@@ -1,8 +1,6 @@
 #SPDX-License-Identifier: MIT-0
 galaxy_info:
-  author: Ansible Community
   description: Configure GPU passthrough on Proxmox VE hosts
-  company: Proxmox Community
 
   license: MIT-0
 
