@@ -1,0 +1,28 @@
+#SPDX-License-Identifier: MIT-0
+---
+# vars file for proxmox_gpu
+
+# modprobe 設定ファイルパス
+proxmox_gpu_modprobe_config: /etc/modprobe.d/vfio.conf
+
+# GPU ドライバ blacklist 設定ファイルパス
+proxmox_gpu_blacklist_config: /etc/modprobe.d/pve-blacklist.conf
+
+# sysctl 設定ファイルパス
+proxmox_gpu_sysctl_config: /etc/sysctl.d/99-iommu.conf
+
+# カーネル起動パラメータテンプレート
+proxmox_gpu_grub_params: |-
+  {%- if proxmox_gpu_iommu_type == 'amd' -%}
+  amd_iommu=on
+  {%- else -%}
+  intel_iommu=on
+  {%- endif -%}
+   iommu=pt
+  {%- if proxmox_gpu_pcie_acs_override %} pcie_acs_override=downstream,multifunction{%- endif -%}
+  {%- if proxmox_gpu_disable_vga %} video=efifb:off{%- endif -%}
+
+# ベンダ別 GPU 検索パターン
+proxmox_gpu_vendor_pattern_map:
+  amd: 'amd|advanced micro devices|ati|radeon'
+  nvidia: 'nvidia'

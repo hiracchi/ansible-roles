@@ -1,0 +1,36 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for proxmox_gpu
+
+- name: Ensure GPU passthrough role is supported on Debian-based systems
+  assert:
+    that:
+      - ansible_os_family == "Debian"
+    fail_msg: "This role is only supported on Debian-based systems (Proxmox VE)"
+
+- name: Ensure requested GPU vendor is supported
+  assert:
+    that:
+      - proxmox_gpu_vendor in ['amd', 'nvidia']
+    fail_msg: "proxmox_gpu_vendor must be either 'amd' or 'nvidia'"
+
+- name: Skip if GPU passthrough is disabled
+  debug:
+    msg: "GPU passthrough is disabled, skipping tasks"
+  when: not proxmox_gpu_enabled
+
+- name: Include IOMMU setup tasks
+  include_tasks: iommu.yml
+  when:
+    - proxmox_gpu_enabled
+    - proxmox_gpu_enable_iommu
+
+- name: Include VFIO setup tasks
+  include_tasks: vfio.yml
+  when: proxmox_gpu_enabled
+
+- name: Include kernel parameters setup tasks
+  include_tasks: kernel-params.yml
+  when:
+    - proxmox_gpu_enabled
+    - proxmox_gpu_enable_iommu

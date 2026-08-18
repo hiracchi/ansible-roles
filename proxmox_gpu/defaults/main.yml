@@ -1,0 +1,51 @@
+#SPDX-License-Identifier: MIT-0
+---
+# defaults file for proxmox_gpu
+
+# GPU passthrough を有効にするかどうか
+proxmox_gpu_enabled: true
+
+# パススルー対象 GPU ベンダ
+# - amd
+# - nvidia
+proxmox_gpu_vendor: "amd"
+
+# IOMMU を有効にする
+proxmox_gpu_enable_iommu: true
+
+# IOMMU タイプ (amd_iommu)
+proxmox_gpu_iommu_type: "amd"
+
+# PCIe ACS Override を有効にするかどうか (マルチファンクションデバイスの場合に必要)
+proxmox_gpu_pcie_acs_override: true
+
+# VGA arbiter を無効にするかどうか
+proxmox_gpu_disable_vga: true
+
+# GPU のリセット方法
+proxmox_gpu_reset_method: "bus"
+
+# 必要なパッケージリスト
+proxmox_gpu_packages:
+  - pve-headers
+  - build-essential
+  - dkms
+
+# VFIO 関連モジュール
+proxmox_gpu_vfio_modules:
+  - vfio
+  - vfio_iommu_type1
+  - vfio_pci
+
+# ホスト側で読み込ませたくない GPU ドライバ
+proxmox_gpu_blacklist_host_drivers: true
+
+# ベンダ別ブラックリスト対象ドライバ
+proxmox_gpu_vendor_blacklist_map:
+  amd:
+    - amdgpu
+    - radeon
+  nvidia:
+    - nouveau
+    - nvidia
+    - nvidiafb

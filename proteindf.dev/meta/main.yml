@@ -1,6 +1,0 @@
----
-dependencies:
-  - role: ubuntu.dev
-  - role: matplotlib
-  - role: proteindf
-

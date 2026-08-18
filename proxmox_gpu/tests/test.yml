@@ -1,0 +1,62 @@
+#SPDX-License-Identifier: MIT-0
+---
+- name: Test proxmox_gpu role
+  hosts: localhost
+  gather_facts: yes
+  
+  tasks:
+    - name: Check system is Debian-based
+      assert:
+        that:
+          - ansible_os_family == "Debian"
+        fail_msg: "This role requires a Debian-based system"
+
+    - name: Include the role
+      include_role:
+        name: proxmox_gpu
+
+    - name: Verify VFIO modules can be loaded
+      command: modinfo vfio
+      changed_when: false
+
+    - name: Verify VFIO-PCI driver
+      command: modinfo vfio-pci
+      changed_when: false
+
+    - name: Verify modprobe configuration exists
+      stat:
+        path: "{{ proxmox_gpu_modprobe_config }}"
+      register: modprobe_stat
+
+    - name: Assert modprobe configuration is present
+      assert:
+        that:
+          - modprobe_stat.stat.exists
+        fail_msg: "Modprobe configuration not found"
+
+    - name: Verify sysctl configuration
+      stat:
+        path: "{{ proxmox_gpu_sysctl_config }}"
+      register: sysctl_stat
+
+    - name: Assert sysctl configuration is present
+      assert:
+        that:
+          - sysctl_stat.stat.exists
+        fail_msg: "Sysctl configuration not found"
+
+    - name: Verify vfio-bind.sh helper script
+      stat:
+        path: /usr/local/bin/vfio-bind.sh
+      register: vfio_bind_stat
+
+    - name: Assert vfio-bind.sh is executable
+      assert:
+        that:
+          - vfio_bind_stat.stat.exists
+          - vfio_bind_stat.stat.executable
+        fail_msg: "VFIO bind script not found or not executable"
+
+    - name: Test role completion
+      debug:
+        msg: "proxmox_gpu role test completed successfully!"

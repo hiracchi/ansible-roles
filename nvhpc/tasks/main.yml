@@ -9,9 +9,8 @@
 - name: install nvhpc
   become: yes
   apt:
-    name: 
+    name:
       - nvhpc-22-7
-      - environment-modules
     update_cache: yes
     state: latest
 
