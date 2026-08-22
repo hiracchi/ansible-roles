@@ -1,0 +1,4 @@
+---
+munge_uid: 64031
+munge_gid: 64031
+munge_key_file: "{{ playbook_dir }}/secrets/munge.key"

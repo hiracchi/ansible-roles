@@ -1,50 +1,61 @@
 ---
+- name: add munge group
+  become: yes
+  ansible.builtin.group:
+    name: munge
+    gid: "{{ munge_gid }}"
+    system: yes
+
+- name: add munge user
+  become: yes
+  ansible.builtin.user:
+    name: munge
+    uid: "{{ munge_uid }}"
+    group: munge
+    state: present
+    system: yes
+    home: /nonexistent
+    shell: /usr/sbin/nologin
+
 - name: install munge
   become: yes
-  apt:
+  ansible.builtin.apt:
     pkg:
       - munge
-    state: latest
+    state: present
 
+- name: Ensure secrets directory exists on controller
+  ansible.builtin.file:
+    path: "{{ munge_key_file | dirname }}"
+    state: directory
+    mode: '0700'
+  delegate_to: localhost
+  run_once: true
 
-- name: find munge.key on local
-  debug:
-    var: found_munge_key
-  with_first_found:
-    - files:
-        - ./files/munge.key
-      skip: true
-  register: found_munge_key
+- name: Generate munge.key on ansible controller if not present
+  ansible.builtin.shell: |
+    if [ ! -f "{{ munge_key_file }}" ]; then
+      dd if=/dev/urandom of="{{ munge_key_file }}" bs=1 count=1024
+      chmod 600 "{{ munge_key_file }}"
+    fi
+  delegate_to: localhost
+  run_once: true
+  register: key_generation
+  changed_when: "'records out' in key_generation.stderr"
 
-
-- debug:
-    var: found_munge_key
-
-
-- name: fetch munge.key
+- name: Copy munge.key to target hosts
   become: yes
-  fetch:
-    src: /etc/munge/munge.key
-    dest: ./files/
-    flat: yes
-  when:
-    - found_munge_key is skipped
-
-
-- name: put munge.key
-  become: yes
-  copy:
-    src: ./files/munge.key
+  ansible.builtin.copy:
+    src: "{{ munge_key_file }}"
     dest: /etc/munge/munge.key
-    mode: '0600'
+    mode: '0400'
     owner: munge
     group: munge
-  notify: restart munge 
+  notify: restart munge
 
-
-- name: start munge
+- name: Start and enable munge service
   become: yes
-  service:
+  ansible.builtin.service:
     name: munge
     state: started
-
+    enabled: yes
