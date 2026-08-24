@@ -1,0 +1,82 @@
+---
+- name: Create plg-monitoring directories
+  become: true
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "{{ plg_monitoring_user }}"
+    group: "{{ plg_monitoring_group }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - { path: "{{ plg_monitoring_dir }}", mode: "0755" }
+    - { path: "{{ plg_monitoring_dir }}/prometheus", mode: "0755" }
+    - { path: "{{ plg_monitoring_dir }}/loki", mode: "0755" }
+    - { path: "{{ plg_monitoring_dir }}/grafana", mode: "0755" }
+    - { path: "{{ plg_monitoring_dir }}/data", mode: "0755" }
+    - { path: "{{ plg_monitoring_dir }}/data/prometheus", mode: "0777" }
+    - { path: "{{ plg_monitoring_dir }}/data/loki", mode: "0777" }
+    - { path: "{{ plg_monitoring_dir }}/data/grafana", mode: "0777" }
+
+- name: Deploy Makefile
+  become: true
+  ansible.builtin.copy:
+    src: Makefile
+    dest: "{{ plg_monitoring_dir }}/Makefile"
+    owner: "{{ plg_monitoring_user }}"
+    group: "{{ plg_monitoring_group }}"
+    mode: "0644"
+
+- name: Deploy Loki configuration
+  become: true
+  ansible.builtin.copy:
+    src: loki/loki-config.yml
+    dest: "{{ plg_monitoring_dir }}/loki/loki-config.yml"
+    owner: "{{ plg_monitoring_user }}"
+    group: "{{ plg_monitoring_group }}"
+    mode: "0644"
+  notify: Restart plg-monitoring
+
+- name: Deploy Grafana provisioning directory
+  become: true
+  ansible.builtin.copy:
+    src: grafana/provisioning
+    dest: "{{ plg_monitoring_dir }}/grafana/"
+    owner: "{{ plg_monitoring_user }}"
+    group: "{{ plg_monitoring_group }}"
+    mode: "0755"
+  notify: Restart plg-monitoring
+
+- name: Deploy prometheus.yml
+  become: true
+  ansible.builtin.template:
+    src: prometheus.yml.j2
+    dest: "{{ plg_monitoring_dir }}/prometheus/prometheus.yml"
+    owner: "{{ plg_monitoring_user }}"
+    group: "{{ plg_monitoring_group }}"
+    mode: "0644"
+  notify: Restart plg-monitoring
+
+- name: Deploy docker-compose.yml
+  become: true
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ plg_monitoring_dir }}/docker-compose.yml"
+    owner: "{{ plg_monitoring_user }}"
+    group: "{{ plg_monitoring_group }}"
+    mode: "0644"
+  notify: Restart plg-monitoring
+
+- name: Start PLG monitoring stack
+  become: true
+  become_user: "{{ plg_monitoring_user }}"
+  ansible.builtin.command:
+    cmd: docker compose up -d
+    chdir: "{{ plg_monitoring_dir }}"
+  register: compose_up_result
+  changed_when: >
+    'Started' in compose_up_result.stdout or
+    'Created' in compose_up_result.stdout or
+    'Recreated' in compose_up_result.stdout or
+    'Started' in compose_up_result.stderr or
+    'Created' in compose_up_result.stderr or
+    'Recreated' in compose_up_result.stderr

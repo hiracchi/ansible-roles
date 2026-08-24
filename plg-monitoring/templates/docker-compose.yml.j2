@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: prometheus
+    user: "${UID:-{{ plg_monitoring_uid }}}:${GID:-{{ plg_monitoring_gid }}}"
+    restart: unless-stopped
+    ports:
+      - "{{ plg_monitoring_prometheus_port }}:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./data/prometheus:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+
+  loki:
+    image: grafana/loki:2.9.8
+    container_name: loki
+    user: "${UID:-{{ plg_monitoring_uid }}}:${GID:-{{ plg_monitoring_gid }}}"
+    restart: unless-stopped
+    ports:
+      - "{{ plg_monitoring_loki_port }}:3100"
+    volumes:
+      - ./loki/loki-config.yml:/etc/loki/loki-config.yml:ro
+      - ./data/loki:/tmp/loki
+    command:
+      - '-config.file=/etc/loki/loki-config.yml'
+
+  grafana:
+    image: grafana/grafana:10.4.1
+    container_name: grafana
+    user: "${UID:-{{ plg_monitoring_uid }}}:${GID:-{{ plg_monitoring_gid }}}"
+    restart: unless-stopped
+    ports:
+      - "{{ plg_monitoring_grafana_port }}:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER={{ plg_monitoring_grafana_admin_user }}
+      - GF_SECURITY_ADMIN_PASSWORD={{ plg_monitoring_grafana_admin_password }}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./data/grafana:/var/lib/grafana

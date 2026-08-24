@@ -1,0 +1,20 @@
+---
+plg_monitoring_dir: "/opt/plg-monitoring"
+plg_monitoring_user: "{{ ansible_user | default('ubuntu') }}"
+plg_monitoring_group: "{{ plg_monitoring_user }}"
+plg_monitoring_uid: 1000
+plg_monitoring_gid: 1000
+
+plg_monitoring_grafana_port: 3000
+plg_monitoring_prometheus_port: 9090
+plg_monitoring_loki_port: 3100
+
+plg_monitoring_grafana_admin_user: "admin"
+plg_monitoring_grafana_admin_password: "admin"
+
+# Prometheus 監視対象ノード一覧 (デフォルト値: all.ymlでオーバーライド)
+plg_monitoring_node_exporter_targets:
+  - '127.0.0.1:9100'
+
+# Prometheus 監視対象 GPU Exporter 一覧 (デフォルト値)
+plg_monitoring_gpu_exporter_targets: []
