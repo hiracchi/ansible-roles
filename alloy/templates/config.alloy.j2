@@ -1,0 +1,106 @@
+// ==============================================================================
+// Grafana Alloy Configuration for JARVIS Cluster Node
+// Host: {{ ansible_hostname }}
+// ==============================================================================
+
+// ------------------------------------------------------------------------------
+// 1. メトリクス収集 (Node Exporter 互換)
+// ------------------------------------------------------------------------------
+prometheus.exporter.unix "node" {
+  include_exporter_metrics = true
+}
+
+prometheus.scrape "node" {
+  targets         = prometheus.exporter.unix.node.targets
+  forward_to      = [prometheus.relabel.node.receiver]
+  scrape_interval = "15s"
+}
+
+prometheus.relabel "node" {
+  forward_to = [prometheus.remote_write.prom_server.receiver]
+
+  rule {
+    target_label = "instance"
+    replacement  = "{{ ansible_hostname }}"
+  }
+
+  rule {
+    target_label = "job"
+    replacement  = "node_exporter"
+  }
+}
+
+prometheus.remote_write "prom_server" {
+  endpoint {
+    url = "{{ alloy_prometheus_url }}"
+  }
+}
+
+// ------------------------------------------------------------------------------
+// 2. ログ収集 (Grafana Loki 転送)
+// ------------------------------------------------------------------------------
+loki.write "loki_server" {
+  endpoint {
+    url = "{{ alloy_loki_url }}"
+  }
+}
+
+{% if alloy_collect_journal | bool %}
+// Systemd Journal ログ収集
+loki.source.journal "systemd" {
+  forward_to = [loki.relabel.journal.receiver]
+  max_age    = "12h"
+  labels     = {
+    job  = "systemd-journal",
+    host = "{{ ansible_hostname }}",
+  }
+}
+
+loki.relabel "journal" {
+  forward_to = [loki.write.loki_server.receiver]
+
+  rule {
+    source_labels = ["__journal__systemd_unit"]
+    target_label  = "unit"
+  }
+  rule {
+    source_labels = ["__journal__hostname"]
+    target_label  = "host"
+  }
+}
+{% endif %}
+
+{% if alloy_collect_var_logs | bool %}
+// ファイルログ (/var/log, syslog, slurm) 収集
+local.file_match "var_logs" {
+  path_targets = [
+    {
+      "__path__" = "/var/log/*.log",
+      "job"      = "varlogs",
+      "host"     = "{{ ansible_hostname }}",
+    },
+    {
+      "__path__" = "/var/log/syslog",
+      "job"      = "syslog",
+      "host"     = "{{ ansible_hostname }}",
+    },
+{% if alloy_collect_slurm_logs | bool %}
+    {
+      "__path__" = "/var/log/slurm*.log",
+      "job"      = "slurm",
+      "host"     = "{{ ansible_hostname }}",
+    },
+    {
+      "__path__" = "/var/log/slurm/*.log",
+      "job"      = "slurm",
+      "host"     = "{{ ansible_hostname }}",
+    },
+{% endif %}
+  ]
+}
+
+loki.source.file "var_logs" {
+  targets    = local.file_match.var_logs.targets
+  forward_to = [loki.write.loki_server.receiver]
+}
+{% endif %}

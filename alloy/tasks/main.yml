@@ -1,0 +1,55 @@
+---
+- name: Install prerequisite packages for Grafana repository
+  become: true
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - software-properties-common
+      - wget
+      - gpg
+    state: present
+
+- name: Ensure /etc/apt/keyrings directory exists
+  become: true
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Download Grafana GPG key
+  become: true
+  ansible.builtin.get_url:
+    url: https://apt.grafana.com/gpg.key
+    dest: /etc/apt/keyrings/grafana.asc
+    mode: '0644'
+
+- name: Add Grafana APT repository
+  become: true
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/grafana.asc] https://apt.grafana.com stable main"
+    state: present
+    filename: grafana
+
+- name: Install Grafana Alloy
+  become: true
+  ansible.builtin.apt:
+    name: alloy
+    state: present
+    update_cache: true
+
+- name: Configure Grafana Alloy
+  become: true
+  ansible.builtin.template:
+    src: config.alloy.j2
+    dest: "{{ alloy_config_file }}"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart alloy
+
+- name: Ensure Grafana Alloy service is started and enabled
+  become: true
+  ansible.builtin.systemd:
+    name: alloy
+    state: started
+    enabled: true
