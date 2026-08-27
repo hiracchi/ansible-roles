@@ -1,0 +1,10 @@
+slurmctld_hosts:
+  - jarvis-01
+
+slurm_nodes:
+  - "jarvis-prxvm-worker-z3-[01-03] CPUs=2 State=UNKNOWN"
+
+slurm_partitions:
+  - "debug Nodes=jarvis-prxvm-worker-z3-[01-03] MaxTime=120 State=UP Default=YES"
+
+
