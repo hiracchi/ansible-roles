@@ -30,7 +30,7 @@
         "y": 0
       },
       "id": 100,
-      "title": "📊 Log Ingestion Volume & Health",
+      "title": "📊 Log Ingestion Rate & Error Count",
       "type": "row"
     },
     {
@@ -47,16 +47,16 @@
             "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "Logs / sec",
+            "axisLabel": "Lines / sec",
             "axisPlacement": "auto",
-            "fillOpacity": 40,
+            "fillOpacity": 30,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
               "viz": false
             },
-            "lineWidth": 1,
+            "lineWidth": 2,
             "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
@@ -65,7 +65,7 @@
             "spanNulls": false,
             "stacking": {
               "group": "A",
-              "mode": "normal"
+              "mode": "none"
             },
             "thresholdsStyle": {
               "mode": "off"
@@ -81,7 +81,7 @@
               }
             ]
           },
-          "unit": "logs/s"
+          "unit": "short"
         },
         "overrides": []
       },
@@ -115,13 +115,13 @@
             "uid": "Loki"
           },
           "editorMode": "code",
-          "expr": "sum by (host) (rate({host=~\"$host\", job=~\"$job\"} [$__interval]))",
+          "expr": "sum by (host) (rate({host=~\"${host:pipe}\", job=~\"${job:pipe}\"} [1m]))",
           "legendFormat": "{{host}}",
           "queryType": "range",
           "refId": "A"
         }
       ],
-      "title": "Log Rate by Host",
+      "title": "Log Rate (lines/sec) by Host",
       "type": "timeseries"
     },
     {
@@ -148,7 +148,7 @@
               }
             ]
           },
-          "unit": "none"
+          "unit": "short"
         },
         "overrides": []
       },
@@ -181,7 +181,7 @@
             "uid": "Loki"
           },
           "editorMode": "code",
-          "expr": "sum(count_over_time({host=~\"$host\", job=~\"$job\"} |~ \"(?i)error|fatal|panic|failed\" [$__range]))",
+          "expr": "sum(count_over_time({host=~\"${host:pipe}\", job=~\"${job:pipe}\"} |~ \"(?i)error|fatal|panic|failed\" [$__range]))",
           "queryType": "range",
           "refId": "A"
         }
@@ -207,7 +207,7 @@
         "uid": "Loki"
       },
       "gridPos": {
-        "h": 18,
+        "h": 20,
         "w": 24,
         "x": 0,
         "y": 7
@@ -231,12 +231,12 @@
             "uid": "Loki"
           },
           "editorMode": "code",
-          "expr": "{host=~\"$host\", job=~\"$job\"} |= \"$search\"",
+          "expr": "{host=~\"${host:pipe}\", job=~\"${job:pipe}\"}",
           "queryType": "range",
           "refId": "A"
         }
       ],
-      "title": "Cluster Unified Logs Stream",
+      "title": "Cluster Unified Logs Stream (Real-time)",
       "type": "logs"
     }
   ],
@@ -309,26 +309,6 @@
         "skipUrlSync": false,
         "sort": 1,
         "type": "query"
-      },
-      {
-        "current": {
-          "selected": false,
-          "text": "",
-          "value": ""
-        },
-        "hide": 0,
-        "label": "Filter Keyword",
-        "name": "search",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "skipUrlSync": false,
-        "type": "custom"
       }
     ]
   },
@@ -340,6 +320,6 @@
   "timezone": "browser",
   "title": "JARVIS Cluster - Unified Logs Viewer",
   "uid": "jarvis-cluster-logs",
-  "version": 1,
+  "version": 2,
   "weekStart": ""
 }
