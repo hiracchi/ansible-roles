@@ -115,7 +115,7 @@
             "uid": "Loki"
           },
           "editorMode": "code",
-          "expr": "sum by (host) (rate({host=~\"${host:pipe}\", job=~\"${job:pipe}\"} [1m]))",
+          "expr": "sum by (host) (rate({host=~\"${host:regex}\", job=~\"${job:regex}\"} [1m]))",
           "legendFormat": "{{host}}",
           "queryType": "range",
           "refId": "A"
@@ -181,7 +181,7 @@
             "uid": "Loki"
           },
           "editorMode": "code",
-          "expr": "sum(count_over_time({host=~\"${host:pipe}\", job=~\"${job:pipe}\"} |~ \"(?i)error|fatal|panic|failed\" [$__range]))",
+          "expr": "sum(count_over_time({host=~\"${host:regex}\", job=~\"${job:regex}\"} |~ \"(?i)error|fatal|panic|failed\" [$__range]))",
           "queryType": "range",
           "refId": "A"
         }
@@ -231,7 +231,7 @@
             "uid": "Loki"
           },
           "editorMode": "code",
-          "expr": "{host=~\"${host:pipe}\", job=~\"${job:pipe}\"}",
+          "expr": "{host=~\"${host:regex}\", job=~\"${job:regex}\"}",
           "queryType": "range",
           "refId": "A"
         }
@@ -251,7 +251,7 @@
   "templating": {
     "list": [
       {
-        "allValue": ".*",
+        "allValue": ".+",
         "current": {
           "selected": true,
           "text": "All",
@@ -281,7 +281,7 @@
         "type": "query"
       },
       {
-        "allValue": ".*",
+        "allValue": ".+",
         "current": {
           "selected": true,
           "text": "All",
@@ -320,6 +320,6 @@
   "timezone": "browser",
   "title": "JARVIS Cluster - Unified Logs Viewer",
   "uid": "jarvis-cluster-logs",
-  "version": 2,
+  "version": 3,
   "weekStart": ""
 }
