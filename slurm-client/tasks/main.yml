@@ -1,0 +1,84 @@
+---
+- name: add slurm group
+  become: yes
+  ansible.builtin.group:
+    name: slurm
+    gid: 64030
+    system: yes
+
+- name: add slurm user
+  become: yes
+  ansible.builtin.user:
+    name: slurm
+    uid: 64030
+    group: slurm
+    state: present
+    system: yes
+    home: /nonexistent
+    shell: /usr/sbin/nologin
+
+- name: install slurm client packages
+  become: yes
+  ansible.builtin.apt:
+    name:
+      - slurmd
+      - slurm-client
+    state: present
+
+- name: make /etc/slurm
+  become: yes
+  ansible.builtin.file:
+    path: /etc/slurm
+    state: directory
+    mode: '0755'
+    owner: slurm
+    group: slurm
+
+- name: make spool dir for slurm
+  become: yes
+  ansible.builtin.file:
+    path: /var/spool/slurmd.spool
+    state: directory
+    mode: '0755'
+    owner: slurm
+    group: slurm
+
+- name: make spool dir for slurm state
+  become: yes
+  ansible.builtin.file:
+    path: /var/spool/slurm.state
+    state: directory
+    mode: '0755'
+    owner: slurm
+    group: slurm
+
+- name: setup slurm.conf
+  become: yes
+  ansible.builtin.template:
+    src: slurm.conf.tmpl
+    dest: /etc/slurm/slurm.conf
+    mode: '0644'
+    owner: slurm
+    group: slurm
+  notify:
+    - restart slurmd
+
+- name: copy cgroup file
+  become: yes
+  ansible.builtin.copy:
+    src: cgroup.conf
+    dest: /etc/slurm/cgroup.conf
+    mode: '0644'
+    owner: slurm
+    group: slurm
+  notify:
+    - restart slurmd
+
+- name: start and enable slurmd
+  become: yes
+  ansible.builtin.service:
+    name: slurmd
+    state: started
+    enabled: yes
+
+
