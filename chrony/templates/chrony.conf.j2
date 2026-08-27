@@ -1,5 +1,4 @@
 # Managed by Ansible role: chrony
-# Template: ansible-hirano-lab/roles/chrony/templates/chrony.conf.j2
 
 driftfile {{ chrony_driftfile }}
 makestep {{ chrony_makestep }}
@@ -8,6 +7,13 @@ makestep {{ chrony_makestep }}
 {% for server in chrony_ntp_servers %}
 server {{ server }}
 {% endfor %}
+
+{% if chrony_sourcedirs %}
+# Include configuration/source snippets from directories
+{% for sdir in chrony_sourcedirs %}
+sourcedir {{ sdir }}
+{% endfor %}
+{% endif %}
 
 {% if chrony_allow_networks %}
 # Allow NTP clients from these networks
@@ -29,3 +35,4 @@ logdir {{ chrony_logdir }}
 # Synchronize system clock to hardware clock periodically
 rtcsync
 {% endif %}
+

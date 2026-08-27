@@ -6,11 +6,17 @@ chrony_package_name: chrony
 # Default service name. Override when the distribution uses a different name (e.g. "chrony" vs "chronyd").
 chrony_service_name: chronyd
 
+# Disable systemd-timesyncd to avoid time synchronization conflicts (e.g. on Ubuntu/Debian)
+chrony_disable_timesyncd: true
+
 # NTP servers (string items; you can include options like "iburst")
 chrony_ntp_servers:
   - 0.pool.ntp.org iburst
   - 1.pool.ntp.org iburst
   - 2.pool.ntp.org iburst
+
+# Directories containing snippets or additional sources (e.g. ["/run/chrony-dhcp", "/etc/chrony/sources.d"])
+chrony_sourcedirs: []
 
 # Path to driftfile
 chrony_driftfile: /var/lib/chrony/drift
@@ -38,3 +44,4 @@ chrony_conf_dest: /etc/chrony.conf
 
 # Filename to use when writing into conf.d (full path will be conf.d/{{ chrony_conf_d_filename }})
 chrony_conf_d_filename: chrony-ansible.conf
+

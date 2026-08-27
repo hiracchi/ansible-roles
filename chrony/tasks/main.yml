@@ -1,61 +1,65 @@
 ---
+- name: Disable systemd-timesyncd to prevent conflicts
+  ansible.builtin.systemd_service:
+    name: systemd-timesyncd
+    state: stopped
+    enabled: false
+  failed_when: false
+  when: chrony_disable_timesyncd | bool
+
 - name: Install chrony package
-  package:
+  ansible.builtin.package:
     name: "{{ chrony_package_name }}"
     state: present
   when: chrony_manage_package | bool
 
+# Auto-detect service name for Debian/Ubuntu if default 'chronyd' is used
+- name: Set OS-specific service name for Debian family
+  ansible.builtin.set_fact:
+    chrony_service_name: chrony
+  when:
+    - chrony_service_name == 'chronyd'
+    - ansible_facts['os_family'] | default('') == 'Debian'
+
 # Decide where to place the generated configuration.
-# Prefer fragment dir (/etc/chrony/conf.d or /etc/chrony/chrony.conf.d) when present,
-# otherwise fall back to the legacy main config file.
+# Prefer fragment dir (/etc/chrony/conf.d) when present,
+# otherwise fall back to the main config file.
 - name: Check for /etc/chrony/conf.d
-  stat:
+  ansible.builtin.stat:
     path: /etc/chrony/conf.d
   register: chrony_conf_d_dir
 
 - name: Check for /etc/chrony/chrony.conf
-  stat:
+  ansible.builtin.stat:
     path: /etc/chrony/chrony.conf
   register: chrony_main_conf
 
 - name: Check for /etc/chrony.conf
-  stat:
+  ansible.builtin.stat:
     path: /etc/chrony.conf
   register: chrony_root_conf
 
 - name: Set chrony_conf_dest to conf.d fragment when available
-  set_fact:
+  ansible.builtin.set_fact:
     chrony_conf_dest: "/etc/chrony/conf.d/{{ chrony_conf_d_filename }}"
   when:
     - chrony_conf_dest == '/etc/chrony.conf'
     - chrony_conf_d_dir.stat.exists
 
 - name: Prefer /etc/chrony/chrony.conf if that exists and no conf.d
-  set_fact:
+  ansible.builtin.set_fact:
     chrony_conf_dest: /etc/chrony/chrony.conf
   when:
     - chrony_conf_dest == '/etc/chrony.conf'
     - chrony_main_conf.stat.exists
 
-- name: Prefer sources.d for NTP sources if present (Ubuntu-style)
-  stat:
-    path: /etc/chrony/sources.d
-  register: chrony_sources_d_dir
-
-- name: When sources.d exists, write server definitions there as a .sources file
-  set_fact:
-    chrony_conf_dest: "/etc/chrony/sources.d/{{ chrony_conf_d_filename | replace('.conf','') }}.sources"
-  when:
-    - chrony_sources_d_dir.stat.exists
-    - chrony_conf_dest is defined
-
 - name: Fallback to /etc/chrony.conf if nothing else found
-  set_fact:
+  ansible.builtin.set_fact:
     chrony_conf_dest: /etc/chrony.conf
   when: chrony_conf_dest is not defined
 
-- name: Ensure chrony configuration directory exists when using conf.d
-  file:
+- name: Ensure chrony configuration directory exists
+  ansible.builtin.file:
     path: "{{ chrony_conf_dest | dirname }}"
     state: directory
     owner: root
@@ -64,7 +68,7 @@
   when: "(chrony_conf_dest | dirname) != '/'"
 
 - name: Deploy chrony configuration
-  template:
+  ansible.builtin.template:
     src: chrony.conf.j2
     dest: "{{ chrony_conf_dest }}"
     owner: root
@@ -73,7 +77,8 @@
   notify: Restart chrony
 
 - name: Ensure chrony service is enabled and running
-  service:
+  ansible.builtin.service:
     name: "{{ chrony_service_name }}"
     state: started
     enabled: true
+
