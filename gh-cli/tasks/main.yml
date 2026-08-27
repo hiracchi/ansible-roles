@@ -1,0 +1,75 @@
+# SPDX-License-Identifier: MIT-0
+---
+# =============================================================================
+# 前提パッケージ
+# =============================================================================
+- name: Install prerequisite packages
+  become: true
+  ansible.builtin.apt:
+    name:
+      - curl
+      - gnupg
+      - ca-certificates
+    state: present
+    update_cache: true
+
+# =============================================================================
+# GitHub CLI APT キーリング
+# =============================================================================
+- name: Ensure /etc/apt/keyrings directory exists
+  become: true
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Check if GitHub CLI GPG key is already installed
+  ansible.builtin.stat:
+    path: "{{ _gh_cli_keyring_path }}"
+  register: _gh_cli_gpg_stat
+
+- name: Download and install GitHub CLI GPG key
+  become: true
+  ansible.builtin.shell:
+    cmd: >
+      curl -fsSL {{ _gh_cli_repo_url }}/githubcli-archive-keyring.gpg |
+      dd of={{ _gh_cli_keyring_path }}
+    creates: "{{ _gh_cli_keyring_path }}"
+  when: not _gh_cli_gpg_stat.stat.exists
+
+- name: Set permissions on GitHub CLI GPG key
+  become: true
+  ansible.builtin.file:
+    path: "{{ _gh_cli_keyring_path }}"
+    owner: root
+    group: root
+    mode: "0644"
+
+# =============================================================================
+# APT リポジトリ設定
+# =============================================================================
+- name: Add GitHub CLI APT repository
+  become: true
+  ansible.builtin.copy:
+    dest: "{{ _gh_cli_repo_list }}"
+    content: |
+      deb [arch={{ 'amd64' if ansible_architecture == 'x86_64' else ansible_architecture }} signed-by={{ _gh_cli_keyring_path }}] {{ _gh_cli_repo_url }} stable main
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Update apt cache
+
+- name: Flush handlers (apt cache update)
+  ansible.builtin.meta: flush_handlers
+
+# =============================================================================
+# gh パッケージインストール
+# =============================================================================
+- name: Install GitHub CLI (gh)
+  become: true
+  ansible.builtin.apt:
+    name: gh
+    state: "{{ gh_cli_state }}"
+    update_cache: true

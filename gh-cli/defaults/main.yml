@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: MIT-0
+---
+# gh (GitHub CLI) package state ("present" or "latest")
+gh_cli_state: present

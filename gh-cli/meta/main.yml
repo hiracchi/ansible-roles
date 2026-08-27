@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: MIT-0
+---
+galaxy_info:
+  author: Your Name
+  description: Install GitHub CLI (gh) via the official APT repository
+  license: MIT
+
+  min_ansible_version: "2.12"
+
+  platforms:
+    - name: Ubuntu
+      versions:
+        - noble
+        - jammy
+        - focal
+
+  galaxy_tags:
+    - github
+    - gh
+    - cli
+    - git
+
+dependencies: []
