@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: MIT-0
+---
+# defaults file for nfs-client
+# List of NFS mounts. Each item may include:
+# - src: (string) NFS source, e.g. "server:/export/path" (preferred)
+# - server: (string) server hostname (alternative to `src`)
+# - remote_path: (string) remote export path (used with `server`)
+# - mount_point: (string) local mount point (required)
+# - fstype: (string) filesystem type, default is "nfs"
+# - opts: (string) mount options.
+#   Default: "defaults,_netdev"
+# - state: (string) "mounted" or "absent" (default: "mounted")
+# - create_mountpoint: (bool) whether to create the local directory
+#   (default: true)
+nfs_client_mounts: []
+# package name to install for NFS client tools on Ubuntu/Debian
+nfs_client_package: "nfs-common"
+# defaults
+nfs_client_default_opts: "defaults,_netdev"
+nfs_client_default_fstype: "nfs"

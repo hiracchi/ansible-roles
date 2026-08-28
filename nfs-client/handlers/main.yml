@@ -1,0 +1,29 @@
+# SPDX-License-Identifier: MIT-0
+---
+# handlers file for nfs-client
+- name: Reload systemd daemon
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Remount NFS filesystems
+  become: true
+  loop: "{{ nfs_client_mounts | default([]) }}"
+  vars:
+    _src: >-
+      {{ item.src if (item.src is defined) else
+         ((item.server ~ ':' ~ item.remote_path)
+         if (item.server is defined and item.remote_path is defined)
+         else '') }}
+    _label: "{{ item.mount_point | default(_src) }}"
+    _fstype: "{{ item.fstype | default(nfs_client_default_fstype) }}"
+    _opts: "{{ item.opts | default(nfs_client_default_opts) }}"
+  loop_control:
+    label: "{{ _label }}"
+  ansible.posix.mount:
+    path: "{{ item.mount_point }}"
+    src: "{{ _src }}"
+    fstype: "{{ _fstype }}"
+    opts: "{{ _opts }}"
+    state: mounted
+

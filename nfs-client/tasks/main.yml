@@ -1,0 +1,48 @@
+# SPDX-License-Identifier: MIT-0
+---
+# tasks file for nfs-client
+- name: Ensure NFS client package is installed
+  ansible.builtin.package:
+    name: "{{ nfs_client_package }}"
+    state: present
+  become: true
+
+- name: Validate each NFS mount entry has a valid source
+  ansible.builtin.assert:
+    that:
+      - >-
+        (item.src is defined) or
+        (item.server is defined and item.remote_path is defined)
+    fail_msg: "Each mount must define 'src' or both 'server' and 'remote_path'."
+  loop: "{{ nfs_client_mounts }}"
+  loop_control:
+    label: "{{ item.mount_point | default(item.src | default('unknown')) }}"
+
+- name: Ensure mount point directories exist
+  ansible.builtin.file:
+    path: "{{ item.mount_point }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  become: true
+  loop: "{{ nfs_client_mounts }}"
+  loop_control:
+    label: "{{ item.mount_point }}"
+  when: item.create_mountpoint | default(true) | bool
+
+- name: Configure fstab and mount NFS filesystems
+  ansible.builtin.mount:
+    path: "{{ item.mount_point }}"
+    src: >-
+      {{ item.src if item.src is defined
+         else (item.server ~ ':' ~ item.remote_path) }}
+    fstype: "{{ item.fstype | default(nfs_client_default_fstype) }}"
+    opts: "{{ item.opts | default(nfs_client_default_opts) }}"
+    state: "{{ item.state | default('present' if 'noauto' in (item.opts | default('')) else 'mounted') }}"
+  become: true
+  loop: "{{ nfs_client_mounts }}"
+  loop_control:
+    label: "{{ item.mount_point | default(item.src | default('unknown')) }}"
+  notify: Reload systemd daemon
+
