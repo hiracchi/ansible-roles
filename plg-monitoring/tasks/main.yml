@@ -46,6 +46,19 @@
     mode: "0755"
   notify: Restart plg-monitoring
 
+- name: Deploy parameterized Grafana dashboards
+  become: true
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: "{{ plg_monitoring_dir }}/grafana/provisioning/dashboards/json/{{ item }}"
+    owner: "{{ plg_monitoring_user }}"
+    group: "{{ plg_monitoring_group }}"
+    mode: "0644"
+  loop:
+    - cluster_logs_viewer.json
+    - cluster_nodes_overview.json
+  notify: Restart plg-monitoring
+
 - name: Deploy prometheus.yml
   become: true
   ansible.builtin.template:

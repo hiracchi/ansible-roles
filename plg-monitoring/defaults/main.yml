@@ -12,6 +12,9 @@ plg_monitoring_loki_port: 3100
 plg_monitoring_grafana_admin_user: "admin"
 plg_monitoring_grafana_admin_password: "admin"
 
+# クラスタ表示名 (ダッシュボードタイトル等に使用)
+plg_monitoring_cluster_name: "JARVIS"
+
 # Prometheus 監視対象ノード一覧 (デフォルト値: all.ymlでオーバーライド)
 plg_monitoring_node_exporter_targets:
   - '127.0.0.1:9100'

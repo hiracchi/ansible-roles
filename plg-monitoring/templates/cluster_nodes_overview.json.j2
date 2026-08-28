@@ -30,7 +30,7 @@
         "y": 0
       },
       "id": 100,
-      "title": "🚀 JARVIS Cluster Overview",
+      "title": "🚀 {{ plg_monitoring_cluster_name }} Cluster Overview",
       "type": "row"
     },
     {
@@ -776,7 +776,7 @@
           },
           "editorMode": "code",
           "expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[2m])) * 100)",
-          "legendFormat": "{{instance}}",
+          "legendFormat": "{% raw %}{{instance}}{% endraw %}",
           "range": true,
           "refId": "A"
         }
@@ -870,7 +870,7 @@
           },
           "editorMode": "code",
           "expr": "((node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes) * 100",
-          "legendFormat": "{{instance}}",
+          "legendFormat": "{% raw %}{{instance}}{% endraw %}",
           "range": true,
           "refId": "A"
         }
@@ -962,7 +962,7 @@
           },
           "editorMode": "code",
           "expr": "node_load1",
-          "legendFormat": "{{instance}} (1m)",
+          "legendFormat": "{% raw %}{{instance}}{% endraw %} (1m)",
           "range": true,
           "refId": "A"
         }
@@ -1054,7 +1054,7 @@
           },
           "editorMode": "code",
           "expr": "sum by (instance) (rate(node_network_receive_bytes_total{device!~\"lo|docker.*|veth.*\"}[2m]))",
-          "legendFormat": "{{instance}} (RX)",
+          "legendFormat": "{% raw %}{{instance}}{% endraw %} (RX)",
           "range": true,
           "refId": "RX"
         },
@@ -1065,7 +1065,7 @@
           },
           "editorMode": "code",
           "expr": "sum by (instance) (rate(node_network_transmit_bytes_total{device!~\"lo|docker.*|veth.*\"}[2m]))",
-          "legendFormat": "{{instance}} (TX)",
+          "legendFormat": "{% raw %}{{instance}}{% endraw %} (TX)",
           "range": true,
           "refId": "TX"
         }
@@ -1077,7 +1077,7 @@
   "refresh": "10s",
   "schemaVersion": 39,
   "tags": [
-    "jarvis",
+    "{{ plg_monitoring_cluster_name | lower }}",
     "cluster",
     "overview",
     "summary"
@@ -1091,8 +1091,8 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "JARVIS Cluster - Nodes Overview & Summary",
-  "uid": "jarvis-cluster-overview",
+  "title": "{{ plg_monitoring_cluster_name }} Cluster - Nodes Overview & Summary",
+  "uid": "{{ plg_monitoring_cluster_name | lower }}-cluster-overview",
   "version": 1,
   "weekStart": ""
 }

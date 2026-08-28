@@ -116,7 +116,7 @@
           },
           "editorMode": "code",
           "expr": "sum by (host) (rate({host=~\"${host:regex}\", job=~\"${job:regex}\"} [1m]))",
-          "legendFormat": "{{host}}",
+          "legendFormat": "{% raw %}{{host}}{% endraw %}",
           "queryType": "range",
           "refId": "A"
         }
@@ -243,7 +243,7 @@
   "refresh": "5s",
   "schemaVersion": 39,
   "tags": [
-    "jarvis",
+    "{{ plg_monitoring_cluster_name | lower }}",
     "cluster",
     "logs",
     "loki"
@@ -318,8 +318,8 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "JARVIS Cluster - Unified Logs Viewer",
-  "uid": "jarvis-cluster-logs",
+  "title": "{{ plg_monitoring_cluster_name }} Cluster - Unified Logs Viewer",
+  "uid": "{{ plg_monitoring_cluster_name | lower }}-cluster-logs",
   "version": 3,
   "weekStart": ""
 }
