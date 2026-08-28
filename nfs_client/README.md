@@ -1,4 +1,4 @@
-# `nfs-client` ロール
+# `nfs_client` ロール
 
 Ubuntu / Debian 系ホスト向けに NFS クライアントパッケージ（`nfs-common`）を導入し、NFS 共有ストレージのマウントポイント作成、`/etc/fstab` 登録、マウント実行（または `systemd.automount` によるオートマウント構成）を安全に行う Ansible ロールです。
 
@@ -41,7 +41,7 @@ Ubuntu / Debian 系ホスト向けに NFS クライアントパッケージ（`n
 ```yaml
 - hosts: all
   roles:
-    - role: nfs-client
+    - role: nfs_client
       vars:
         nfs_client_mounts:
           - src: "nas01.example.com:/volume1/data"
@@ -53,7 +53,7 @@ Ubuntu / Debian 系ホスト向けに NFS クライアントパッケージ（`n
 ```yaml
 - hosts: all
   roles:
-    - role: nfs-client
+    - role: nfs_client
       vars:
         nfs_client_mounts:
           - src: "nas01.example.com:/volume1/home"
