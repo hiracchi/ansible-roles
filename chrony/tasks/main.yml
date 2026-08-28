@@ -1,5 +1,6 @@
 ---
 - name: Disable systemd-timesyncd to prevent conflicts
+  become: true
   ansible.builtin.systemd_service:
     name: systemd-timesyncd
     state: stopped
@@ -8,6 +9,7 @@
   when: chrony_disable_timesyncd | bool
 
 - name: Install chrony package
+  become: true
   ansible.builtin.package:
     name: "{{ chrony_package_name }}"
     state: present
@@ -59,6 +61,7 @@
   when: chrony_conf_dest is not defined
 
 - name: Ensure chrony configuration directory exists
+  become: true
   ansible.builtin.file:
     path: "{{ chrony_conf_dest | dirname }}"
     state: directory
@@ -68,6 +71,7 @@
   when: "(chrony_conf_dest | dirname) != '/'"
 
 - name: Deploy chrony configuration
+  become: true
   ansible.builtin.template:
     src: chrony.conf.j2
     dest: "{{ chrony_conf_dest }}"
@@ -77,6 +81,7 @@
   notify: Restart chrony
 
 - name: Ensure chrony service is enabled and running
+  become: true
   ansible.builtin.service:
     name: "{{ chrony_service_name }}"
     state: started
