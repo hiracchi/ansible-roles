@@ -34,3 +34,22 @@ make start    # 起動
 make stop     # 停止
 make restart  # 再起動
 ```
+
+## 今後の拡張予定 (TODO: アラート・通知機能)
+
+> [!NOTE]
+> 段階的な実装手順や検証計画の詳細は [実装計画書 (ALERTING_PLAN.md)](./ALERTING_PLAN.md) をご参照ください。
+
+- [x] **Grafana Alerting による自動監視・通知機能の実装**
+  - [x] **ホスト死活監視**: `up == 0`（2分間継続で Critical 通知）および復旧（Resolved）通知
+  - [x] **リソース枯渇監視**: ディスク空き容量 10% 未満、高CPU負荷（90%以上）
+  - [x] **GPU 異常検知**: GPU 温度異常（85℃以上）、VRAM 枯渇、GPU 認識外れ
+  - [x] **ログベース障害検知**: Loki による OOM Killer（`Out of memory`）発生検知
+  - [ ] **NFS マウント監視**: `/mnt/nfs1` などのマウント外れ検知 (将来拡張)
+- [x] **複数通知先（マルチレシーバー）対応**
+  - [x] **Discord 連携**: 指定テキストチャンネルへの Webhook 埋め込みカード通知・メンション機能
+  - [x] **Gmail / SMTP 連携**: `smtp.gmail.com:587`（アプリパスワード）経由での管理者宛て同報メール送信
+  - [x] **Slack / 汎用 Webhook 連携**
+- [x] **データ保持期間（Retention）の自動管理**
+  - [x] Prometheus TSDB 保持期間設定 (`--storage.tsdb.retention.time=30d`)
+  - [x] Loki ログ保持期間設定 (`retention_period: 30d`)

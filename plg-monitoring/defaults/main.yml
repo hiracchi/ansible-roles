@@ -15,6 +15,25 @@ plg_monitoring_grafana_admin_password: "admin"
 # クラスタ表示名 (ダッシュボードタイトル等に使用)
 plg_monitoring_cluster_name: "JARVIS"
 
+# データ保持期間 (Retention)
+plg_monitoring_prometheus_retention: "30d"
+plg_monitoring_loki_retention: "720h"
+
+# SMTP (メール送信 / Gmail連携) 設定
+plg_monitoring_smtp_enabled: false
+plg_monitoring_smtp_host: "smtp.gmail.com:587"
+plg_monitoring_smtp_user: ""
+plg_monitoring_smtp_password: ""
+plg_monitoring_smtp_from_address: ""
+plg_monitoring_smtp_from_name: "{{ plg_monitoring_cluster_name }} Cluster Alerts"
+
+# アラート機能 & 通知先設定
+plg_monitoring_alerts_enabled: false
+plg_monitoring_alert_receivers: []
+plg_monitoring_alert_host_down_for: "2m"
+plg_monitoring_alert_disk_threshold_percent: 10
+plg_monitoring_alert_cpu_threshold_percent: 90
+
 # Prometheus 監視対象ノード一覧 (デフォルト値: all.ymlでオーバーライド)
 plg_monitoring_node_exporter_targets:
   - '127.0.0.1:9100'

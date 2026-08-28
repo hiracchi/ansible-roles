@@ -1,0 +1,50 @@
+apiVersion: 1
+
+contactPoints:
+  - orgId: 1
+    name: "{{ plg_monitoring_cluster_name }} Default Alerts"
+    receivers:
+{% for receiver in plg_monitoring_alert_receivers %}
+{% if receiver.type == 'discord' %}
+      - uid: "discord-{{ loop.index }}"
+        type: discord
+        sendResolved: true
+        settings:
+          url: "{{ receiver.url }}"
+          message: "🚨 [{{ plg_monitoring_cluster_name }} Alert] {{ '{{' }} .CommonLabels.alertname {{ '}}' }}\n{{ '{{' }} range .Alerts {{ '}}' }}• {{ '{{' }} .Annotations.summary {{ '}}' }}\n{{ '{{' }} end {{ '}}' }}"
+{% if receiver.avatar_url is defined %}
+          avatar_url: "{{ receiver.avatar_url }}"
+{% endif %}
+{% elif receiver.type == 'slack' %}
+      - uid: "slack-{{ loop.index }}"
+        type: slack
+        sendResolved: true
+        settings:
+          url: "{{ receiver.url }}"
+{% if receiver.recipient is defined %}
+          recipient: "{{ receiver.recipient }}"
+{% endif %}
+{% elif receiver.type == 'email' %}
+      - uid: "email-{{ loop.index }}"
+        type: email
+        sendResolved: true
+        settings:
+          addresses: "{{ receiver.addresses | join(';') if receiver.addresses is iterable and receiver.addresses is not string else receiver.addresses }}"
+          singleEmail: true
+{% elif receiver.type == 'webhook' %}
+      - uid: "webhook-{{ loop.index }}"
+        type: webhook
+        sendResolved: true
+        settings:
+          url: "{{ receiver.url }}"
+          httpMethod: "{{ receiver.http_method | default('POST') }}"
+{% endif %}
+{% endfor %}
+
+policies:
+  - orgId: 1
+    receiver: "{{ plg_monitoring_cluster_name }} Default Alerts"
+    group_by: ['alertname', 'instance']
+    group_wait: 30s
+    group_interval: 5m
+    repeat_interval: 4h

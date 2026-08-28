@@ -1,0 +1,199 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: "{{ plg_monitoring_cluster_name }} Host Health"
+    folder: "Alerts"
+    interval: 1m
+    rules:
+      - uid: "{{ plg_monitoring_cluster_name | lower }}-host-down"
+        title: "Host Down ({{ plg_monitoring_cluster_name }})"
+        condition: "B"
+        data:
+          - refId: "A"
+            queryType: "range"
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: "Prometheus"
+            model:
+              editorMode: "code"
+              expr: "up{job=\"node_exporter\"} == 0"
+              instant: true
+              range: false
+              refId: "A"
+          - refId: "B"
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: "gt"
+                  operator:
+                    type: "and"
+                  query:
+                    params: ["A"]
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: "query"
+              datasource:
+                name: "Expression"
+                type: "__expr__"
+                uid: "__expr__"
+              expression: "A"
+              refId: "B"
+              type: "threshold"
+        noDataState: "Alerting"
+        execErrState: "Alerting"
+        for: "{{ plg_monitoring_alert_host_down_for }}"
+        labels:
+          severity: "critical"
+          cluster: "{{ plg_monitoring_cluster_name }}"
+        annotations:
+          summary: "Host {{ '{{' }} $labels.instance {{ '}}' }} is DOWN"
+          description: "Target node {{ '{{' }} $labels.instance {{ '}}' }} has been unreachable for more than {{ plg_monitoring_alert_host_down_for }}."
+
+      - uid: "{{ plg_monitoring_cluster_name | lower }}-disk-space-low"
+        title: "Disk Space Low ({{ plg_monitoring_cluster_name }})"
+        condition: "B"
+        data:
+          - refId: "A"
+            queryType: "range"
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: "Prometheus"
+            model:
+              editorMode: "code"
+              expr: "((node_filesystem_avail_bytes{fstype=~\"ext4|xfs\",mountpoint=\"/\"} / node_filesystem_size_bytes{fstype=~\"ext4|xfs\",mountpoint=\"/\"}) * 100) < {{ plg_monitoring_alert_disk_threshold_percent }}"
+              instant: true
+              range: false
+              refId: "A"
+          - refId: "B"
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: "gt"
+                  operator:
+                    type: "and"
+                  query:
+                    params: ["A"]
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: "query"
+              datasource:
+                name: "Expression"
+                type: "__expr__"
+                uid: "__expr__"
+              expression: "A"
+              refId: "B"
+              type: "threshold"
+        noDataState: "OK"
+        execErrState: "Alerting"
+        for: "5m"
+        labels:
+          severity: "critical"
+          cluster: "{{ plg_monitoring_cluster_name }}"
+        annotations:
+          summary: "Root disk on {{ '{{' }} $labels.instance {{ '}}' }} has less than {{ plg_monitoring_alert_disk_threshold_percent }}% free space"
+          description: "Disk space utilization is critically high on {{ '{{' }} $labels.instance {{ '}}' }}."
+
+      - uid: "{{ plg_monitoring_cluster_name | lower }}-high-cpu-load"
+        title: "High CPU Load ({{ plg_monitoring_cluster_name }})"
+        condition: "B"
+        data:
+          - refId: "A"
+            queryType: "range"
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: "Prometheus"
+            model:
+              editorMode: "code"
+              expr: "(100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[2m])) * 100)) > {{ plg_monitoring_alert_cpu_threshold_percent }}"
+              instant: true
+              range: false
+              refId: "A"
+          - refId: "B"
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: "gt"
+                  operator:
+                    type: "and"
+                  query:
+                    params: ["A"]
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: "query"
+              datasource:
+                name: "Expression"
+                type: "__expr__"
+                uid: "__expr__"
+              expression: "A"
+              refId: "B"
+              type: "threshold"
+        noDataState: "OK"
+        execErrState: "Alerting"
+        for: "5m"
+        labels:
+          severity: "warning"
+          cluster: "{{ plg_monitoring_cluster_name }}"
+        annotations:
+          summary: "High CPU usage on {{ '{{' }} $labels.instance {{ '}}' }} (above {{ plg_monitoring_alert_cpu_threshold_percent }}%)"
+          description: "CPU utilization has been above {{ plg_monitoring_alert_cpu_threshold_percent }}% for more than 5 minutes."
+
+      - uid: "{{ plg_monitoring_cluster_name | lower }}-gpu-high-temp"
+        title: "GPU High Temperature ({{ plg_monitoring_cluster_name }})"
+        condition: "B"
+        data:
+          - refId: "A"
+            queryType: "range"
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: "Prometheus"
+            model:
+              editorMode: "code"
+              expr: "nvidia_smi_temperature_gpu >= 85"
+              instant: true
+              range: false
+              refId: "A"
+          - refId: "B"
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: "gt"
+                  operator:
+                    type: "and"
+                  query:
+                    params: ["A"]
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: "query"
+              datasource:
+                name: "Expression"
+                type: "__expr__"
+                uid: "__expr__"
+              expression: "A"
+              refId: "B"
+              type: "threshold"
+        noDataState: "OK"
+        execErrState: "Alerting"
+        for: "2m"
+        labels:
+          severity: "warning"
+          cluster: "{{ plg_monitoring_cluster_name }}"
+        annotations:
+          summary: "GPU on {{ '{{' }} $labels.instance {{ '}}' }} (GPU: {{ '{{' }} $labels.name {{ '}}' }}) reached {{ '{{' }} $values.A {{ '}}' }}°C"
+          description: "GPU temperature is critical (>=85°C) on {{ '{{' }} $labels.instance {{ '}}' }}."

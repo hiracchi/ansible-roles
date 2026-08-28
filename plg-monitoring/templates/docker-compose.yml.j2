@@ -14,6 +14,7 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time={{ plg_monitoring_prometheus_retention }}'
       - '--web.console.libraries=/usr/share/prometheus/console_libraries'
       - '--web.console.templates=/usr/share/prometheus/consoles'
       - '--web.enable-remote-write-receiver'
@@ -42,6 +43,15 @@ services:
       - GF_SECURITY_ADMIN_USER={{ plg_monitoring_grafana_admin_user }}
       - GF_SECURITY_ADMIN_PASSWORD={{ plg_monitoring_grafana_admin_password }}
       - GF_USERS_ALLOW_SIGN_UP=false
+{% if plg_monitoring_smtp_enabled | bool %}
+      - GF_SMTP_ENABLED=true
+      - GF_SMTP_HOST={{ plg_monitoring_smtp_host }}
+      - GF_SMTP_USER={{ plg_monitoring_smtp_user }}
+      - GF_SMTP_PASSWORD={{ plg_monitoring_smtp_password }}
+      - GF_SMTP_FROM_ADDRESS={{ plg_monitoring_smtp_from_address | default(plg_monitoring_smtp_user) }}
+      - GF_SMTP_FROM_NAME={{ plg_monitoring_smtp_from_name }}
+      - GF_SMTP_STARTTLS_POLICY=MandatoryStartTLS
+{% endif %}
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
       - ./data/grafana:/var/lib/grafana
