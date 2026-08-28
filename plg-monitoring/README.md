@@ -35,6 +35,41 @@ make stop     # 停止
 make restart  # 再起動
 ```
 
+## アラート・通知機能の設定方法
+
+本ロールでは、Grafana Unified Alerting による自動監視および複数チャネル（Discord / Gmail / Slack / Webhook）への通知が可能です。
+
+### 1. Discord Webhook URL の取得方法
+1. Discord で通知を受け取りたいテキストチャンネル（例: `#server-alerts`）の **歯車アイコン（チャンネルの編集）** を開く。
+2. 左メニューの **「連携サービス」** → **「ウェブフック」**（または「ウェブフックを作成」）を選択。
+3. ボット名（例: `Grafana Alerts`）を設定し、**「ウェブフック URL をコピー」** をクリック。
+   - コピーされる URL 形式: `https://discord.com/api/webhooks/1234567890/abcdef...`
+
+### 2. Gmail 送信（SMTP）の設定準備
+1. 送信元とする Google アカウントで [Google セキュリティ設定](https://myaccount.google.com/security) を開く。
+2. **2 段階認証** を有効にし、**「アプリ パスワード」** を新規発行（16文字の英数字）。
+
+### 3. Playbook での設定例 (`group_vars/all.yml`)
+```yaml
+# アラート機能の有効化
+plg_monitoring_alerts_enabled: true
+
+# （任意）Gmail 送信元設定
+plg_monitoring_smtp_enabled: true
+plg_monitoring_smtp_user: "your-lab@gmail.com"
+plg_monitoring_smtp_password: "abcd efgh ijkl mnop" # 16文字のアプリパスワード
+
+# 複数通知先リスト
+plg_monitoring_alert_receivers:
+  - name: "Discord Alerts"
+    type: "discord"
+    url: "https://discord.com/api/webhooks/1234567890/xxxxxxxxx"
+  - name: "Admin Email"
+    type: "email"
+    addresses:
+      - "admin@example.com"
+```
+
 ## 今後の拡張予定 (TODO: アラート・通知機能)
 
 > [!NOTE]
