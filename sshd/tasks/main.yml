@@ -1,91 +1,20 @@
 ---
-- name: Forbid root to access via ssh
-  become: yes
-  lineinfile:
-    dest: /etc/ssh/sshd_config
-    state: present
-    regexp: "^#?PermitRootLogin "
-    line: "PermitRootLogin no"
-    backrefs: yes
-    validate: "sshd -T -f %s"
-    backup: yes
-  notify:
-    - restart sshd
+- name: Ensure sshd_config includes /etc/ssh/sshd_config.d/*.conf
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^[#\s]*Include\s+/etc/ssh/sshd_config\.d/\*\.conf'
+    line: "Include /etc/ssh/sshd_config.d/*.conf"
+    insertafter: BOF
+    validate: "/usr/sbin/sshd -t -f %s"
 
-- name: Forbid ssh user to login with password
-  become: yes
-  lineinfile:
-    dest: /etc/ssh/sshd_config
-    state: present
-    regexp: "^#?PasswordAuthentication yes"
-    line: "PasswordAuthentication no"
-    backrefs: yes
-    validate: "sshd -T -f %s"
-    backup: yes
-  notify:
-    - restart sshd
-
-- name: no use PAM for sshd
-  become: yes
-  lineinfile:
-    dest: /etc/ssh/sshd_config
-    state: present
-    regexp: "^#?UsePAM yes"
-    line: "UsePAM no"
-    backrefs: yes
-    validate: "sshd -T -f %s"
-    backup: yes
-  notify:
-    - restart sshd
-
-- name: Permit only specific users
-  become: yes
-  lineinfile:
-    dest: /etc/ssh/sshd_config
-    state: present
-    regexp: "^AllowUsers"
-    line: "AllowUsers {{ ssh_user }}"
-    validate: "sshd -T -f %s"
-    backup: yes
-  notify:
-    - restart sshd
-  when: ssh_user is defined
-
-- name: Change ssh port number
-  become: yes
-  lineinfile:
-    dest: /etc/ssh/sshd_config
-    state: present
-    insertafter: "#Port 22"
-    regexp: "^#?Port"
-    line: "Port {{ ssh_port }}"
-    validate: "sshd -T -f %s"
-    backup: yes
-  notify:
-    - restart sshd
-  when: ssh_port is defined
-    
-#- name: Change acceptable tcp port for ssh on iptables
-#  become: yes
-#  lineinfile:
-#    dest: /etc/sysconfig/iptables
-#    state: present
-#    regexp: "^-A INPUT -m state --state NEW -m tcp -p tcp --dport 22 -j ACCEPT"
-#    line: "-A INPUT -m state --state NEW -m tcp -p tcp --dport {{ ssh_port }} -j ACCEPT"
-#    backrefs: yes
-#    backup: yes
-#  notify:
-#    - restart iptables
-
-- name: setup MACs
-  become: yes
-  lineinfile:
-    dest: /etc/ssh/sshd_config
-    state: present
-    line: "Macs umac-128-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128@openssh.com,hmac-sha2-512,hmac-sha2-256"
-    regexp: "^#?Macs"
-    validate: "sshd -T -f %s"
-    backup: yes
-  notify:
-    - restart sshd
- 
+- name: Configure sshd hardening via drop-in configuration
+  become: true
+  ansible.builtin.template:
+    src: 00-ansible-hardening.conf.j2
+    dest: /etc/ssh/sshd_config.d/00-ansible-hardening.conf
+    owner: root
+    group: root
+    mode: "0644"
+    validate: "/usr/sbin/sshd -t -f %s"
+  notify: reload sshd

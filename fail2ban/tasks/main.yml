@@ -1,0 +1,26 @@
+---
+- name: Install fail2ban
+  become: true
+  ansible.builtin.apt:
+    name: fail2ban
+    state: present
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Configure fail2ban jail for sshd
+  become: true
+  ansible.builtin.template:
+    src: zz-ansible.local.j2
+    dest: /etc/fail2ban/jail.d/zz-ansible.local
+    owner: root
+    group: root
+    mode: "0644"
+  notify: restart fail2ban
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Ensure fail2ban is enabled and started
+  become: true
+  ansible.builtin.service:
+    name: fail2ban
+    enabled: true
+    state: started
+  when: ansible_facts['os_family'] == "Debian"

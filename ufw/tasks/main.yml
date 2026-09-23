@@ -1,0 +1,47 @@
+---
+- name: Install ufw
+  become: true
+  ansible.builtin.apt:
+    name: ufw
+    state: present
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Allow SSH through ufw (before enabling, to avoid lockout)
+  become: true
+  community.general.ufw:
+    rule: allow
+    port: "{{ ufw_ssh_port }}"
+    proto: tcp
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Configure custom ufw rules
+  become: true
+  community.general.ufw:
+    rule: "{{ item.rule | default('allow') }}"
+    port: "{{ item.port | default(omit) }}"
+    proto: "{{ item.proto | default('tcp') }}"
+    src: "{{ item.src | default(omit) }}"
+    dest: "{{ item.dest | default(omit) }}"
+    direction: "{{ item.direction | default(omit) }}"
+    comment: "{{ item.comment | default(omit) }}"
+  loop: "{{ ufw_rules }}"
+  when:
+    - ansible_facts['os_family'] == "Debian"
+    - ufw_rules is defined
+    - ufw_rules | length > 0
+
+- name: Set ufw default policies
+  become: true
+  community.general.ufw:
+    direction: "{{ item.direction }}"
+    policy: "{{ item.policy }}"
+  loop:
+    - { direction: incoming, policy: "{{ ufw_default_direction_incoming }}" }
+    - { direction: outgoing, policy: "{{ ufw_default_direction_outgoing }}" }
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Enable ufw
+  become: true
+  community.general.ufw:
+    state: "{{ ufw_state }}"
+  when: ansible_facts['os_family'] == "Debian"

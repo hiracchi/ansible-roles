@@ -1,0 +1,12 @@
+# Managed by ansible (role: fail2ban). Do not edit manually.
+[DEFAULT]
+banaction = {{ fail2ban_banaction }}
+bantime = {{ fail2ban_bantime }}
+findtime = {{ fail2ban_findtime }}
+maxretry = {{ fail2ban_maxretry }}
+{% if fail2ban_ignoreip is defined and fail2ban_ignoreip %}
+ignoreip = {{ fail2ban_ignoreip }}
+{% endif %}
+
+[sshd]
+enabled = true

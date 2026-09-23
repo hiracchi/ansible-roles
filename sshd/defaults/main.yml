@@ -1,0 +1,6 @@
+---
+sshd_password_authentication: false
+sshd_challenge_response_authentication: false
+sshd_permit_root_login: false
+sshd_port: 22
+sshd_allow_users: []

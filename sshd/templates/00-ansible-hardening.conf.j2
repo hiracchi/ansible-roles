@@ -1,0 +1,10 @@
+# Managed by ansible (role: sshd). Do not edit manually.
+PasswordAuthentication {{ 'yes' if sshd_password_authentication else 'no' }}
+ChallengeResponseAuthentication {{ 'yes' if sshd_challenge_response_authentication else 'no' }}
+PermitRootLogin {{ 'yes' if sshd_permit_root_login else 'no' }}
+{% if sshd_port is defined and sshd_port != 22 %}
+Port {{ sshd_port }}
+{% endif %}
+{% if sshd_allow_users is defined and sshd_allow_users %}
+AllowUsers {{ sshd_allow_users | join(' ') if (sshd_allow_users is iterable and sshd_allow_users is not string) else sshd_allow_users }}
+{% endif %}

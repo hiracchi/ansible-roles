@@ -1,0 +1,6 @@
+---
+ufw_state: enabled
+ufw_default_direction_incoming: deny
+ufw_default_direction_outgoing: allow
+ufw_ssh_port: "{{ ansible_port | default(22) }}"
+ufw_rules: []
