@@ -13,4 +13,8 @@ limits:
     type: 'soft'
     item: memlock
     value: 3145728
-    
+
+# unattended-upgrades
+ubuntu_base_enable_unattended_upgrades: true
+ubuntu_base_unattended_upgrades_update_package_lists: "1"
+ubuntu_base_unattended_upgrades_unattended_upgrade: "1"

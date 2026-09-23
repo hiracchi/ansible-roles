@@ -71,3 +71,9 @@
 
 - import_tasks: python.yml
 - import_tasks: ruby.yml
+
+# =============================================================================
+# unattended-upgrades
+# =============================================================================
+- import_tasks: unattended_upgrades.yml
+  when: ubuntu_base_enable_unattended_upgrades | default(true)
