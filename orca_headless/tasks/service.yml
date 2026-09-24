@@ -1,0 +1,16 @@
+---
+- name: Deploy orca-serve systemd service unit
+  ansible.builtin.template:
+    src: orca-serve.service.j2
+    dest: /etc/systemd/system/orca-serve.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart orca-serve
+
+- name: Manage orca-serve systemd service state
+  ansible.builtin.systemd:
+    name: orca-serve
+    state: "{{ orca_service_state }}"
+    enabled: "{{ orca_service_enabled }}"
+    daemon_reload: true

@@ -1,0 +1,20 @@
+---
+- name: Load OS-specific package variables
+  ansible.builtin.include_vars: "{{ item }}"
+  with_first_found:
+    - files:
+        - "{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
+        - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+        - "{{ ansible_os_family }}-{{ ansible_distribution_major_version }}.yml"
+        - "{{ ansible_distribution }}.yml"
+        - "{{ ansible_os_family }}.yml"
+        - "default.yml"
+      paths:
+        - "vars"
+
+- name: Install required prerequisites and Electron dependencies
+  ansible.builtin.apt:
+    name: "{{ orca_required_packages }}"
+    state: present
+    update_cache: true
+    cache_valid_time: 3600

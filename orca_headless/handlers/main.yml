@@ -1,0 +1,8 @@
+---
+# handlers file for orca_headless
+
+- name: Restart orca-serve
+  ansible.builtin.systemd:
+    name: orca-serve
+    state: restarted
+    daemon_reload: true

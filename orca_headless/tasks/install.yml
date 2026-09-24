@@ -1,0 +1,17 @@
+---
+- name: Ensure orca installation directory exists
+  ansible.builtin.file:
+    path: "{{ orca_install_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Download Orca AppImage binary
+  ansible.builtin.get_url:
+    url: "{{ orca_appimage_url }}"
+    dest: "{{ orca_install_dir }}/{{ orca_bin_name }}"
+    owner: root
+    group: root
+    mode: '0755'
+  notify: Restart orca-serve

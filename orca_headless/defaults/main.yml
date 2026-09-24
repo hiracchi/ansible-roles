@@ -1,0 +1,26 @@
+---
+# defaults file for orca_headless
+
+# Version and download settings
+orca_version: "latest"
+orca_appimage_url: "https://github.com/stablyai/orca/releases/latest/download/orca-linux.AppImage"
+
+# Directory and binary settings
+orca_install_dir: "/opt/orca"
+orca_bin_name: "orca-linux.AppImage"
+
+# User settings
+orca_user: "orca"
+orca_group: "orca"
+orca_home: "/home/orca"
+orca_enable_linger: true
+
+# Service settings
+orca_port: 6768
+# Advertised pairing address (LAN IP, Tailscale IP, hostname, or full URL).
+# If empty, --pairing-address will not be passed to the command.
+orca_pairing_address: ""
+
+# systemd service control
+orca_service_enabled: true
+orca_service_state: "started"

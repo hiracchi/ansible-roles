@@ -1,0 +1,24 @@
+# {{ ansible_managed }}
+[Unit]
+Description=Orca runtime server
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User={{ orca_user }}
+WorkingDirectory={{ orca_home }}
+Environment=LIBGL_ALWAYS_SOFTWARE=1
+ExecStart={{ orca_install_dir }}/{{ orca_bin_name }} serve --port {{ orca_port }}{% if orca_pairing_address | default('', true) | length > 0 %} --pairing-address {{ orca_pairing_address }}{% endif %}
+
+StandardOutput=journal
+StandardError=journal
+KillMode=mixed
+Restart=on-failure
+RestartPreventExitStatus=3
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

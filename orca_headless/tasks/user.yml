@@ -1,0 +1,30 @@
+---
+- name: Create orca group
+  ansible.builtin.group:
+    name: "{{ orca_group }}"
+    state: present
+    system: true
+
+- name: Create orca system user
+  ansible.builtin.user:
+    name: "{{ orca_user }}"
+    group: "{{ orca_group }}"
+    home: "{{ orca_home }}"
+    shell: /usr/sbin/nologin
+    create_home: true
+    system: true
+    state: present
+
+- name: Check if lingering is enabled for orca user
+  ansible.builtin.stat:
+    path: "/var/lib/systemd/linger/{{ orca_user }}"
+  register: orca_linger_check
+  when: orca_enable_linger | bool
+
+- name: Enable systemd lingering for orca user
+  ansible.builtin.command:
+    cmd: "loginctl enable-linger {{ orca_user }}"
+  when:
+    - orca_enable_linger | bool
+    - not orca_linger_check.stat.exists
+  changed_when: true
