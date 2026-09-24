@@ -1,0 +1,9 @@
+# /etc/profile.d/aider.sh - Default Aider configuration
+# Managed by Ansible
+
+{% if aider_ollama_api_base is defined and aider_ollama_api_base != "" %}
+export OLLAMA_API_BASE="{{ aider_ollama_api_base }}"
+{% endif %}
+{% if aider_model is defined and aider_model != "" %}
+export AIDER_MODEL="{{ aider_model }}"
+{% endif %}
