@@ -13,7 +13,11 @@ SlurmctldHost={{ host }}
 #EpilogSlurmctld=
 #FirstJobId=1
 #MaxJobId=999999
+{% if slurm_gres_types is defined and slurm_gres_types != "" %}
+GresTypes={{ slurm_gres_types }}
+{% else %}
 #GresTypes=
+{% endif %}
 #GroupUpdateForce=0
 #GroupUpdateTime=600
 #JobFileAppend=0
@@ -119,7 +123,7 @@ SelectTypeParameters=CR_Core
 AccountingStorageType=accounting_storage/none
 #AccountingStorageUser=
 AccountingStoreFlags=job_comment
-ClusterName=cluster
+ClusterName={{ slurm_cluster_name | default('cluster') }}
 #DebugFlags=
 #JobCompHost=
 #JobCompLoc=

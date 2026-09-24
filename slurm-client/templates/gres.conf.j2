@@ -1,0 +1,6 @@
+# gres.conf - Slurm Generic Resource configuration
+# Managed by Ansible
+
+{% for gres in slurm_gres_conf %}
+{{ gres }}
+{% endfor %}

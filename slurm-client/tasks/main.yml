@@ -74,6 +74,18 @@
   notify:
     - restart slurmd
 
+- name: setup gres.conf
+  become: yes
+  ansible.builtin.template:
+    src: gres.conf.j2
+    dest: /etc/slurm/gres.conf
+    mode: '0644'
+    owner: slurm
+    group: slurm
+  when: slurm_gres_conf is defined and slurm_gres_conf | length > 0
+  notify:
+    - restart slurmd
+
 - name: start and enable slurmd
   become: yes
   ansible.builtin.service:

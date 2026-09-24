@@ -1,6 +1,10 @@
 slurmctld_hosts:
   - jarvis-01
 
+slurm_cluster_name: cluster
+slurm_gres_types: ""
+slurm_gres_conf: []
+
 slurm_nodes:
   - "jarvis-prxvm-worker-z3-[01-03] CPUs=2 State=UNKNOWN"
 
