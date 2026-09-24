@@ -1,0 +1,13 @@
+#!/bin/bash
+# Check if ollama-service job is currently queued or running in Slurm
+# If not, submit it automatically.
+
+JOB_COUNT=$(squeue -h --name=ollama-service | wc -l)
+
+if [ "$JOB_COUNT" -eq 0 ]; then
+    echo "$(date): ollama-service job not found in Slurm queue. Submitting..."
+    sbatch {{ ollama_scripts_dir }}/ollama-service.sh
+else
+    # Job exists (either Running or Pending/Requeued)
+    exit 0
+fi

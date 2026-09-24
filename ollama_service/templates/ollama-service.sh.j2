@@ -1,0 +1,36 @@
+#!/bin/bash
+#SBATCH --job-name=ollama-service
+#SBATCH --partition={{ ollama_partition }}
+#SBATCH --gres={{ ollama_gpu_gres }}
+#SBATCH --cpus-per-task={{ ollama_cpus }}
+#SBATCH --mem={{ ollama_memory }}
+#SBATCH --time=INFINITE
+#SBATCH --output={{ ollama_log_dir }}/ollama_%j.out
+#SBATCH --error={{ ollama_log_dir }}/ollama_%j.err
+
+echo "=== Ollama service started on $(hostname) at $(date) (Job ID: $SLURM_JOB_ID) ==="
+echo "Assigned GPU: $CUDA_VISIBLE_DEVICES"
+
+# Signal handling for Slurm preemption (requeue)
+cleanup() {
+    echo "Received termination/preemption signal at $(date). Cleaning up..."
+    if [ -n "$OLLAMA_PID" ]; then
+        kill -TERM "$OLLAMA_PID" 2>/dev/null
+        wait "$OLLAMA_PID" 2>/dev/null
+    fi
+    echo "Ollama process terminated cleanly."
+    exit 0
+}
+
+trap cleanup SIGTERM SIGINT SIGCONT SIGHUP
+
+# Start Ollama via Apptainer
+APPTAINERENV_OLLAMA_HOST=0.0.0.0 \
+APPTAINERENV_OLLAMA_MODELS="{{ ollama_models_dir }}" \
+apptainer run --nv \
+  -B "{{ ollama_models_dir }}:{{ ollama_models_dir }}" \
+  "{{ ollama_sif_path }}" serve &
+
+OLLAMA_PID=$!
+
+wait "$OLLAMA_PID"

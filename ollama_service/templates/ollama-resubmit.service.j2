@@ -1,0 +1,9 @@
+[Unit]
+Description=Ollama Slurm Service Auto-Resubmit
+After=network.target slurmctld.service
+
+[Service]
+Type=oneshot
+User={{ ollama_user }}
+Group={{ ollama_group }}
+ExecStart={{ ollama_scripts_dir }}/ollama-resubmit.sh

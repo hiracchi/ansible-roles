@@ -1,0 +1,56 @@
+---
+- name: Create local directories on controller
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ ollama_user }}"
+    group: "{{ ollama_group }}"
+    mode: '0755'
+  loop:
+    - "{{ ollama_scripts_dir }}"
+    - "{{ ollama_log_dir }}"
+
+- name: Deploy Ollama Slurm service script on controller
+  become: true
+  ansible.builtin.template:
+    src: ollama-service.sh.j2
+    dest: "{{ ollama_scripts_dir }}/ollama-service.sh"
+    owner: "{{ ollama_user }}"
+    group: "{{ ollama_group }}"
+    mode: '0755'
+
+- name: Deploy Ollama resubmit script on controller
+  become: true
+  ansible.builtin.template:
+    src: ollama-resubmit.sh.j2
+    dest: "{{ ollama_scripts_dir }}/ollama-resubmit.sh"
+    owner: "{{ ollama_user }}"
+    group: "{{ ollama_group }}"
+    mode: '0755'
+
+- name: Deploy systemd service for Ollama resubmit
+  become: true
+  ansible.builtin.template:
+    src: ollama-resubmit.service.j2
+    dest: /etc/systemd/system/ollama-resubmit.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Deploy systemd timer for Ollama resubmit
+  become: true
+  ansible.builtin.template:
+    src: ollama-resubmit.timer.j2
+    dest: /etc/systemd/system/ollama-resubmit.timer
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Reload systemd daemon and enable timer
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: ollama-resubmit.timer
+    state: started
+    enabled: true

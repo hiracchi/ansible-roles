@@ -1,0 +1,30 @@
+---
+- name: Create shared NFS directories for Ollama
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ ollama_user }}"
+    group: "{{ ollama_group }}"
+    mode: '0775'
+  loop:
+    - "{{ ollama_nfs_base_dir }}"
+    - "{{ ollama_models_dir }}"
+    - "{{ ollama_sif_dir }}"
+
+- name: Pull Ollama Apptainer SIF image if not present
+  become: true
+  ansible.builtin.command:
+    cmd: "apptainer pull {{ ollama_sif_path }} {{ ollama_image_url }}"
+    creates: "{{ ollama_sif_path }}"
+  async: 900
+  poll: 15
+
+- name: Ensure correct ownership on Ollama SIF image
+  become: true
+  ansible.builtin.file:
+    path: "{{ ollama_sif_path }}"
+    owner: "{{ ollama_user }}"
+    group: "{{ ollama_group }}"
+    mode: '0755'
+

@@ -1,0 +1,19 @@
+---
+- name: Setup NFS shared directories and SIF image
+  ansible.builtin.import_tasks: nfs.yml
+  run_once: true
+  delegate_to: "{{ groups['slurm_compute_gpu'][0] }}"
+
+- name: Setup Ollama on GPU compute nodes
+  ansible.builtin.import_tasks: compute.yml
+  when: inventory_hostname in groups['slurm_compute_gpu']
+
+- name: Setup Ollama management and timer on Slurm controller
+  ansible.builtin.import_tasks: controller.yml
+  when: inventory_hostname in groups['slurm_controller']
+
+- name: Pull default Ollama models
+  ansible.builtin.import_tasks: models.yml
+  when:
+    - inventory_hostname in groups['slurm_controller']
+    - ollama_default_models | length > 0

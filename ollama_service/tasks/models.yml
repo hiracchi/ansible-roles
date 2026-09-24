@@ -1,0 +1,42 @@
+---
+# Pull default models via Ollama API
+
+- name: Get active node running ollama-service
+  ansible.builtin.command:
+    cmd: "squeue -h --name=ollama-service --states=R -o %N"
+  register: active_ollama_node
+  changed_when: false
+
+- name: Wait for Ollama service API to become responsive
+  ansible.builtin.uri:
+    url: "http://{{ active_ollama_node.stdout | trim }}:{{ ollama_port }}/api/tags"
+    method: GET
+    status_code: 200
+  register: ollama_api_status
+  retries: 12
+  delay: 5
+  until: ollama_api_status.status == 200
+  when: active_ollama_node.stdout | trim | length > 0
+
+- name: Get list of already installed models
+  ansible.builtin.uri:
+    url: "http://{{ active_ollama_node.stdout | trim }}:{{ ollama_port }}/api/tags"
+    method: GET
+    status_code: 200
+  register: installed_models_res
+  when: active_ollama_node.stdout | trim | length > 0
+
+- name: Pull missing default models
+  ansible.builtin.uri:
+    url: "http://{{ active_ollama_node.stdout | trim }}:{{ ollama_port }}/api/pull"
+    method: POST
+    body_format: json
+    body:
+      model: "{{ item }}"
+      stream: false
+    status_code: 200
+    timeout: 1200
+  loop: "{{ ollama_default_models }}"
+  when:
+    - active_ollama_node.stdout | trim | length > 0
+    - item not in (installed_models_res.json.models | map(attribute='name') | list)

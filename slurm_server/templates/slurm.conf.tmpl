@@ -97,6 +97,15 @@ Waittime=0
 SchedulerType=sched/backfill
 SelectType=select/cons_tres
 SelectTypeParameters=CR_Core
+{% if slurm_preempt_type is defined and slurm_preempt_type != "" %}
+PreemptType={{ slurm_preempt_type }}
+{% endif %}
+{% if slurm_preempt_mode is defined and slurm_preempt_mode != "" %}
+PreemptMode={{ slurm_preempt_mode }}
+{% endif %}
+{% if slurm_preempt_exempt_time is defined and slurm_preempt_exempt_time != "" %}
+PreemptExemptTime={{ slurm_preempt_exempt_time }}
+{% endif %}
 #
 #
 # JOB PRIORITY

@@ -1,0 +1,32 @@
+---
+# Defaults for ollama_service role
+
+ollama_user: toshi
+ollama_group: hirano-lab
+
+# Shared NFS storage paths
+ollama_nfs_base_dir: /mnt/nfs1/ollama
+ollama_models_dir: "{{ ollama_nfs_base_dir }}/models"
+ollama_sif_dir: "{{ ollama_nfs_base_dir }}/sif"
+ollama_sif_path: "{{ ollama_sif_dir }}/ollama.sif"
+ollama_image_url: "docker://ollama/ollama:latest"
+
+# Local directories on nodes
+ollama_scripts_dir: /opt/ollama
+ollama_log_dir: /var/log/ollama
+
+# Slurm parameters
+ollama_partition: llm
+ollama_gpu_gres: "gpu:1"
+ollama_cpus: 4
+ollama_memory: "32G"
+
+# Port
+ollama_port: 11434
+
+# Default models to pull
+ollama_default_models:
+  - "qwen2.5-coder:7b"
+
+# Timer check interval on controller (every 2 minutes)
+ollama_resubmit_interval: "*:0/2"

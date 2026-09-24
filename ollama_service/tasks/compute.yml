@@ -1,0 +1,21 @@
+---
+- name: Create local directories on compute node
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ ollama_user }}"
+    group: "{{ ollama_group }}"
+    mode: '0755'
+  loop:
+    - "{{ ollama_scripts_dir }}"
+    - "{{ ollama_log_dir }}"
+
+- name: Deploy Ollama Slurm service script
+  become: true
+  ansible.builtin.template:
+    src: ollama-service.sh.j2
+    dest: "{{ ollama_scripts_dir }}/ollama-service.sh"
+    owner: "{{ ollama_user }}"
+    group: "{{ ollama_group }}"
+    mode: '0755'
