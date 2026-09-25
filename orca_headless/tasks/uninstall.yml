@@ -1,0 +1,64 @@
+---
+# tasks file for orca_headless uninstallation
+
+- name: Stop and disable orca-serve systemd service
+  become: true
+  ansible.builtin.systemd:
+    name: orca-serve.service
+    state: stopped
+    enabled: false
+  failed_when: false
+
+- name: Remove orca-serve systemd service file
+  become: true
+  ansible.builtin.file:
+    path: /etc/systemd/system/orca-serve.service
+    state: absent
+  notify: Reload systemd daemon
+
+- name: Flush handlers to reload systemd daemon
+  ansible.builtin.meta: flush_handlers
+
+- name: Remove orca installation directory
+  become: true
+  ansible.builtin.file:
+    path: "{{ orca_install_dir }}"
+    state: absent
+
+- name: Remove orca helper scripts
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /usr/local/bin/orca-pairing-info
+    - /usr/local/bin/orca-uninstall
+
+- name: Disable lingering for orca user
+  become: true
+  ansible.builtin.command:
+    cmd: "loginctl disable-linger {{ orca_user }}"
+  failed_when: false
+  changed_when: false
+
+- name: Kill remaining processes of orca user
+  become: true
+  ansible.builtin.command:
+    cmd: "pkill -u {{ orca_user }}"
+  failed_when: false
+  changed_when: false
+
+- name: Remove orca user
+  become: true
+  ansible.builtin.user:
+    name: "{{ orca_user }}"
+    state: absent
+    remove: true
+  failed_when: false
+
+- name: Remove orca group
+  become: true
+  ansible.builtin.group:
+    name: "{{ orca_group }}"
+    state: absent
+  failed_when: false

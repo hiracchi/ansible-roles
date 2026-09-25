@@ -1,14 +1,22 @@
 ---
 # tasks file for orca_headless
 
-- name: Setup prerequisites and dependencies
-  ansible.builtin.include_tasks: prerequisites.yml
+- name: Uninstall Orca headless
+  ansible.builtin.include_tasks: uninstall.yml
+  when: orca_headless_action | default('install') == 'uninstall'
 
-- name: Manage orca user and systemd lingering
-  ansible.builtin.include_tasks: user.yml
+- name: Install and configure Orca headless
+  when: orca_headless_action | default('install') == 'install'
+  block:
+    - name: Setup prerequisites and dependencies
+      ansible.builtin.include_tasks: prerequisites.yml
 
-- name: Install Orca AppImage
-  ansible.builtin.include_tasks: install.yml
+    - name: Manage orca user and systemd lingering
+      ansible.builtin.include_tasks: user.yml
 
-- name: Configure and manage systemd service
-  ansible.builtin.include_tasks: service.yml
+    - name: Install Orca AppImage
+      ansible.builtin.include_tasks: install.yml
+
+    - name: Configure and manage systemd service
+      ansible.builtin.include_tasks: service.yml
+

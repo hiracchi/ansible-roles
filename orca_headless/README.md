@@ -90,6 +90,28 @@ sudo journalctl -u orca-serve.service -o cat | jq -Rrc 'fromjson? | select(.type
 sudo journalctl -u orca-serve.service -o cat | grep -E 'Pairing URL|Web client URL' | tail -n 2
 ```
 
+## 停止・アンインストール
+
+### 1. スクリプトによるアンインストール（対象ノード上）
+
+対象ノードにインストールされたヘルパースクリプト `orca-uninstall`（またはロール内の `files/orca-uninstall`）を実行することで、Orca サービス、ファイル、およびユーザーを安全に削除できます。
+
+```bash
+# 対話確認付きで実行
+sudo orca-uninstall
+
+# 確認をスキップして即座に削除
+sudo orca-uninstall -y
+```
+
+### 2. Ansible プレイブックによるアンインストール
+
+ロールの変数 `orca_headless_action: "uninstall"` を指定してプレイブックを実行します。
+
+```bash
+ansible-playbook -i inventory/hosts.yml playbook.yml -e "orca_headless_action=uninstall"
+```
+
 ## ライセンス
 
 MIT

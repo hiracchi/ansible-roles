@@ -25,3 +25,13 @@
     group: root
     mode: '0755'
 
+- name: Install orca-uninstall helper script
+  become: true
+  ansible.builtin.copy:
+    src: orca-uninstall
+    dest: /usr/local/bin/orca-uninstall
+    owner: root
+    group: root
+    mode: '0755'
+
+
