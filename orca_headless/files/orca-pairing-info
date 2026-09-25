@@ -1,0 +1,127 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# orca-pairing-info: Show Orca headless server status and pairing URLs
+# ==============================================================================
+set -euo pipefail
+
+SERVICE_NAME="orca-serve.service"
+
+show_help() {
+  cat <<'EOF'
+Usage: orca-pairing-info [OPTIONS]
+
+Display current Orca headless runtime status and pairing URLs.
+
+Options:
+  -u, --url       Output only the desktop app pairing URL (orca://...)
+  -w, --web       Output only the web client browser URL (http://...)
+  -q, --qr        Display QR code for mobile / app pairing (requires qrencode)
+  -h, --help      Show this help message
+
+Examples:
+  orca-pairing-info
+  orca-pairing-info --url
+  orca-pairing-info --web
+EOF
+}
+
+MODE="full"
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -u|--url)
+      MODE="url"
+      shift
+      ;;
+    -w|--web)
+      MODE="web"
+      shift
+      ;;
+    -q|--qr)
+      MODE="qr"
+      shift
+      ;;
+    -h|--help)
+      show_help
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1" >&2
+      show_help >&2
+      exit 1
+      ;;
+  esac
+done
+
+# Check systemd service status
+IS_ACTIVE=false
+if systemctl is-active --quiet "${SERVICE_NAME}" 2>/dev/null; then
+  IS_ACTIVE=true
+fi
+
+# Fetch journal log
+# Try normal journalctl first; if permission denied, warn or attempt sudo
+LOG_OUTPUT=""
+if journalctl -u "${SERVICE_NAME}" -n 1 >/dev/null 2>&1; then
+  LOG_OUTPUT=$(journalctl -u "${SERVICE_NAME}" -o cat 2>/dev/null || true)
+elif command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null; then
+  LOG_OUTPUT=$(sudo journalctl -u "${SERVICE_NAME}" -o cat 2>/dev/null || true)
+else
+  # Prompt or inform user
+  if [[ "${MODE}" == "full" ]]; then
+    echo "Notice: Elevating permissions with sudo to read systemd logs..." >&2
+  fi
+  LOG_OUTPUT=$(sudo journalctl -u "${SERVICE_NAME}" -o cat 2>/dev/null || true)
+fi
+
+PAIRING_URL=$(echo "${LOG_OUTPUT}" | grep -E '^\s*Pairing URL:\s*' | tail -n 1 | sed -E 's/^\s*Pairing URL:\s*//')
+WEB_URL=$(echo "${LOG_OUTPUT}" | grep -E '^\s*Web client URL:\s*' | tail -n 1 | sed -E 's/^\s*Web client URL:\s*//')
+ADVERTISED_EP=$(echo "${LOG_OUTPUT}" | grep -E '^\s*Advertised endpoint:\s*' | tail -n 1 | sed -E 's/^\s*Advertised endpoint:\s*//')
+BOUND_EP=$(echo "${LOG_OUTPUT}" | grep -E '^\s*Bound endpoint:\s*' | tail -n 1 | sed -E 's/^\s*Bound endpoint:\s*//')
+
+if [[ -z "${PAIRING_URL}" ]]; then
+  echo "Error: Could not retrieve pairing URL from ${SERVICE_NAME} logs." >&2
+  if [[ "${IS_ACTIVE}" != "true" ]]; then
+    echo "Reason: ${SERVICE_NAME} is not currently running. Try: sudo systemctl start ${SERVICE_NAME}" >&2
+  fi
+  exit 1
+fi
+
+case "${MODE}" in
+  url)
+    echo "${PAIRING_URL}"
+    ;;
+  web)
+    echo "${WEB_URL:-${PAIRING_URL}}"
+    ;;
+  qr)
+    if command -v qrencode >/dev/null 2>&1; then
+      qrencode -t ANSIUTF8 "${PAIRING_URL}"
+    else
+      echo "qrencode command not found. Install with: sudo apt install qrencode" >&2
+      echo "${PAIRING_URL}"
+    fi
+    ;;
+  full)
+    echo "=================================================================="
+    echo "  Orca Headless Runtime Status & Pairing Info"
+    echo "=================================================================="
+    if [[ "${IS_ACTIVE}" == "true" ]]; then
+      echo "● Service:    active (running) [${SERVICE_NAME}]"
+    else
+      echo "● Service:    inactive (stopped) [${SERVICE_NAME}]"
+    fi
+    [[ -n "${BOUND_EP}" ]] && echo "● Local:      ${BOUND_EP}"
+    [[ -n "${ADVERTISED_EP}" ]] && echo "● Advertised: ${ADVERTISED_EP}"
+    echo
+    echo "[ Desktop App Pairing URL ]"
+    echo "${PAIRING_URL}"
+    echo
+    if [[ -n "${WEB_URL}" ]]; then
+      echo "[ Web Client URL (Browser) ]"
+      echo "${WEB_URL}"
+      echo
+    fi
+    echo "Tip: Use 'orca-pairing-info --url' or 'orca-pairing-info --web' for raw URL."
+    echo "=================================================================="
+    ;;
+esac

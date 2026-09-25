@@ -15,3 +15,13 @@
     group: root
     mode: '0755'
   notify: Restart orca-serve
+
+- name: Install orca-pairing-info helper script
+  become: true
+  ansible.builtin.copy:
+    src: orca-pairing-info
+    dest: /usr/local/bin/orca-pairing-info
+    owner: root
+    group: root
+    mode: '0755'
+

@@ -62,17 +62,32 @@
 
 ## ペアリング URL の確認
 
-サービス起動後、ペアリング用 URL やステータスは systemd のジャーナルログから確認できます。
+本ロールでは、サーバーのステータスや最新のペアリング URL を手軽に確認できるヘルパースクリプト **`orca-pairing-info`**（`/usr/local/bin/orca-pairing-info`）を自動インストールします。
+
+### ヘルパースクリプトの利用（推奨）
+
+```bash
+# 全ステータス & ペアリング URL を整形表示
+orca-pairing-info
+
+# アプリ用 Pairing URL のみを出力（クリップボード等に渡す場合）
+orca-pairing-info --url
+
+# ブラウザ用 Web Client URL のみを出力
+orca-pairing-info --web
+
+# QR コードを表示（qrencode がインストールされている場合）
+orca-pairing-info --qr
+```
+
+### 手動でログから確認する場合
 
 ```bash
 # ペアリング情報（URL や QR コード等）を含む準備完了ログを表示
 sudo journalctl -u orca-serve.service -o cat | jq -Rrc 'fromjson? | select(.type == "orca_server_ready")'
-```
 
-または通常のログ確認:
-
-```bash
-sudo journalctl -u orca-serve.service -n 50 --no-pager
+# 直近のログから Pairing URL を抽出
+sudo journalctl -u orca-serve.service -o cat | grep -E 'Pairing URL|Web client URL' | tail -n 2
 ```
 
 ## ライセンス
