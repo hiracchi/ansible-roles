@@ -9,6 +9,8 @@ Ubuntu サーバーの基盤環境（システムパラメータ調整、リソ�
 
 1. **システム & カーネルパラメータ**
    - **シャットダウンタイムアウトの短縮**: `DefaultTimeoutStopSec=10s`（systemd の終了待ち時間を短縮）
+   - **ネットワーク待機遅延の防止 (systemd-networkd-wait-online)**: `--any --timeout=10` ドロップインを設定し、未接続NICが存在する複数NIC環境等での起動時スタック（最大2分待ち）を防止
+   - **ロケール環境**: `locales-all` の導入により多言語・全UTF-8ロケールの文字化けや警告を防止
    - **リソース制限 (limits.conf)**: memlock 制限値の調整
    - **Apport / コアダンプ設定**: Apport 自動クラッシュレポートの無効化およびコアダンプ出力形式の設定 (`/etc/sysctl.d/90-core-dump.conf`)
    - **デバッグ (ptrace)**: `kernel.yama.ptrace_scope = 0` に設定してプロセスへのアタッチを許可

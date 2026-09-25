@@ -22,3 +22,8 @@
     name: procps
     state: restarted
 
+- name: reload systemd
+  become: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
+

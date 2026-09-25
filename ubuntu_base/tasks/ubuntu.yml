@@ -13,6 +13,28 @@
     regexp: '^#?\s*DefaultTimeoutStopSec=90s'
     line: DefaultTimeoutStopSec=10s
 
+- name: create systemd-networkd-wait-online drop-in directory
+  become: yes
+  ansible.builtin.file:
+    path: /etc/systemd/system/systemd-networkd-wait-online.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: configure systemd-networkd-wait-online timeout and any option
+  become: yes
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf
+    content: |
+      [Service]
+      ExecStart=
+      ExecStart=/usr/lib/systemd/systemd-networkd-wait-online --any --timeout=10
+    owner: root
+    group: root
+    mode: "0644"
+  notify: reload systemd
+
 # =============================================================================
 # limit
 # =============================================================================
@@ -68,6 +90,16 @@
 # - import_tasks: chrony.yml
 - import_tasks: shell.yml
 - import_tasks: systemtools.yml
+
+# =============================================================================
+# packages
+# =============================================================================
+- name: install system packages
+  become: yes
+  ansible.builtin.apt:
+    pkg:
+      - locales-all
+    state: present
 
 - import_tasks: python.yml
 - import_tasks: ruby.yml
