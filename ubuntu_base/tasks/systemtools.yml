@@ -24,7 +24,7 @@
       - smartmontools
       - lsof
 
-      - tty-clock
-      - neofetch
+      # - tty-clock
+      # - neofetch
     state: latest
     
