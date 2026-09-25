@@ -1,0 +1,24 @@
+---
+# defaults file for gnome_remote_desktop
+
+gnome_remote_desktop_package_name: "gnome-remote-desktop"
+gnome_remote_desktop_service_name: "gnome-remote-desktop.service"
+gnome_remote_desktop_port: 3389
+
+# RDP Credentials (Vault または extra-vars でオーバーライド可能)
+gnome_remote_desktop_user: "{{ gnome_remote_desktop_username | default('toshi') }}"
+gnome_remote_desktop_pass: "{{ gnome_remote_desktop_password | default('') }}"
+
+# TLS settings
+gnome_remote_desktop_cert_dir: "/var/lib/gnome-remote-desktop/.local/share/gnome-remote-desktop"
+gnome_remote_desktop_cert_file: "{{ gnome_remote_desktop_cert_dir }}/tls.crt"
+gnome_remote_desktop_key_file: "{{ gnome_remote_desktop_cert_dir }}/tls.key"
+gnome_remote_desktop_cert_days: 3650
+gnome_remote_desktop_cert_cn: "{{ ansible_fqdn | default(inventory_hostname) }}"
+
+# UFW settings
+gnome_remote_desktop_ufw_enabled: true
+gnome_remote_desktop_ufw_rule: "allow"
+gnome_remote_desktop_ufw_direction: "in"
+gnome_remote_desktop_ufw_proto: "tcp"
+gnome_remote_desktop_ufw_from_ip: "any"

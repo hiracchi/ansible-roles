@@ -1,0 +1,14 @@
+galaxy_info:
+  author: toshi
+  description: Setup system-level GNOME Remote Desktop (RDP) on Ubuntu
+  company: hirano-lab
+  license: MIT
+  min_ansible_version: "2.10"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - all
+  categories:
+    - system
+
+dependencies: []

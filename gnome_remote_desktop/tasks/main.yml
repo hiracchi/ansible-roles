@@ -1,0 +1,92 @@
+---
+# tasks file for gnome_remote_desktop
+
+- name: Install gnome-remote-desktop and required tools
+  become: true
+  ansible.builtin.apt:
+    name:
+      - "{{ gnome_remote_desktop_package_name }}"
+      - openssl
+    state: present
+    install_recommends: false
+
+- name: Ensure TLS certificate directory exists
+  become: true
+  ansible.builtin.file:
+    path: "{{ gnome_remote_desktop_cert_dir }}"
+    state: directory
+    owner: gnome-remote-desktop
+    group: gnome-remote-desktop
+    mode: '0700'
+
+- name: Check if TLS key exists
+  become: true
+  ansible.builtin.stat:
+    path: "{{ gnome_remote_desktop_key_file }}"
+  register: grd_key_stat
+
+- name: Generate self-signed TLS certificate and private key
+  become: true
+  ansible.builtin.command:
+    cmd: >
+      openssl req -new -newkey rsa:4096 -days {{ gnome_remote_desktop_cert_days }}
+      -nodes -x509 -subj "/CN={{ gnome_remote_desktop_cert_cn }}"
+      -out "{{ gnome_remote_desktop_cert_file }}"
+      -keyout "{{ gnome_remote_desktop_key_file }}"
+  when: not grd_key_stat.stat.exists
+  notify: Restart gnome-remote-desktop
+
+- name: Set permissions on TLS files
+  become: true
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    owner: gnome-remote-desktop
+    group: gnome-remote-desktop
+    mode: "{{ item.mode }}"
+  loop:
+    - { path: "{{ gnome_remote_desktop_cert_file }}", mode: '0644' }
+    - { path: "{{ gnome_remote_desktop_key_file }}", mode: '0600' }
+
+- name: Configure TLS certificate in gnome-remote-desktop
+  become: true
+  ansible.builtin.command:
+    cmd: "grdctl --system rdp set-tls-cert {{ gnome_remote_desktop_cert_file }}"
+  changed_when: false
+
+- name: Configure TLS private key in gnome-remote-desktop
+  become: true
+  ansible.builtin.command:
+    cmd: "grdctl --system rdp set-tls-key {{ gnome_remote_desktop_key_file }}"
+  changed_when: false
+
+- name: Set RDP credentials in gnome-remote-desktop
+  become: true
+  ansible.builtin.command:
+    cmd: "grdctl --system rdp set-credentials {{ gnome_remote_desktop_user }} {{ gnome_remote_desktop_pass }}"
+  no_log: true
+  when: gnome_remote_desktop_pass | length > 0
+  changed_when: false
+
+- name: Enable RDP in gnome-remote-desktop
+  become: true
+  ansible.builtin.command:
+    cmd: "grdctl --system rdp enable"
+  changed_when: false
+
+- name: Ensure gnome-remote-desktop service is enabled and started
+  become: true
+  ansible.builtin.systemd:
+    name: "{{ gnome_remote_desktop_service_name }}"
+    state: started
+    enabled: true
+
+- name: Allow RDP port in ufw
+  become: true
+  community.general.ufw:
+    rule: "{{ gnome_remote_desktop_ufw_rule }}"
+    port: "{{ gnome_remote_desktop_port | string }}"
+    proto: "{{ gnome_remote_desktop_ufw_proto }}"
+    direction: "{{ gnome_remote_desktop_ufw_direction }}"
+    from_ip: "{{ gnome_remote_desktop_ufw_from_ip }}"
+    comment: "GNOME Remote Desktop (RDP)"
+  when: gnome_remote_desktop_ufw_enabled | bool

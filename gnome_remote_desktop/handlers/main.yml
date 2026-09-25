@@ -1,0 +1,8 @@
+---
+# handlers for gnome_remote_desktop
+
+- name: Restart gnome-remote-desktop
+  become: true
+  ansible.builtin.systemd:
+    name: "{{ gnome_remote_desktop_service_name }}"
+    state: restarted
