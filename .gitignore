@@ -66,4 +66,7 @@ target/
 # for CoreOS
 defunctzombie.coreos-bootstrap
 
+# Aider chat history
+.aider*
+
 

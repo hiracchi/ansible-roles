@@ -18,8 +18,8 @@ ollama_log_dir: /var/log/ollama
 # Slurm parameters
 ollama_partition: llm
 ollama_gpu_gres: "gpu:1"
-ollama_cpus: 4
-ollama_memory: "32G"
+ollama_cpus: 16
+ollama_memory: "120G"
 
 # Port
 ollama_port: 11434
