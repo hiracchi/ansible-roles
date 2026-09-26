@@ -1,0 +1,9 @@
+[Unit]
+Description=llama.cpp Distributed RPC Cluster Auto-Resubmit
+After=network.target slurmctld.service
+
+[Service]
+Type=oneshot
+User={{ llama_cpp_user }}
+Group={{ llama_cpp_group }}
+ExecStart={{ llama_cpp_scripts_dir }}/llama-cpp-resubmit.sh

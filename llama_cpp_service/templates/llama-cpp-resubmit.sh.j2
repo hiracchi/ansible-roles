@@ -1,0 +1,13 @@
+#!/bin/bash
+# Check if llama-cpp-cluster job is currently queued or running in Slurm
+# If not, submit it automatically.
+
+JOB_COUNT=$(squeue -h --name=llama-cpp-cluster | wc -l)
+
+if [ "$JOB_COUNT" -eq 0 ]; then
+    echo "$(date): llama-cpp-cluster job not found in Slurm queue. Submitting..."
+    sbatch {{ llama_cpp_scripts_dir }}/llama-cpp-cluster.sh
+else
+    # Job exists (either Running or Pending/Requeued)
+    exit 0
+fi

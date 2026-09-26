@@ -1,0 +1,71 @@
+---
+- name: Stop and disable legacy ollama-resubmit timer if present
+  become: true
+  ansible.builtin.systemd:
+    name: ollama-resubmit.timer
+    state: stopped
+    enabled: false
+  failed_when: false
+
+- name: Cancel running ollama-service job to release GPU
+  ansible.builtin.command:
+    cmd: scancel --name=ollama-service
+  failed_when: false
+  changed_when: false
+
+- name: Create local directories on controller
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+
+    owner: "{{ llama_cpp_user }}"
+    group: "{{ llama_cpp_group }}"
+    mode: '0755'
+  loop:
+    - "{{ llama_cpp_scripts_dir }}"
+    - "{{ llama_cpp_log_dir }}"
+
+- name: Deploy llama.cpp cluster script on controller
+  become: true
+  ansible.builtin.template:
+    src: llama-cpp-cluster.sh.j2
+    dest: "{{ llama_cpp_scripts_dir }}/llama-cpp-cluster.sh"
+    owner: "{{ llama_cpp_user }}"
+    group: "{{ llama_cpp_group }}"
+    mode: '0755'
+
+- name: Deploy llama.cpp resubmit script on controller
+  become: true
+  ansible.builtin.template:
+    src: llama-cpp-resubmit.sh.j2
+    dest: "{{ llama_cpp_scripts_dir }}/llama-cpp-resubmit.sh"
+    owner: "{{ llama_cpp_user }}"
+    group: "{{ llama_cpp_group }}"
+    mode: '0755'
+
+- name: Deploy systemd service for llama.cpp resubmit
+  become: true
+  ansible.builtin.template:
+    src: llama-cpp-resubmit.service.j2
+    dest: /etc/systemd/system/llama-cpp-resubmit.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Deploy systemd timer for llama.cpp resubmit
+  become: true
+  ansible.builtin.template:
+    src: llama-cpp-resubmit.timer.j2
+    dest: /etc/systemd/system/llama-cpp-resubmit.timer
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Reload systemd daemon and enable timer
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: llama-cpp-resubmit.timer
+    state: started
+    enabled: true

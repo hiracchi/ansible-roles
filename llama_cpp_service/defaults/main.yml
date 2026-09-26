@@ -1,0 +1,40 @@
+---
+# Defaults for llama_cpp_service role
+
+llama_cpp_user: toshi
+llama_cpp_group: hirano-lab
+
+# Shared NFS storage paths
+llama_cpp_nfs_base_dir: /mnt/nfs1/llama_cpp
+llama_cpp_bin_dir: "{{ llama_cpp_nfs_base_dir }}/bin"
+llama_cpp_models_dir: "{{ llama_cpp_nfs_base_dir }}/models"
+
+# Official llama.cpp release (CUDA 13.4 optimized)
+llama_cpp_version: "b11193"
+llama_cpp_archive_url: "https://github.com/ggml-org/llama.cpp/releases/download/{{ llama_cpp_version }}/llama-{{ llama_cpp_version }}-bin-ubuntu-cuda-13.4-x64.tar.gz"
+llama_cpp_cudart_url: "https://github.com/ggml-org/llama.cpp/releases/download/{{ llama_cpp_version }}/cudart-llama-{{ llama_cpp_version }}-bin-ubuntu-cuda-13.4-x64.tar.gz"
+
+# Target Model: Qwen3-Coder-30B-A3B-Instruct (MoE, 30.5B total / 3.3B active)
+llama_cpp_model_filename: "Qwen3-Coder-30B-A3B-Instruct-Q4_K_M.gguf"
+llama_cpp_model_url: "https://huggingface.co/unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/resolve/main/{{ llama_cpp_model_filename }}"
+llama_cpp_model_path: "{{ llama_cpp_models_dir }}/{{ llama_cpp_model_filename }}"
+llama_cpp_model_alias: "qwen3-coder"
+
+# Network and ports
+llama_cpp_api_port: 8080
+llama_cpp_rpc_port: 50052
+llama_cpp_context_size: 32768
+
+# Local directories on nodes
+llama_cpp_scripts_dir: /opt/llama_cpp
+llama_cpp_log_dir: /var/log/llama_cpp
+
+# Slurm parameters (2 nodes, 1 GPU each)
+llama_cpp_partition: llm
+llama_cpp_nodes: 2
+llama_cpp_gpu_gres: "gpu:1"
+llama_cpp_cpus_per_node: 16
+llama_cpp_mem_per_node: "120G"
+
+# Timer check interval on controller (every 2 minutes)
+llama_cpp_resubmit_interval: "*:0/2"

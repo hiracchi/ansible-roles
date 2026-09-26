@@ -1,0 +1,64 @@
+#!/bin/bash
+#SBATCH --job-name=llama-cpp-cluster
+#SBATCH --partition={{ llama_cpp_partition }}
+#SBATCH --nodes={{ llama_cpp_nodes }}
+#SBATCH --ntasks-per-node=1
+#SBATCH --gres={{ llama_cpp_gpu_gres }}
+#SBATCH --cpus-per-task={{ llama_cpp_cpus_per_node }}
+#SBATCH --mem={{ llama_cpp_mem_per_node }}
+#SBATCH --time=INFINITE
+#SBATCH --output={{ llama_cpp_log_dir }}/llama_cluster_%j.out
+#SBATCH --error={{ llama_cpp_log_dir }}/llama_cluster_%j.err
+
+# Parse allocated nodes
+NODES=($(scontrol show hostnames "$SLURM_JOB_NODELIST"))
+MASTER_NODE=${NODES[0]}
+WORKER_NODE=${NODES[1]}
+
+echo "=== llama.cpp RPC Cluster Started on $(date) (Job ID: $SLURM_JOB_ID) ==="
+echo "Master node: $MASTER_NODE"
+echo "Worker node: $WORKER_NODE"
+
+export LD_LIBRARY_PATH="{{ llama_cpp_bin_dir }}:$LD_LIBRARY_PATH"
+
+# Signal handling for Slurm preemption (requeue)
+cleanup() {
+    echo "Received termination/preemption signal at $(date). Cleaning up cluster processes..."
+    if [ -n "$SERVER_PID" ]; then
+        kill -TERM "$SERVER_PID" 2>/dev/null
+    fi
+    if [ -n "$RPC_PID" ]; then
+        kill -TERM "$RPC_PID" 2>/dev/null
+    fi
+    wait 2>/dev/null
+    echo "Cluster processes cleaned up."
+    exit 0
+}
+
+trap cleanup SIGTERM SIGINT SIGCONT SIGHUP
+
+# 1. Start ggml-rpc-server on Worker node
+echo "Starting ggml-rpc-server on $WORKER_NODE:{{ llama_cpp_rpc_port }}..."
+srun --nodes=1 --ntasks=1 -w "$WORKER_NODE" \
+  env LD_LIBRARY_PATH="{{ llama_cpp_bin_dir }}:$LD_LIBRARY_PATH" \
+  "{{ llama_cpp_bin_dir }}/ggml-rpc-server" -H 0.0.0.0 -p {{ llama_cpp_rpc_port }} &
+RPC_PID=$!
+
+# Wait for worker RPC server to initialize
+sleep 4
+
+# 2. Start llama-server on Master node connected to Worker via RPC
+echo "Starting llama-server on $MASTER_NODE:{{ llama_cpp_api_port }} (RPC: $WORKER_NODE:{{ llama_cpp_rpc_port }})..."
+srun --nodes=1 --ntasks=1 -w "$MASTER_NODE" \
+  env LD_LIBRARY_PATH="{{ llama_cpp_bin_dir }}:$LD_LIBRARY_PATH" \
+  "{{ llama_cpp_bin_dir }}/llama-server" \
+  -m "{{ llama_cpp_model_path }}" \
+  --alias "{{ llama_cpp_model_alias }}" \
+  --rpc "${WORKER_NODE}:{{ llama_cpp_rpc_port }}" \
+  -ngl 99 \
+  --host 0.0.0.0 \
+  --port {{ llama_cpp_api_port }} \
+  -c {{ llama_cpp_context_size }} &
+SERVER_PID=$!
+
+wait "$SERVER_PID"

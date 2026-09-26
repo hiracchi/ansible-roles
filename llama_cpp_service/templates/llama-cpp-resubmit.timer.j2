@@ -1,0 +1,10 @@
+[Unit]
+Description=Timer for llama.cpp Distributed RPC Cluster Auto-Resubmit
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=2min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

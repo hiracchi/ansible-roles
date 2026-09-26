@@ -6,12 +6,21 @@ aider_bin_link: /usr/local/bin/aider
 aider_pip_packages:
   - aider-chat
 
-# Aider environment variables
+# Backend mode: "openai" (recommended for llama.cpp / Qwen3-Coder) or "ollama"
+aider_backend: "openai"
+
+# OpenAI-compatible settings (e.g. llama.cpp)
+aider_openai_api_base: "http://asuka-z4-01:8080/v1"
+aider_openai_model: "openai/qwen3-coder"
+aider_openai_api_key: "dummy"
+
+# Ollama settings (legacy/fallback)
 aider_ollama_api_base: "http://asuka-z4-01:11434"
-aider_model: "ollama/qwen2.5-coder:7b"
+aider_ollama_model: "ollama/qwen2.5-coder:7b"
 
 # Backward compatibility aliases
 aider_default_ollama_host: "{{ aider_ollama_api_base }}"
-aider_default_model: "{{ aider_model }}"
+aider_default_model: "{{ aider_openai_model if aider_backend == 'openai' else aider_ollama_model }}"
+aider_model: "{{ aider_default_model }}"
 
 aider_setup_profile: true

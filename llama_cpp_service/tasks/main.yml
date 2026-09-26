@@ -1,0 +1,13 @@
+---
+- name: Setup NFS shared directories, SIF image and GGUF model
+  ansible.builtin.import_tasks: nfs.yml
+  run_once: true
+  delegate_to: "{{ groups['slurm_compute_gpu'][0] }}"
+
+- name: Setup llama.cpp cluster on GPU compute nodes
+  ansible.builtin.import_tasks: compute.yml
+  when: inventory_hostname in groups['slurm_compute_gpu']
+
+- name: Setup llama.cpp cluster management and timer on Slurm controller
+  ansible.builtin.import_tasks: controller.yml
+  when: inventory_hostname in groups['slurm_controller']

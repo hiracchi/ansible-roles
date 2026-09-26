@@ -1,0 +1,59 @@
+---
+- name: Create shared NFS directories for llama.cpp
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ llama_cpp_user }}"
+    group: "{{ llama_cpp_group }}"
+    mode: '0775'
+  loop:
+    - "{{ llama_cpp_nfs_base_dir }}"
+    - "{{ llama_cpp_bin_dir }}"
+    - "{{ llama_cpp_models_dir }}"
+
+- name: Download and extract llama.cpp CUDA binaries
+  become: true
+  ansible.builtin.unarchive:
+    src: "{{ llama_cpp_archive_url }}"
+    dest: "{{ llama_cpp_bin_dir }}"
+    remote_src: true
+    extra_opts:
+      - "--strip-components=1"
+    creates: "{{ llama_cpp_bin_dir }}/llama-server"
+
+- name: Download and extract llama.cpp cudart libraries
+  become: true
+  ansible.builtin.unarchive:
+    src: "{{ llama_cpp_cudart_url }}"
+    dest: "{{ llama_cpp_bin_dir }}"
+    remote_src: true
+    extra_opts:
+      - "--strip-components=1"
+    creates: "{{ llama_cpp_bin_dir }}/libcudart.so.13"
+  failed_when: false
+
+- name: Ensure correct ownership and permissions on llama.cpp binaries
+  become: true
+  ansible.builtin.file:
+    path: "{{ llama_cpp_bin_dir }}"
+    owner: "{{ llama_cpp_user }}"
+    group: "{{ llama_cpp_group }}"
+    mode: '0755'
+    recurse: true
+
+- name: Download Qwen3-Coder-30B-A3B GGUF model if not present
+  become: true
+  ansible.builtin.command:
+    cmd: "curl -fL -C - --retry 5 --retry-delay 5 -o {{ llama_cpp_model_path }} {{ llama_cpp_model_url }}"
+    creates: "{{ llama_cpp_model_path }}"
+  async: 3600
+  poll: 30
+
+- name: Ensure correct ownership on GGUF model
+  become: true
+  ansible.builtin.file:
+    path: "{{ llama_cpp_model_path }}"
+    owner: "{{ llama_cpp_user }}"
+    group: "{{ llama_cpp_group }}"
+    mode: '0644'

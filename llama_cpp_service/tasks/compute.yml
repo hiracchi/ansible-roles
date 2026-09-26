@@ -1,0 +1,21 @@
+---
+- name: Create local directories on compute node
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ llama_cpp_user }}"
+    group: "{{ llama_cpp_group }}"
+    mode: '0755'
+  loop:
+    - "{{ llama_cpp_scripts_dir }}"
+    - "{{ llama_cpp_log_dir }}"
+
+- name: Deploy llama.cpp cluster Slurm service script
+  become: true
+  ansible.builtin.template:
+    src: llama-cpp-cluster.sh.j2
+    dest: "{{ llama_cpp_scripts_dir }}/llama-cpp-cluster.sh"
+    owner: "{{ llama_cpp_user }}"
+    group: "{{ llama_cpp_group }}"
+    mode: '0755'

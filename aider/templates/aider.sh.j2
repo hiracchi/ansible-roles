@@ -1,9 +1,16 @@
 # /etc/profile.d/aider.sh - Default Aider configuration
 # Managed by Ansible
 
+{% if aider_backend == 'openai' %}
+export OPENAI_API_BASE="{{ aider_openai_api_base }}"
+export OPENAI_API_KEY="{{ aider_openai_api_key | default('dummy') }}"
+export AIDER_MODEL="{{ aider_openai_model }}"
+export AIDER_SHOW_MODEL_WARNINGS=false
+{% else %}
 {% if aider_ollama_api_base is defined and aider_ollama_api_base != "" %}
 export OLLAMA_API_BASE="{{ aider_ollama_api_base }}"
 {% endif %}
 {% if aider_model is defined and aider_model != "" %}
 export AIDER_MODEL="{{ aider_model }}"
+{% endif %}
 {% endif %}
