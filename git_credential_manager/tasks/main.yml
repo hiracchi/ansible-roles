@@ -1,0 +1,55 @@
+---
+- name: Install prerequisite packages for Git Credential Manager
+  become: true
+  ansible.builtin.apt:
+    name:
+      - curl
+      - git
+      - libsecret-1-0
+    state: present
+    update_cache: true
+
+- name: Check if Git Credential Manager is already installed
+  ansible.builtin.command:
+    cmd: git-credential-manager --version
+  register: gcm_version_check
+  failed_when: false
+  changed_when: false
+
+- name: Download and install Git Credential Manager
+  when: gcm_version_check.rc != 0 or git_credential_manager_version not in gcm_version_check.stdout
+  block:
+    - name: Download Git Credential Manager deb package
+      become: true
+      ansible.builtin.get_url:
+        url: "{{ git_credential_manager_deb_url }}"
+        dest: "{{ git_credential_manager_temp_deb_path }}"
+        mode: "0644"
+
+    - name: Install Git Credential Manager from deb
+      become: true
+      ansible.builtin.apt:
+        deb: "{{ git_credential_manager_temp_deb_path }}"
+        state: present
+
+    - name: Remove temporary deb package
+      become: true
+      ansible.builtin.file:
+        path: "{{ git_credential_manager_temp_deb_path }}"
+        state: absent
+
+- name: Configure Git Credential Manager globally/system-wide
+  become: true
+  ansible.builtin.command:
+    cmd: git-credential-manager configure
+  when: git_credential_manager_configure_system | bool
+  changed_when: false
+
+- name: Set Git credential store backend (system-wide)
+  become: true
+  ansible.builtin.command:
+    cmd: "git config --system credential.credentialStore {{ git_credential_manager_credential_store }}"
+  when:
+    - git_credential_manager_credential_store is defined
+    - git_credential_manager_credential_store | length > 0
+  changed_when: false

@@ -1,0 +1,21 @@
+---
+git_credential_manager_version: "2.9.1"
+
+# アーキテクチャのマッピング (x86_64 -> x64, aarch64 -> arm64)
+git_credential_manager_arch_map:
+  x86_64: "x64"
+  aarch64: "arm64"
+
+git_credential_manager_arch: "{{ git_credential_manager_arch_map[ansible_architecture] | default('x64') }}"
+
+# GitHub Releases からの .deb ダウンロードURL
+git_credential_manager_deb_url: "https://github.com/git-ecosystem/git-credential-manager/releases/download/v{{ git_credential_manager_version }}/gcm-linux-{{ git_credential_manager_arch }}-{{ git_credential_manager_version }}.deb"
+
+# 一時保存先パス
+git_credential_manager_temp_deb_path: "/tmp/gcm-linux-{{ git_credential_manager_arch }}-{{ git_credential_manager_version }}.deb"
+
+# システム全体に credential.helper を設定するかどうか
+git_credential_manager_configure_system: true
+
+# クレデンシャルストアのバックエンド設定 (例: 'secretservice', 'gpg', 'cache', 'plaintext' など。未指定の場合は空文字)
+git_credential_manager_credential_store: ""
