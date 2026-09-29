@@ -1,0 +1,96 @@
+#!/bin/bash
+# /usr/local/bin/asuka-cluster - Control asuka-z4 GPU nodes and LLM cluster service
+# Managed by Ansible
+
+set -e
+
+NODES="asuka-z4-[01-02]"
+SSH_NODES=("asuka-z4-01" "asuka-z4-02")
+TIMER="llama-cpp-resubmit.timer"
+JOB_NAME="llama-cpp-cluster"
+RESUBMIT_SCRIPT="{{ llama_cpp_scripts_dir }}/llama-cpp-resubmit.sh"
+
+usage() {
+    echo "使用方法: $0 {start|stop [--shutdown]|status}"
+    echo ""
+    echo "コマンド:"
+    echo "  start           : ノードの Drain 解除、タイマー開始、LLM サービス再開"
+    echo "  stop            : タイマー停止、LLM ジョブ終了、ノードを Drain 状態に設定"
+    echo "  stop --shutdown : 上記に加え、asuka-z4-[01-02] をシャットダウン"
+    echo "  status          : Slurm ジョブ、タイマー、ノード状態の確認"
+    exit 1
+}
+
+case "$1" in
+    stop)
+        if [ "$EUID" -ne 0 ]; then
+            echo "エラー: stop コマンドは sudo を付けて実行してください (例: sudo asuka-cluster stop)"
+            exit 1
+        fi
+
+        echo "=== [1/3] 自動再投入タイマー ($TIMER) を停止しています ==="
+        systemctl stop "$TIMER"
+        echo "タイマーを停止しました。"
+
+        echo "=== [2/3] Slurm ジョブ ($JOB_NAME) をキャンセルしています ==="
+        scancel -n "$JOB_NAME" 2>/dev/null || true
+        echo "ジョブをキャンセルしました。"
+
+        echo "=== [3/3] ノード ($NODES) を Drain (保守) 状態に設定しています ==="
+        scontrol update nodename="$NODES" state=drain reason="asuka-cluster stop"
+        echo "ノードを Drain 状態に設定しました。"
+
+        if [ "$2" == "--shutdown" ]; then
+            echo "=== 計算ノードをシャットダウンしています ==="
+            for node in "${SSH_NODES[@]}"; do
+                echo "Shutting down $node..."
+                ssh -o ConnectTimeout=5 "$node" "sudo shutdown -h now" 2>/dev/null || true
+            done
+            echo "シャットダウン指示を送信しました。"
+        else
+            echo ""
+            echo "※ ノード本体の電源を切る場合は、以下のコマンドを実行するか '$0 stop --shutdown' を実行してください:"
+            echo "   ssh asuka-z4-01 'sudo shutdown -h now'; ssh asuka-z4-02 'sudo shutdown -h now'"
+        fi
+        echo "=== 停止処理が完了しました ==="
+        ;;
+
+    start)
+        if [ "$EUID" -ne 0 ]; then
+            echo "エラー: start コマンドは sudo を付けて実行してください (例: sudo asuka-cluster start)"
+            exit 1
+        fi
+
+        echo "=== [1/3] ノード ($NODES) の Drain 状態を解除しています ==="
+        scontrol update nodename="$NODES" state=resume
+        echo "ノードをアクティブ化しました。"
+
+        echo "=== [2/3] 自動再投入タイマー ($TIMER) を開始しています ==="
+        systemctl start "$TIMER"
+        echo "タイマーを開始しました。"
+
+        echo "=== [3/3] LLM 常駐ジョブを即時投入しています ==="
+        if [ -x "$RESUBMIT_SCRIPT" ]; then
+            "$RESUBMIT_SCRIPT" || true
+        fi
+
+        echo "=== 再開処理が完了しました ==="
+        echo ""
+        squeue
+        ;;
+
+    status)
+        echo "=== Slurm ジョブ状況 (squeue) ==="
+        squeue
+        echo ""
+        echo "=== ノード状態 (sinfo) ==="
+        sinfo -N -n "$NODES"
+        echo ""
+        echo "=== 自動再投入タイマー状態 ($TIMER) ==="
+        systemctl status "$TIMER" --no-pager -l | head -n 10
+        ;;
+
+    *)
+        usage
+        ;;
+esac

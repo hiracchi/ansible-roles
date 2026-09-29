@@ -69,3 +69,12 @@
     name: llama-cpp-resubmit.timer
     state: started
     enabled: true
+
+- name: Deploy asuka-cluster management script on controller
+  become: true
+  ansible.builtin.template:
+    src: asuka-cluster.sh.j2
+    dest: /usr/local/bin/asuka-cluster
+    owner: root
+    group: root
+    mode: '0755'

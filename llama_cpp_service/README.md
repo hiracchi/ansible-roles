@@ -148,51 +148,38 @@ aider --model openai/qwen3-coder
 
 ---
 
-## ⏹️ 計算ノードの停止・メンテナンスと復帰手順
+## ⏹️ 計算ノードの停止・メンテナンスと復帰手順 (`asuka-cluster`)
 
-`asuka-z4-01`, `asuka-z4-02` などの計算ノードをシャットダウン（電源オフ）またはメンテナンスする場合の手順です。
+コントローラ（`asuka-01`）に配備された管理コマンド **`asuka-cluster`** を使用して、1 コマンドで安全に停止・再開・状態確認が可能です。
 
-### 1. 停止手順（シャットダウン）
+### 1. 停止手順（シャットダウン・メンテナンス）
 
-1. **自動再投入タイマーを停止する（最重要）**:
-   コントローラ（`asuka-01`）上で常駐タイマーを停止します（停止しないと、ジョブをキャンセルしても 2分後に再度 `sbatch` されてしまいます）。
-   ```bash
-   sudo systemctl stop llama-cpp-resubmit.timer
-   ```
+```bash
+# パターン A: ジョブを停止し、ノードを Drain（保守）状態にする
+sudo asuka-cluster stop
 
-2. **実行中ジョブをキャンセルする**:
-   ```bash
-   scancel -n llama-cpp-cluster
-   # または squeue で JOBID を確認してキャンセル
-   # scancel <JOBID>
-   ```
+# パターン B: ジョブ停止・Drain に加え、計算ノード（asuka-z4-[01-02]）の電源オフまで実行
+sudo asuka-cluster stop --shutdown
+```
 
-3. **Slurm ノードを Drain（保守状態）に設定する（推奨）**:
-   他のバッチジョブが誤って割り当てられるのを防止します。
-   ```bash
-   sudo scontrol update nodename=asuka-z4-[01-02] state=drain reason="Maintenance / Power off"
-   ```
-
-4. **ノードをシャットダウンする**:
-   ```bash
-   ssh asuka-z4-01 "sudo shutdown -h now"
-   ssh asuka-z4-02 "sudo shutdown -h now"
-   ```
+* 内部で `llama-cpp-resubmit.timer` を停止した上でジョブをキャンセルするため、ジョブが勝手に再投入されるのを確実に防ぎます。
 
 ---
 
 ### 2. 復帰手順（起動・サービス再開）
 
-マシンを起動後、LLM サービスを再開する手順です。
+ノードの電源を投入した後、以下のコマンドを実行します：
 
-1. **ノードの Drain 状態を解除（アクティブ化）**:
-   ```bash
-   sudo scontrol update nodename=asuka-z4-[01-02] state=resume
-   ```
+```bash
+# ノードの Drain 解除、タイマー開始、ジョブの即時再投入を一括実行
+sudo asuka-cluster start
+```
 
-2. **自動再投入タイマーを再開**:
-   ```bash
-   sudo systemctl start llama-cpp-resubmit.timer
-   ```
-   * タイマーにより数分以内に Slurm ジョブが自動投入され、常駐推論サービスが復帰します。
-   * すぐに起動したい場合は、コントローラで `/opt/llama_cpp/llama-cpp-resubmit.sh` を手動実行してください。
+---
+
+### 3. クラスタ状態の確認
+
+```bash
+# Slurm ジョブ、タイマー稼働状態、ノード状態を一括表示
+asuka-cluster status
+```
