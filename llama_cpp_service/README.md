@@ -38,6 +38,9 @@
 | `llama_cpp_rpc_port` | `50052` | ノード間 RPC 通信ポート |
 | `llama_cpp_nodes` | `2` | 確保するノード数 |
 | `llama_cpp_partition` | `llm` | 実行する Slurm パーティション |
+| `llama_cpp_cluster_command_name` | `llm-cluster` | コントローラに配備する管理コマンド名 |
+| `llama_cpp_cluster_nodes` | `""` | 対象 Slurm ノード名（例: `node-[01-02]`） |
+| `llama_cpp_cluster_ssh_nodes` | `[]` | シャットダウン対象ホスト名リスト（SSH 用） |
 
 ---
 
@@ -148,18 +151,18 @@ aider --model openai/qwen3-coder
 
 ---
 
-## ⏹️ 計算ノードの停止・メンテナンスと復帰手順 (`asuka-cluster`)
+## ⏹️ 計算ノードの停止・メンテナンスと復帰手順
 
-コントローラ（`asuka-01`）に配備された管理コマンド **`asuka-cluster`** を使用して、1 コマンドで安全に停止・再開・状態確認が可能です。
+本ロールでは、コントローラノードにクラスタ管理コマンド（デフォルト: **`llm-cluster`**、変数 `llama_cpp_cluster_command_name` でカスタマイズ可能）を配備します。これを使用して 1 コマンドで安全に停止・再開・状態確認が可能です。
 
 ### 1. 停止手順（シャットダウン・メンテナンス）
 
 ```bash
 # パターン A: ジョブを停止し、ノードを Drain（保守）状態にする
-sudo asuka-cluster stop
+sudo llm-cluster stop
 
-# パターン B: ジョブ停止・Drain に加え、計算ノード（asuka-z4-[01-02]）の電源オフまで実行
-sudo asuka-cluster stop --shutdown
+# パターン B: ジョブ停止・Drain に加え、対象計算ノードの電源オフまで実行
+sudo llm-cluster stop --shutdown
 ```
 
 * 内部で `llama-cpp-resubmit.timer` を停止した上でジョブをキャンセルするため、ジョブが勝手に再投入されるのを確実に防ぎます。
@@ -172,7 +175,7 @@ sudo asuka-cluster stop --shutdown
 
 ```bash
 # ノードの Drain 解除、タイマー開始、ジョブの即時再投入を一括実行
-sudo asuka-cluster start
+sudo llm-cluster start
 ```
 
 ---
@@ -181,5 +184,5 @@ sudo asuka-cluster start
 
 ```bash
 # Slurm ジョブ、タイマー稼働状態、ノード状態を一括表示
-asuka-cluster status
+llm-cluster status
 ```

@@ -38,3 +38,8 @@ llama_cpp_mem_per_node: "120G"
 
 # Timer check interval on controller (every 2 minutes)
 llama_cpp_resubmit_interval: "*:0/2"
+
+# Cluster management script settings
+llama_cpp_cluster_command_name: "llm-cluster"
+llama_cpp_cluster_nodes: ""
+llama_cpp_cluster_ssh_nodes: []

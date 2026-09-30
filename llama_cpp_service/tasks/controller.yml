@@ -70,11 +70,11 @@
     state: started
     enabled: true
 
-- name: Deploy asuka-cluster management script on controller
+- name: Deploy cluster management script on controller
   become: true
   ansible.builtin.template:
-    src: asuka-cluster.sh.j2
-    dest: /usr/local/bin/asuka-cluster
+    src: cluster-control.sh.j2
+    dest: "/usr/local/bin/{{ llama_cpp_cluster_command_name }}"
     owner: root
     group: root
     mode: '0755'
