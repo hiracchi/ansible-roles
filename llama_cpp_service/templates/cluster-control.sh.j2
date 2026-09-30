@@ -42,12 +42,13 @@ case "$1" in
             echo "ノードを Drain 状態に設定しました。"
         fi
 
+        SSH_USER="${SUDO_USER:-$USER}"
         if [ "$2" == "--shutdown" ]; then
 {% if llama_cpp_cluster_ssh_nodes | length > 0 %}
             echo "=== 計算ノードをシャットダウンしています ==="
             for node in "${SSH_NODES[@]}"; do
                 echo "Shutting down $node..."
-                ssh -o ConnectTimeout=5 "$node" "sudo shutdown -h now" 2>/dev/null || true
+                sudo -u "$SSH_USER" ssh -o ConnectTimeout=5 -o BatchMode=yes "$node" "sudo shutdown -h now" 2>/dev/null || true
             done
             echo "シャットダウン指示を送信しました。"
 {% else %}

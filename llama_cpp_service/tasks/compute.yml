@@ -19,3 +19,13 @@
     owner: "{{ llama_cpp_user }}"
     group: "{{ llama_cpp_group }}"
     mode: '0755'
+
+- name: Allow sudo group to run shutdown commands without password on compute nodes
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/sudoers.d/99-compute-shutdown
+    content: "%sudo ALL=(ALL) NOPASSWD: /usr/sbin/shutdown, /usr/sbin/poweroff, /usr/sbin/reboot\n"
+    owner: root
+    group: root
+    mode: '0440'
+    validate: /usr/sbin/visudo -cf %s
