@@ -180,9 +180,13 @@ sudo llm-cluster start
 
 ---
 
-### 3. クラスタ状態の確認
+### 3. クラスタ状態の確認と一括健全性診断
 
 ```bash
-# Slurm ジョブ、タイマー稼働状態、ノード状態を一括表示
+# 簡易確認: Slurm ジョブ、タイマー稼働状態、ノード状態を表示
 llm-cluster status
+
+# 一括診断 & 推論ベンチマーク:
+# Slurmジョブ、全GPUのVRAM、API疎通、テスト推論（t/s計測）をワンストップで検証（sudo不要）
+llm-cluster check
 ```

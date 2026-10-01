@@ -11,13 +11,14 @@ JOB_NAME="llama-cpp-cluster"
 RESUBMIT_SCRIPT="{{ llama_cpp_scripts_dir }}/llama-cpp-resubmit.sh"
 
 usage() {
-    echo "使用方法: $0 {start|stop [--shutdown]|status}"
+    echo "使用方法: $0 {start|stop [--shutdown]|status|check}"
     echo ""
     echo "コマンド:"
+    echo "  check / test    : クラスタ、VRAM、API、推論ベンチマークを一括診断（sudo不要）"
+    echo "  status          : Slurm ジョブ、タイマー、ノード状態の簡易確認"
     echo "  start           : ノードの Drain 解除、タイマー開始、LLM サービス再開"
     echo "  stop            : タイマー停止、LLM ジョブ終了、ノードを Drain 状態に設定"
     echo "  stop --shutdown : 上記に加え、対象計算ノードをシャットダウン"
-    echo "  status          : Slurm ジョブ、タイマー、ノード状態の確認"
     exit 1
 }
 
@@ -103,6 +104,118 @@ case "$1" in
         fi
         echo "=== 自動再投入タイマー状態 ($TIMER) ==="
         systemctl status "$TIMER" --no-pager -l | head -n 10
+        ;;
+
+    check|test)
+        echo "=========================================================="
+        echo "  LLM Cluster Diagnostic & Benchmark Tool ({{ llama_cpp_cluster_command_name }})"
+        echo "=========================================================="
+        echo ""
+
+        # 1. Slurm ジョブ状態
+        echo "--- [1/5] Slurm ジョブ状態 ---"
+        JOB_INFO=$(squeue -h -n "$JOB_NAME" -o "%i %T %M %N" 2>/dev/null || true)
+        if [ -z "$JOB_INFO" ]; then
+            echo "❌ エラー: $JOB_NAME ジョブがキューに見つかりません。"
+            echo "   -> 起動コマンド: sudo $0 start"
+            exit 1
+        fi
+        echo "✅ ジョブ稼働中: $JOB_INFO"
+        echo ""
+
+        # 2. ノード状態
+        echo "--- [2/5] Slurm ノード状態 ---"
+        if [ -n "$NODES" ]; then
+            sinfo -N -n "$NODES" -o "  %N | 状態: %T | パーティション: %R"
+        fi
+        echo ""
+
+        # 3. GPU VRAM & プロセス状態
+        echo "--- [3/5] GPU VRAM & 稼働プロセス ---"
+{% if llama_cpp_cluster_ssh_nodes | length > 0 %}
+        for node in "${SSH_NODES[@]}"; do
+            echo "[$node]"
+            GPU_INFO=$(ssh -o ConnectTimeout=5 -o BatchMode=yes "$node" \
+                "nvidia-smi --query-gpu=name,memory.used,memory.total,utilization.gpu --format=csv,noheader,nounits" 2>/dev/null || true)
+            if [ -n "$GPU_INFO" ]; then
+                IFS=',' read -r GPU_NAME VRAM_USED VRAM_TOTAL GPU_UTIL <<< "$GPU_INFO"
+                PROC_NAME=$(ssh -o ConnectTimeout=5 -o BatchMode=yes "$node" \
+                    "pgrep -a -f 'llama-server|ggml-rpc-server' | head -n 1" 2>/dev/null || true)
+                echo "  GPU: $(echo $GPU_NAME | xargs) | VRAM: $(echo $VRAM_USED | xargs) / $(echo $VRAM_TOTAL | xargs) MiB | 利用率: $(echo $GPU_UTIL | xargs)%"
+                if [ -n "$PROC_NAME" ]; then
+                    echo "  プロセス: $PROC_NAME"
+                else
+                    echo "  ⚠️  警告: llama-server / ggml-rpc-server プロセスが見つかりません。"
+                fi
+            else
+                echo "  ❌ GPU 情報を取得できませんでした ($node)"
+            fi
+        done
+{% else %}
+        echo "  (SSH_NODES が未設定のためスキップ)"
+{% endif %}
+        echo ""
+
+        # 4. API 疎通 & モデルロード確認
+        MASTER_HOST="${SSH_NODES[0]:-127.0.0.1}"
+        API_PORT="{{ llama_cpp_api_port }}"
+        MODEL_ALIAS="{{ llama_cpp_model_alias }}"
+        API_BASE="http://${MASTER_HOST}:${API_PORT}"
+
+        echo "--- [4/5] OpenAI 互換 API 疎通 ($API_BASE/v1/models) ---"
+        MODELS_RES=$(curl -s --connect-timeout 5 "$API_BASE/v1/models" 2>/dev/null || true)
+        if [ -z "$MODELS_RES" ]; then
+            echo "❌ エラー: $API_BASE に接続できません。ポート $API_PORT が開いていません。"
+            exit 1
+        fi
+
+        if echo "$MODELS_RES" | grep -q "Loading model"; then
+            echo "⏳ モデルをロード中です。数秒待ってから再試行してください。"
+            exit 1
+        fi
+
+        if echo "$MODELS_RES" | grep -q "$MODEL_ALIAS"; then
+            echo "✅ モデル '$MODEL_ALIAS' が正常にロードされ Ready 状態です。"
+        else
+            echo "⚠️  モデル一覧に応答がありますが、'$MODEL_ALIAS' が見つかりません:"
+            echo "$MODELS_RES" | jq -r '.data[].id' 2>/dev/null || echo "$MODELS_RES"
+        fi
+        echo ""
+
+        # 5. 推論ベンチマークテスト
+        echo "--- [5/5] テスト推論ベンチマーク (/v1/chat/completions) ---"
+        echo "テストプロンプト送信中..."
+        CHAT_RES=$(curl -s --connect-timeout 10 "$API_BASE/v1/chat/completions" \
+            -H "Content-Type: application/json" \
+            -d '{
+                "model": "'"$MODEL_ALIAS"'",
+                "messages": [{"role": "user", "content": "1+1の計算結果と、短い挨拶を日本語で出力してください。"}],
+                "temperature": 0.1,
+                "max_tokens": 100
+            }' 2>/dev/null || true)
+
+        if [ -n "$CHAT_RES" ] && echo "$CHAT_RES" | grep -q "choices"; then
+            CONTENT=$(echo "$CHAT_RES" | jq -r '.choices[0].message.content' 2>/dev/null || true)
+            PRED_SPEED=$(echo "$CHAT_RES" | jq -r '.timings.predicted_per_second' 2>/dev/null || true)
+            PROMPT_SPEED=$(echo "$CHAT_RES" | jq -r '.timings.prompt_per_second' 2>/dev/null || true)
+            COMPL_TOKENS=$(echo "$CHAT_RES" | jq -r '.usage.completion_tokens' 2>/dev/null || true)
+            PROMPT_TOKENS=$(echo "$CHAT_RES" | jq -r '.usage.prompt_tokens' 2>/dev/null || true)
+
+            echo "  応答:"
+            echo "$CONTENT" | sed 's/^/    /'
+            echo ""
+            echo "  トークン生成速度 : ${PRED_SPEED:-N/A} tokens/sec"
+            echo "  プロンプト速度   : ${PROMPT_SPEED:-N/A} tokens/sec"
+            echo "  使用トークン     : prompt: ${PROMPT_TOKENS:-0} / completion: ${COMPL_TOKENS:-0}"
+            echo ""
+            echo "=========================================================="
+            echo "  🎉 診断結果: 全てのチェックに合格しました。推論可能です。"
+            echo "=========================================================="
+        else
+            echo "❌ 推論リクエストに失敗しました:"
+            echo "$CHAT_RES"
+            exit 1
+        fi
         ;;
 
     *)
