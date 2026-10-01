@@ -23,4 +23,11 @@ aider_default_ollama_host: "{{ aider_ollama_api_base }}"
 aider_default_model: "{{ aider_openai_model if aider_backend == 'openai' else aider_ollama_model }}"
 aider_model: "{{ aider_default_model }}"
 
-aider_setup_profile: true
+# Environment Modules settings
+aider_setup_modulefile: true
+aider_modulefile_dir: "/usr/share/modules/modulefiles"
+aider_module_name: "aider"
+aider_module_version: "local"
+
+# Profile.d settings (deprecated in favor of environment-modules)
+aider_setup_profile: false

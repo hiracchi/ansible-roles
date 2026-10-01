@@ -49,7 +49,7 @@
       /usr/local/bin/uv tool install --force --python 3.12 aider-chat
     creates: /usr/local/bin/aider
 
-- name: Deploy default environment variables for Aider
+- name: Deploy default environment variables for Aider (profile.d)
   become: true
   ansible.builtin.template:
     src: aider.sh.j2
@@ -58,3 +58,40 @@
     group: root
     mode: '0644'
   when: aider_setup_profile | bool
+
+- name: Remove profile.d environment variables for Aider if disabled
+  become: true
+  ansible.builtin.file:
+    path: /etc/profile.d/aider.sh
+    state: absent
+  when: not (aider_setup_profile | bool)
+
+- name: Setup Environment Modules modulefile for Aider
+  when: aider_setup_modulefile | bool
+  block:
+    - name: Ensure modulefile directory exists for Aider
+      become: true
+      ansible.builtin.file:
+        path: "{{ aider_modulefile_dir }}/{{ aider_module_name }}"
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Deploy Environment Modules modulefile for Aider
+      become: true
+      ansible.builtin.template:
+        src: aider.modulefile.j2
+        dest: "{{ aider_modulefile_dir }}/{{ aider_module_name }}/{{ aider_module_version }}"
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Create default symlink for Aider modulefile
+      become: true
+      ansible.builtin.file:
+        src: "{{ aider_module_version }}"
+        dest: "{{ aider_modulefile_dir }}/{{ aider_module_name }}/default"
+        state: link
+        owner: root
+        group: root

@@ -1,0 +1,24 @@
+#%Module1.0
+##
+## Aider CLI Environment Module
+## Managed by Ansible
+##
+proc ModulesHelp { } {
+    puts stderr "Loads environment variables for Aider with {{ aider_backend }} backend."
+}
+
+module-whatis "Configures Aider to connect to {{ aider_model }}"
+
+{% if aider_backend == 'openai' %}
+setenv OPENAI_API_BASE "{{ aider_openai_api_base }}"
+setenv OPENAI_API_KEY "{{ aider_openai_api_key | default('dummy') }}"
+setenv AIDER_MODEL "{{ aider_openai_model }}"
+setenv AIDER_SHOW_MODEL_WARNINGS "false"
+{% else %}
+{% if aider_ollama_api_base is defined and aider_ollama_api_base != "" %}
+setenv OLLAMA_API_BASE "{{ aider_ollama_api_base }}"
+{% endif %}
+{% if aider_model is defined and aider_model != "" %}
+setenv AIDER_MODEL "{{ aider_model }}"
+{% endif %}
+{% endif %}
