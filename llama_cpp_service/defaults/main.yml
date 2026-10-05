@@ -24,6 +24,16 @@ llama_cpp_model_alias: "qwen3-coder"
 llama_cpp_api_port: 8080
 llama_cpp_rpc_port: 50052
 llama_cpp_context_size: 32768
+# KV cache data type (f16 / q8_0 / q4_0 ...). Quantizing reduces VRAM usage for long contexts.
+llama_cpp_cache_type_k: "f16"
+llama_cpp_cache_type_v: "f16"
+# Optional tuning (empty = use llama.cpp defaults)
+# ubatch size (-ub): smaller value reduces compute buffer VRAM, e.g. 256
+llama_cpp_ubatch_size: ""
+# Tensor split ratio across devices (-ts), e.g. "50,50". Device order depends on llama.cpp (RPC worker may come first); verify with VRAM usage.
+llama_cpp_tensor_split: ""
+# Keep MoE expert weights of the first N layers on CPU (--n-cpu-moe). Frees VRAM at some speed cost.
+llama_cpp_n_cpu_moe: ""
 
 # Local directories on nodes
 llama_cpp_scripts_dir: /opt/llama_cpp

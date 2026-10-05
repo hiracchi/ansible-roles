@@ -34,6 +34,11 @@
 | `llama_cpp_model_url` | Hugging Face URL | モデルの自動ダウンロード元 URL |
 | `llama_cpp_model_alias` | `qwen3-coder` | API エンドポイントで公開するモデルエイリアス |
 | `llama_cpp_context_size` | `32768` | コンテキスト長（KV キャッシュサイズ） |
+| `llama_cpp_cache_type_k` | `f16` | K キャッシュのデータ型（`q8_0` 等で VRAM 使用量を削減） |
+| `llama_cpp_cache_type_v` | `f16` | V キャッシュのデータ型（`q8_0` 等で VRAM 使用量を削減。Flash Attention を有効化済み） |
+| `llama_cpp_ubatch_size` | `""` | ubatch サイズ（`-ub`）。空なら llama.cpp の既定値。小さくすると計算バッファの VRAM が減る（例: `256`） |
+| `llama_cpp_tensor_split` | `""` | GPU 間のテンソル分割比（`-ts`）。空なら既定値（例: `"50,50"`）。デバイス順は RPC ワーカーが先になる場合があるため、実際の VRAM 使用量を見て調整する |
+| `llama_cpp_n_cpu_moe` | `""` | 先頭 N 層の MoE エキスパート重みを CPU に置く（`--n-cpu-moe`）。空なら無効。VRAM を節約できるが、速度は低下する（例: `4`） |
 | `llama_cpp_api_port` | `8080` | OpenAI 互換 API ポート |
 | `llama_cpp_rpc_port` | `50052` | ノード間 RPC 通信ポート |
 | `llama_cpp_nodes` | `2` | 確保するノード数 |

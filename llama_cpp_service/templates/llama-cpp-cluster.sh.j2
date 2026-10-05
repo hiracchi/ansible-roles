@@ -58,7 +58,20 @@ srun --nodes=1 --ntasks=1 -w "$MASTER_NODE" \
   -ngl 99 \
   --host 0.0.0.0 \
   --port {{ llama_cpp_api_port }} \
-  -c {{ llama_cpp_context_size }} &
+  -c {{ llama_cpp_context_size }} \
+  -ctk {{ llama_cpp_cache_type_k }} \
+  -ctv {{ llama_cpp_cache_type_v }} \
+  -fa on \
+{% if llama_cpp_ubatch_size | string | length > 0 %}
+  -ub {{ llama_cpp_ubatch_size }} \
+{% endif %}
+{% if llama_cpp_tensor_split | string | length > 0 %}
+  -ts {{ llama_cpp_tensor_split }} \
+{% endif %}
+{% if llama_cpp_n_cpu_moe | string | length > 0 %}
+  --n-cpu-moe {{ llama_cpp_n_cpu_moe }} \
+{% endif %}
+  &
 SERVER_PID=$!
 
 wait "$SERVER_PID"
