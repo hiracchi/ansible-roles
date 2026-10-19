@@ -7,16 +7,5 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9090']
 
-  - job_name: 'node_exporter'
-    static_configs:
-      - targets:
-{% for target in plg_monitoring_node_exporter_targets %}
-          - '{{ target }}'
-{% endfor %}
-
-  - job_name: 'nvidia_gpu_exporter'
-    static_configs:
-      - targets:
-{% for target in plg_monitoring_gpu_exporter_targets %}
-          - '{{ target }}'
-{% endfor %}
+# node_exporter / nvidia_gpu_exporter は各ノードの Grafana Alloy が remote_write で送信するため、
+# ここでは直接スクレイプしない (同じホストが IP と hostname の 2 系統で入るのを防ぐ)

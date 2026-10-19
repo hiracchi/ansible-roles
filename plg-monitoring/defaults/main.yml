@@ -33,10 +33,3 @@ plg_monitoring_alert_receivers: []
 plg_monitoring_alert_host_down_for: "2m"
 plg_monitoring_alert_disk_threshold_percent: 10
 plg_monitoring_alert_cpu_threshold_percent: 90
-
-# Prometheus 監視対象ノード一覧 (デフォルト値: all.ymlでオーバーライド)
-plg_monitoring_node_exporter_targets:
-  - '127.0.0.1:9100'
-
-# Prometheus 監視対象 GPU Exporter 一覧 (デフォルト値)
-plg_monitoring_gpu_exporter_targets: []

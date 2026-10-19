@@ -19,7 +19,6 @@
 | `plg_monitoring_grafana_port`          | `3000`                | Grafana Web UI ポート                |
 | `plg_monitoring_prometheus_port`       | `9090`                | Prometheus ポート                    |
 | `plg_monitoring_loki_port`             | `3100`                | Grafana Loki ポート                  |
-| `plg_monitoring_node_exporter_targets` | 各ノードのリスト      | 監視対象 node_exporter アドレス一覧  |
 
 ## 日常運用コマンド (ホスト上での操作)
 
