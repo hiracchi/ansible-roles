@@ -30,6 +30,29 @@ prometheus.relabel "node" {
   }
 }
 
+{% if alloy_gpu_exporter_enabled | bool %}
+// GPU Exporter (nvidia_smi_*) のローカル取得
+prometheus.scrape "gpu" {
+  targets         = [{"__address__" = "{{ alloy_gpu_exporter_address }}"}]
+  forward_to      = [prometheus.relabel.gpu.receiver]
+  scrape_interval = "15s"
+}
+
+prometheus.relabel "gpu" {
+  forward_to = [prometheus.remote_write.prom_server.receiver]
+
+  rule {
+    target_label = "instance"
+    replacement  = "{{ ansible_hostname }}"
+  }
+
+  rule {
+    target_label = "job"
+    replacement  = "nvidia_gpu_exporter"
+  }
+}
+{% endif %}
+
 prometheus.remote_write "prom_server" {
   endpoint {
     url = "{{ alloy_prometheus_url }}"
