@@ -33,3 +33,7 @@ plg_monitoring_alert_receivers: []
 plg_monitoring_alert_host_down_for: "2m"
 plg_monitoring_alert_disk_threshold_percent: 10
 plg_monitoring_alert_cpu_threshold_percent: 90
+plg_monitoring_alert_cpu_enabled: true
+plg_monitoring_alert_cpu_for: "5m"
+# CPU 高負荷アラートの対象外とする instance ラベル (正規表現として "|" で連結される)
+plg_monitoring_alert_cpu_exclude_instances: []

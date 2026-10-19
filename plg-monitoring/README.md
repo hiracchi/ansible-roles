@@ -69,6 +69,24 @@ plg_monitoring_alert_receivers:
       - "admin@example.com"
 ```
 
+### 4. CPU 高負荷アラートの調整
+
+計算ノードなど、CPU 高負荷が常態のノードは対象外にできます。
+
+| 変数名 | デフォルト値 | 説明 |
+|---|---|---|
+| `plg_monitoring_alert_cpu_enabled` | `true` | CPU 高負荷アラートを有効にするかどうか |
+| `plg_monitoring_alert_cpu_threshold_percent` | `90` | 警告する CPU 使用率 (%) |
+| `plg_monitoring_alert_cpu_for` | `"5m"` | 閾値超過がこの時間継続したら警告 |
+| `plg_monitoring_alert_cpu_exclude_instances` | `[]` | 対象外とする `instance` ラベルのリスト (正規表現として `\|` で連結) |
+
+```yaml
+plg_monitoring_alert_cpu_for: "30m"
+plg_monitoring_alert_cpu_exclude_instances:
+  - "jarvis-x3-0[12]"
+  - "10.71.99.111:9100"
+```
+
 ## 今後の拡張予定 (TODO: アラート・通知機能)
 
 > [!NOTE]

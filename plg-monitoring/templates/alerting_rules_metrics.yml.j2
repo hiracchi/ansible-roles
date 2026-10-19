@@ -102,6 +102,7 @@ groups:
           summary: "Root disk on {{ '{{' }} $labels.instance {{ '}}' }} has less than {{ plg_monitoring_alert_disk_threshold_percent }}% free space"
           description: "Disk space utilization is critically high on {{ '{{' }} $labels.instance {{ '}}' }}."
 
+{% if plg_monitoring_alert_cpu_enabled | bool %}
       - uid: "{{ plg_monitoring_cluster_name | lower }}-high-cpu-load"
         title: "High CPU Load ({{ plg_monitoring_cluster_name }})"
         condition: "B"
@@ -114,7 +115,7 @@ groups:
             datasourceUid: "Prometheus"
             model:
               editorMode: "code"
-              expr: "(100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[2m])) * 100)) > {{ plg_monitoring_alert_cpu_threshold_percent }}"
+              expr: "(100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"{% if plg_monitoring_alert_cpu_exclude_instances | length > 0 %},instance!~\"{{ plg_monitoring_alert_cpu_exclude_instances | join('|') }}\"{% endif %}}[2m])) * 100)) > {{ plg_monitoring_alert_cpu_threshold_percent }}"
               instant: true
               range: false
               refId: "A"
@@ -142,14 +143,15 @@ groups:
               type: "threshold"
         noDataState: "OK"
         execErrState: "Alerting"
-        for: "5m"
+        for: "{{ plg_monitoring_alert_cpu_for }}"
         labels:
           severity: "warning"
           cluster: "{{ plg_monitoring_cluster_name }}"
         annotations:
           summary: "High CPU usage on {{ '{{' }} $labels.instance {{ '}}' }} (above {{ plg_monitoring_alert_cpu_threshold_percent }}%)"
-          description: "CPU utilization has been above {{ plg_monitoring_alert_cpu_threshold_percent }}% for more than 5 minutes."
+          description: "CPU utilization has been above {{ plg_monitoring_alert_cpu_threshold_percent }}% for more than {{ plg_monitoring_alert_cpu_for }}."
 
+{% endif %}
       - uid: "{{ plg_monitoring_cluster_name | lower }}-gpu-high-temp"
         title: "GPU High Temperature ({{ plg_monitoring_cluster_name }})"
         condition: "B"
