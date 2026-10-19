@@ -27,3 +27,12 @@
   listen: "restart nis server"
 
   
+
+
+# Reflect changes of local users/groups to NIS maps (/var/yp/<domain>).
+# Skipped until the maps have been created by `ypinit -m` (see README).
+- name: rebuild nis maps
+  become: yes
+  ansible.builtin.command: make -C /var/yp
+  changed_when: true
+  when: nis_maps_dir.stat.exists | default(false)

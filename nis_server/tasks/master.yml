@@ -19,6 +19,12 @@
     - nis_initialize | bool
 
 
+- name: check NIS maps directory
+  ansible.builtin.stat:
+    path: "/var/yp/{{ nis_domainname }}"
+  register: nis_maps_dir
+
+
 - name: add NIS group
   become: yes
   group:
@@ -26,6 +32,7 @@
     gid: "{{ item.value.gid }}"
     state: present
   with_dict: "{{ nis_groups | default({}) }}"
+  notify: rebuild nis maps
 
  
 - name: add NIS users
@@ -38,20 +45,37 @@
     uid: "{{ item.value.uid }}"
     home: "{{ item.value.home }}"
     shell: "{{ item.value.shell | default('/bin/bash') }}"
-    createhome: no
+    createhome: "{{ item.value.createhome | default(false) | bool }}"
   with_dict: "{{ nis_users | default({}) }}"
+  notify: rebuild nis maps
+
+
+# nis_users.<name>.ssh_keys (list of public keys) is optional.
+# The home directory must exist (set createhome: true or provide it by NFS etc.).
+- name: add authorized_keys for NIS users
+  become: yes
+  ansible.posix.authorized_key:
+    user: "{{ item.0.key }}"
+    key: "{{ item.1 }}"
+    state: present
+  loop: "{{ nis_users | default({}) | dict2items | subelements('value.ssh_keys', skip_missing=True) }}"
+  loop_control:
+    label: "{{ item.0.key }}"
 
  
 - name: update NIS user password
   become: yes
   user:
     name: "{{ item.key }}"
-    password: "{{ item.value.password | password_hash('sha512') }}"
+    # salt is seeded by the user name so that the same password gives the same
+    # hash (otherwise the task is "changed" on every run)
+    password: "{{ item.value.password | password_hash('sha512', 65534 | random(seed=item.key) | string) }}"
   when:
     - item.value.password is defined
     - item.value.update_password is defined
     - item.value.update_password
     - nis_task == "master"
   with_dict: "{{ nis_users | default({}) }}"
+  notify: rebuild nis maps
 
 
