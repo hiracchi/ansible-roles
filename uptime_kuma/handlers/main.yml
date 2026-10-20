@@ -1,0 +1,8 @@
+---
+- name: Restart uptime-kuma
+  become: true
+  become_user: "{{ uptime_kuma_user }}"
+  ansible.builtin.command:
+    cmd: docker compose restart
+    chdir: "{{ uptime_kuma_dir }}"
+  changed_when: true
