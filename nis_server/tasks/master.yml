@@ -11,18 +11,12 @@
   notify: restart nis server
 
 
-- name: initialize nis database for master
-  become: yes
-  command: /usr/lib/yp/ypinit -m
-  notify: restart nis server
-  when: 
-    - nis_initialize | bool
-
-
-- name: check NIS maps directory
-  ansible.builtin.stat:
-    path: "/var/yp/{{ nis_domainname }}"
-  register: nis_maps_dir
+# the NIS maps (/var/yp/<domain>/passwd.byname) exist only after `ypinit -m`
+- name: find NIS maps
+  ansible.builtin.find:
+    paths: "/var/yp/{{ nis_domainname }}"
+    patterns: "passwd.byname*"
+  register: nis_passwd_map
 
 
 - name: add NIS group
@@ -79,3 +73,36 @@
   notify: rebuild nis maps
 
 
+# `ypinit -m` is interactive: it reads the list of slave servers from stdin until
+# EOF and then asks for a confirmation (an empty answer means yes). It is run with
+# stdin from /dev/null, and only when no map exists yet. It is done after the users
+# and groups are created because the maps are built from the local passwd/group files.
+- name: set domainname of the running system
+  become: yes
+  ansible.builtin.command: "domainname {{ nis_domainname }}"
+  changed_when: false
+  when:
+    - nis_initialize | bool
+    - nis_passwd_map.matched == 0
+
+
+- name: initialize nis database for master
+  become: yes
+  ansible.builtin.shell: /usr/lib/yp/ypinit -m < /dev/null
+  changed_when: true
+  notify: restart nis server
+  when:
+    - nis_initialize | bool
+    - nis_passwd_map.matched == 0
+
+
+# ypinit exits with 0 even if building the maps failed
+- name: check NIS maps were created
+  ansible.builtin.find:
+    paths: "/var/yp/{{ nis_domainname }}"
+    patterns: "passwd.byname*"
+  register: nis_passwd_map_created
+  failed_when: nis_passwd_map_created.matched == 0
+  when:
+    - nis_initialize | bool
+    - nis_passwd_map.matched == 0

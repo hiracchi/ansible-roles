@@ -1,6 +1,7 @@
 ---
 # false, slabe, master
 nis_task: "master"
+# true: run `ypinit -m` (non-interactively) when no NIS map exists yet
 nis_initialize: false
 nis_merge_passwd: true
 nis_merge_group: true

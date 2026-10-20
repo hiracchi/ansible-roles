@@ -49,12 +49,13 @@ vars:
 - `ssh_keys` requires the `ansible.posix` collection and an existing home directory
   (`createhome: true`, or the home provided by NFS).
 - When users or groups are changed, the NIS maps are rebuilt (`make -C /var/yp`).
-  This is skipped until the maps have been created.
+  This is skipped until the maps have been created (see `nis_initialize`).
 
 
 # remarks
 
 - NIS server must be an NIS client.
-- `nis_initialize` is `false` by default because `ypinit -m` is interactive.
-  After the first run, execute `sudo /usr/lib/yp/ypinit -m` once on the master.
+- `nis_initialize: true` runs `ypinit -m` non-interactively (stdin from `/dev/null`) after the
+  users and groups are created, only when no NIS map exists yet. It is `false` by default;
+  in that case run `sudo /usr/lib/yp/ypinit -m` once by hand on the master.
 
