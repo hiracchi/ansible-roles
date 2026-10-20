@@ -93,5 +93,11 @@
     state: started
     enabled: yes
 
-
-
+- name: install slurm-resume-node helper
+  become: yes
+  ansible.builtin.copy:
+    src: slurm-resume-node.sh
+    dest: /usr/local/sbin/slurm-resume-node
+    mode: '0755'
+    owner: root
+    group: root
