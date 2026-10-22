@@ -57,6 +57,7 @@
   loop:
     - cluster_logs_viewer.json
     - cluster_nodes_overview.json
+    - node_detail.json
   notify: Restart plg-monitoring
 
 - name: Ensure Grafana alerting provisioning directory state

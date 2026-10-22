@@ -90,13 +90,79 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "count(count by (instance) (node_cpu_seconds_total))",
+          "expr": "count(count by (instance) (last_over_time(up{job=\"node_exporter\",instance!~\"[0-9].*\"}[30d])))",
           "instant": true,
           "range": false,
           "refId": "A"
         }
       ],
-      "title": "Active Nodes",
+      "title": "Registered Nodes (30d)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 1
+      },
+      "id": 103,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.4.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "editorMode": "code",
+          "expr": "count(up{job=\"node_exporter\",instance!~\"[0-9].*\"} == 1)",
+          "instant": true,
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Reporting Nodes (now)",
       "type": "stat"
     },
     {
@@ -125,8 +191,8 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 5,
-        "x": 4,
+        "w": 4,
+        "x": 8,
         "y": 1
       },
       "id": 2,
@@ -187,8 +253,8 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 5,
-        "x": 9,
+        "w": 4,
+        "x": 12,
         "y": 1
       },
       "id": 3,
@@ -259,8 +325,8 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 5,
-        "x": 14,
+        "w": 4,
+        "x": 16,
         "y": 1
       },
       "id": 4,
@@ -331,8 +397,8 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 5,
-        "x": 19,
+        "w": 4,
+        "x": 20,
         "y": 1
       },
       "id": 5,
@@ -416,6 +482,23 @@
           }
         },
         "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Node"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "ノード詳細を開く",
+                    "url": "/d/{{ plg_monitoring_cluster_name | lower }}-node-detail?var-instance=${__value.raw}&${__url_time_range}"
+                  }
+                ]
+              }
+            ]
+          },
           {
             "matcher": {
               "id": "byName",
@@ -1072,7 +1155,140 @@
       ],
       "title": "Network Traffic (Total RX/TX per Node)",
       "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 31
+      },
+      "id": 104,
+      "title": "📇 Registered Nodes 一覧",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "id": 105,
+      "type": "table",
+      "title": "Registered Nodes（過去30日に報告があったノード）",
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 32
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto"
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "1": {
+                  "text": "報告中",
+                  "color": "green",
+                  "index": 0
+                },
+                "0": {
+                  "text": "停止中",
+                  "color": "red",
+                  "index": 1
+                }
+              }
+            }
+          ]
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "Value #Seen"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "dateTimeAsLocal"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "displayName": "ノード",
+            "desc": false
+          }
+        ]
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": "Seen",
+          "expr": "max by (instance) (max_over_time(timestamp(up{job=\"node_exporter\",instance!~\\\"[0-9].*\\\"})[30d:1m]))"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "instant": true,
+          "range": false,
+          "refId": "Up",
+          "expr": "up{job=\"node_exporter\",instance!~\\\"[0-9].*\\\"}"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "joinByField",
+          "options": {
+            "byField": "instance",
+            "mode": "outer"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time 1": true,
+              "Time 2": true,
+              "Time 3": true,
+              "Time 4": true,
+              "Time 5": true,
+              "Time 6": true
+            },
+            "indexByName": {
+              "instance": 0,
+              "Value #Seen": 1,
+              "Value #Up": 2
+            },
+            "renameByName": {
+              "instance": "ノード",
+              "Value #Seen": "最終報告",
+              "Value #Up": "状態"
+            }
+          }
+        }
+      ]
     }
+
   ],
   "refresh": "10s",
   "schemaVersion": 39,
