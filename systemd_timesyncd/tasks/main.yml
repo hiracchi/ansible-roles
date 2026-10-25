@@ -13,7 +13,7 @@
     state: present
     backrefs: yes
     regexp: '^#?NTP=.*'
-    line: 'NTP={{ NTP_SERVER }}'
+    line: 'NTP={{ systemd_timesyncd_ntp_server }}'
   notify: restart systemd-timesyncd
 
 - name: enable set-ntp
