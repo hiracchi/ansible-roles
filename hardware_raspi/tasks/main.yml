@@ -1,14 +1,14 @@
 ---
-- name: set locale to '{{ sys.locale }}'
+- name: set locale to '{{ hardware_raspi_sys.locale }}'
   become: yes
   locale_gen:
-    name: '{{ sys.locale }}'
+    name: '{{ hardware_raspi_sys.locale }}'
     state: present
 
-- name: set timezone to '{{ sys.timezone }}'
+- name: set timezone to '{{ hardware_raspi_sys.timezone }}'
   become: yes
   timezone:
-    name: '{{ sys.timezone }}'
+    name: '{{ hardware_raspi_sys.timezone }}'
 
 - name: start & stop services
   become: yes
@@ -16,4 +16,4 @@
     name: '{{ item.name }}'
     enabled: '{{ item.enabled | default("yes") }}'
     state: '{{ item.state | default("started") }}'
-  with_items: '{{ sys.services }}'
+  with_items: '{{ hardware_raspi_sys.services }}'
