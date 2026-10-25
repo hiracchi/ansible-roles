@@ -1,0 +1,15 @@
+---
+extends: default
+
+ignore: |
+  .git/
+  _unsupported/
+
+rules:
+  line-length:
+    max: 250
+  truthy:
+    allowed-values: ["true", "false", "yes", "no"]
+  comments:
+    min-spaces-from-content: 1
+  document-start: disable

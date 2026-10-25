@@ -1,0 +1,8 @@
+---
+profile: min
+
+exclude_paths:
+  - .git/
+  - _unsupported/
+
+skip_list: []
