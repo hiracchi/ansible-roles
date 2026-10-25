@@ -17,4 +17,4 @@
 - name: create samba password
   become: yes
   shell: '(echo "{{ item.smbpasswd }}"; echo "{{ item.smbpasswd }}") | smbpasswd -s -a "{{ item.name }}"'
-  with_items: "{{ samba.users | default({}) }}"
+  with_items: "{{ samba_users }}"
