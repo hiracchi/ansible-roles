@@ -1,2 +1,2 @@
-nis_servers:
+nis_client_servers:
   - 127.0.0.1

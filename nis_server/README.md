@@ -13,7 +13,7 @@ vars:
   nis_merge_group: true
 
   nis_domainname: local
-  nis_servers:
+  nis_server_servers:
     - localhost
   nis_securenets_netmask: 255.255.255.0
   nis_securenets_network: 192.168.0.0
