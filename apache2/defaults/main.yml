@@ -1,4 +1,4 @@
-apache2_ServerAdmin:
+apache2_server_admin:
   webmaster@localhost
-apache2_DocumentRoot:
+apache2_document_root:
   /var/www/html
