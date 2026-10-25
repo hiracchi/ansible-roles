@@ -1,4 +1,4 @@
-# plg-monitoring ロール
+# plg_monitoring ロール
 
 `jarvis-prxvm-docker-01` などの Docker ホスト上に、[docker-plg-monitoring](https://github.com/hiracchi/docker-plg-monitoring) をベースにした PLG 監視スタック（Prometheus + Loki + Grafana）をデプロイ・管理する Ansible ロールです。
 

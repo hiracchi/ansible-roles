@@ -1,5 +1,5 @@
 ---
-- name: Create plg-monitoring directories
+- name: Create plg_monitoring directories
   become: true
   ansible.builtin.file:
     path: "{{ item.path }}"
@@ -34,7 +34,7 @@
     owner: "{{ plg_monitoring_user }}"
     group: "{{ plg_monitoring_group }}"
     mode: "0644"
-  notify: Restart plg-monitoring
+  notify: Restart plg_monitoring
 
 - name: Deploy Grafana provisioning directory
   become: true
@@ -44,7 +44,7 @@
     owner: "{{ plg_monitoring_user }}"
     group: "{{ plg_monitoring_group }}"
     mode: "0755"
-  notify: Restart plg-monitoring
+  notify: Restart plg_monitoring
 
 - name: Deploy parameterized Grafana dashboards
   become: true
@@ -58,7 +58,7 @@
     - cluster_logs_viewer.json
     - cluster_nodes_overview.json
     - node_detail.json
-  notify: Restart plg-monitoring
+  notify: Restart plg_monitoring
 
 - name: Ensure Grafana alerting provisioning directory state
   become: true
@@ -68,7 +68,7 @@
     owner: "{{ plg_monitoring_user }}"
     group: "{{ plg_monitoring_group }}"
     mode: "0755"
-  notify: Restart plg-monitoring
+  notify: Restart plg_monitoring
 
 - name: Deploy Grafana Alerting Contact Points
   become: true
@@ -79,7 +79,7 @@
     group: "{{ plg_monitoring_group }}"
     mode: "0644"
   when: plg_monitoring_alerts_enabled | bool
-  notify: Restart plg-monitoring
+  notify: Restart plg_monitoring
 
 - name: Deploy Grafana Alerting Rules (Metrics)
   become: true
@@ -90,7 +90,7 @@
     group: "{{ plg_monitoring_group }}"
     mode: "0644"
   when: plg_monitoring_alerts_enabled | bool
-  notify: Restart plg-monitoring
+  notify: Restart plg_monitoring
 
 - name: Deploy Grafana Alerting Rules (Logs)
   become: true
@@ -101,7 +101,7 @@
     group: "{{ plg_monitoring_group }}"
     mode: "0644"
   when: plg_monitoring_alerts_enabled | bool
-  notify: Restart plg-monitoring
+  notify: Restart plg_monitoring
 
 - name: Deploy prometheus.yml
   become: true
@@ -111,7 +111,7 @@
     owner: "{{ plg_monitoring_user }}"
     group: "{{ plg_monitoring_group }}"
     mode: "0644"
-  notify: Restart plg-monitoring
+  notify: Restart plg_monitoring
 
 - name: Deploy docker-compose.yml
   become: true
@@ -121,7 +121,7 @@
     owner: "{{ plg_monitoring_user }}"
     group: "{{ plg_monitoring_group }}"
     mode: "0644"
-  notify: Restart plg-monitoring
+  notify: Restart plg_monitoring
 
 - name: Start PLG monitoring stack
   become: true

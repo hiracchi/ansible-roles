@@ -1,5 +1,5 @@
 ---
-- name: Restart plg-monitoring
+- name: Restart plg_monitoring
   become: true
   become_user: "{{ plg_monitoring_user }}"
   ansible.builtin.command:

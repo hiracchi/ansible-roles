@@ -1,6 +1,6 @@
 # PLG Monitoring アラート・通知機能 実装計画書
 
-本ドキュメントは、`plg-monitoring` ロールに Grafana Unified Alerting による自動監視および複数チャネル通知機能（Discord / Gmail / Slack等）を追加するための段階的実装計画です。
+本ドキュメントは、`plg_monitoring` ロールに Grafana Unified Alerting による自動監視および複数チャネル通知機能（Discord / Gmail / Slack等）を追加するための段階的実装計画です。
 
 ---
 
