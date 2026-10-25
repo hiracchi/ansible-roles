@@ -1,2 +1,2 @@
-cuda_version: 10.0.130-1
-nvidia_driver_version: 418
+opencl_nv_ppa_cuda_version: 10.0.130-1
+opencl_nv_ppa_driver_version: 418
