@@ -1,2 +1,2 @@
-movedir_src: "foo"
-movedir_dest: "bar"
+move_dir_src: "foo"
+move_dir_dest: "bar"

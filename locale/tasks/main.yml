@@ -7,7 +7,7 @@
     backrefs: yes
     regexp: '{{ item.regexp }}'
     line: '{{ item.line }}'
-  with_items: "{{ generate_locales | default() }}"
+  with_items: "{{ locale_generate_list | default() }}"
 
 - name: "do locale-gen"
   become: yes

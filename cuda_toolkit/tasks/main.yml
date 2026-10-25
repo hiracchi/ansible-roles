@@ -22,4 +22,4 @@
   become: yes
   command: "systemctl set-default multi-user"
   when:
-    - disable_graphical
+    - cuda_toolkit_disable_graphical

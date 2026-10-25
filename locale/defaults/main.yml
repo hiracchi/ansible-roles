@@ -1,4 +1,4 @@
-generate_locales:
+locale_generate_list:
   - regexp: '^#?\s*C.UTF-8 UTF-8'
     line: "C.UTF-8 UTF-8"
   - regexp: '^#?\s*en_US.UTF-8 UTF-8'
