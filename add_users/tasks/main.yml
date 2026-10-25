@@ -7,18 +7,18 @@
 #       password: hogehoge
 #       uid: 10000
 #       createhome: yes
-#       
+#
 # ---
 # password string should be created by following:
 # for SHA512
-# python -c "import crypt; print crypt.crypt('test','\$6\$SALTsalt\$')" 
-# 
+# python -c "import crypt; print crypt.crypt('test','\$6\$SALTsalt\$')"
+#
 # for MD5
 # python -c 'import crypt; print crypt.crypt("gitgit", "$1$SomeSalt$")'
 ---
 - name: add users
   become: yes
-  user: 
+  user:
     name: "{{ item.user }}"
     createhome: "{{ item.createhome }}"
     uid: "{{ item.uid }}"

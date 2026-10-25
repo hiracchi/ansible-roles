@@ -1,6 +1,6 @@
 ---
 - include_tasks: proteindf-dev-ubuntu1604.yml
-  when: 
+  when:
     - ansible_distribution == 'Ubuntu'
     - ansible_distribution_version == '16.04'
 
@@ -18,5 +18,3 @@
   when:
     - ansible_distribution == 'Ubuntu'
     - ansible_distribution_version == '22.04'
-
-

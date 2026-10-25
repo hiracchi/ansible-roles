@@ -1,24 +1,23 @@
 ---
 - name: install rsh server
   become: yes
-  apt: 
+  apt:
     pkg:
-     - openbsd-inetd
-     - rsh-server
+      - openbsd-inetd
+      - rsh-server
     force: yes
     update_cache: yes
     state: latest
 
 - name: update /etc/hosts.equiv
   become: yes
-  template: 
-    src: hosts.equiv.tmpl 
+  template:
+    src: hosts.equiv.tmpl
     dest: /etc/hosts.equiv
-  
+
 - name: start openbsd-inetd server
   become: yes
-  service: 
-    name: openbsd-inetd 
-    state: started 
+  service:
+    name: openbsd-inetd
+    state: started
     enabled: yes
-  

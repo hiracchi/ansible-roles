@@ -44,4 +44,3 @@ chrony_conf_dest: /etc/chrony.conf
 
 # Filename to use when writing into conf.d (full path will be conf.d/{{ chrony_conf_d_filename }})
 chrony_conf_d_filename: chrony-ansible.conf
-

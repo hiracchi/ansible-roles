@@ -3,7 +3,7 @@
   become: yes
   apt:
     pkg:
-      - apache2-suexec-custom 
+      - apache2-suexec-custom
       - libcgi-pm-perl
     update_cache: yes
     cache_valid_time: 3600
@@ -18,4 +18,3 @@
   become: yes
   command: a2enmod cgid
   notify: restart apache2
-

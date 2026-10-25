@@ -3,8 +3,7 @@
   become: yes
   copy:
     src: nvhpc.list
-    dest: /etc/apt/sources.list.d/nvhpc.list  
-
+    dest: /etc/apt/sources.list.d/nvhpc.list
 
 - name: install nvhpc
   become: yes
@@ -14,12 +13,8 @@
     update_cache: yes
     state: latest
 
-     
 - name: add nvhpc module
   become: yes
   lineinfile:
     path: /etc/environment-modules/modulespath
     line: "/opt/nvidia/hpc_sdk/modulefiles"
-
-
-

@@ -9,7 +9,7 @@
   become: yes
   template: src=dnsmasq.conf.j2 dest=/etc/dnsmasq.conf
   notify: service dnsmasq
-  
+
 - name: start service dnsmasq
   become: yes
   service: name=dnsmasq enabled=yes state=started

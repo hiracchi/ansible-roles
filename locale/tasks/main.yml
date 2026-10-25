@@ -9,7 +9,6 @@
     line: '{{ item.line }}'
   with_items: "{{ generate_locales | default() }}"
 
-
 - name: "do locale-gen"
   become: yes
   command:
@@ -20,8 +19,6 @@
 #     - ansible_distribution == "Ubuntu"
 #   - ansible_distribution_major_version == "16"
 
-
 # - include: debian.yml
 #   when:
 #     - ansible_distribution == "Debian"
-

@@ -21,4 +21,3 @@
   become: yes
   ansible.builtin.command:
     cmd: fc-cache -fv
-

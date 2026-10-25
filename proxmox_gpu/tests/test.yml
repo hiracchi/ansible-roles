@@ -1,9 +1,9 @@
-#SPDX-License-Identifier: MIT-0
+# SPDX-License-Identifier: MIT-0
 ---
 - name: Test proxmox_gpu role
   hosts: localhost
   gather_facts: yes
-  
+
   tasks:
     - name: Check system is Debian-based
       assert:

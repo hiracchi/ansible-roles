@@ -1,25 +1,22 @@
 ---
 - name: install ntp package
   become: yes
-  apt: 
-    pkg: 
+  apt:
+    pkg:
       - chrony
     state: latest
 
-
 - name: copy chrony setting file
   become: yes
-  template: 
-    src: chrony.conf.j2 
+  template:
+    src: chrony.conf.j2
     dest: /etc/chrony/chrony.conf
-    owner: root 
+    owner: root
     mode: "0644"
   notify: restart chrony server
-
 
 - name: start chrony server
   become: yes
   service:
     name: chrony
     state: started
-

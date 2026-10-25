@@ -3,7 +3,6 @@
   become: yes
   apt:
     pkg:
-      - language-pack-ja-base 
-      - language-pack-ja 
+      - language-pack-ja-base
+      - language-pack-ja
     state: latest
-

@@ -26,4 +26,3 @@
     fstype: "{{ _fstype }}"
     opts: "{{ _opts }}"
     state: mounted
-

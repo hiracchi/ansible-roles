@@ -10,14 +10,12 @@
     line: "NISSERVER=master"
   notify: restart nis server
 
-
 # the NIS maps (/var/yp/<domain>/passwd.byname) exist only after `ypinit -m`
 - name: find NIS maps
   ansible.builtin.find:
     paths: "/var/yp/{{ nis_domainname }}"
     patterns: "passwd.byname*"
   register: nis_passwd_map
-
 
 - name: add NIS group
   become: yes
@@ -28,7 +26,6 @@
   with_dict: "{{ nis_groups | default({}) }}"
   notify: rebuild nis maps
 
- 
 - name: add NIS users
   become: yes
   user:
@@ -43,7 +40,6 @@
   with_dict: "{{ nis_users | default({}) }}"
   notify: rebuild nis maps
 
-
 # nis_users.<name>.ssh_keys (list of public keys) is optional.
 # The home directory must exist (set createhome: true or provide it by NFS etc.).
 - name: add authorized_keys for NIS users
@@ -56,7 +52,6 @@
   loop_control:
     label: "{{ item.0.key }}"
 
- 
 - name: update NIS user password
   become: yes
   user:
@@ -72,7 +67,6 @@
   with_dict: "{{ nis_users | default({}) }}"
   notify: rebuild nis maps
 
-
 # `ypinit -m` is interactive: it reads the list of slave servers from stdin until
 # EOF and then asks for a confirmation (an empty answer means yes). It is run with
 # stdin from /dev/null, and only when no map exists yet. It is done after the users
@@ -85,7 +79,6 @@
     - nis_initialize | bool
     - nis_passwd_map.matched == 0
 
-
 - name: initialize nis database for master
   become: yes
   ansible.builtin.shell: /usr/lib/yp/ypinit -m < /dev/null
@@ -94,7 +87,6 @@
   when:
     - nis_initialize | bool
     - nis_passwd_map.matched == 0
-
 
 # ypinit exits with 0 even if building the maps failed
 - name: check NIS maps were created

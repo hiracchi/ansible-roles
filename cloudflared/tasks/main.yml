@@ -9,8 +9,8 @@
 - name: add gpg key
   become: yes
   ansible.builtin.get_url:
-    url: "https://pkg.cloudflare.com/cloudflare-main.gpg"   
-    dest: /usr/share/keyrings/cloudflare-main.gpg 
+    url: "https://pkg.cloudflare.com/cloudflare-main.gpg"
+    dest: /usr/share/keyrings/cloudflare-main.gpg
 
 - name: set repo
   become: yes
@@ -25,4 +25,3 @@
       - cloudflared
     state: latest
     update_cache: yes
-

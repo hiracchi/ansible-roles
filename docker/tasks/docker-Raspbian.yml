@@ -1,10 +1,10 @@
 ---
 - name: check if docker is installed
-  shell: which docker 
+  shell: which docker
   register: is_installed_docker
   ignore_errors: yes
 
-- name: debug 
+- name: debug
   debug:
     msg: "{{ is_installed_docker }}"
 
@@ -12,4 +12,3 @@
   become: yes
   shell: "curl -sSL https://get.docker.com | bash"
   when: is_installed_docker.stdout == ''
-

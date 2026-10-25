@@ -12,7 +12,6 @@
     line: 'enabled=0'
   when: etc_default_apport_file_status.stat.exists
 
-
 - name: set core dump filename format
   become: yes
   copy:
@@ -20,4 +19,3 @@
     dest: /etc/sysctl.d/90-core-dump.conf
     mode: '0644'
   notify: restart procps
-

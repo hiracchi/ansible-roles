@@ -18,4 +18,3 @@
     }}
   with_items: homebrew_packages
   when: homebrew_packages
-

@@ -27,4 +27,3 @@
 # Reserved magic variable
 - name: Reserved | environment
   debug: var=environment
-    

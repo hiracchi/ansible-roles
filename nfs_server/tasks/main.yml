@@ -5,17 +5,17 @@
 
 - name: install nfs-server
   become: yes
-  apt: 
+  apt:
     pkg:
-    - nfs-common
-    - nfs-kernel-server
+      - nfs-common
+      - nfs-kernel-server
     state: latest
 
 - name: create exports
   become: yes
-  template: 
-    src: exports.j2 
-    dest: /etc/exports 
+  template:
+    src: exports.j2
+    dest: /etc/exports
 
 - name: enable rpcbind
   become: yes
@@ -23,13 +23,12 @@
 
 - name: enabled nfs-kernel-server
   become: yes
-  service: 
-    name: nfs-kernel-server 
+  service:
+    name: nfs-kernel-server
     enabled: yes
 
 - name: restart nfs-kernel-server
   become: yes
-  service: 
-    name: nfs-kernel-server 
+  service:
+    name: nfs-kernel-server
     state: restarted
-

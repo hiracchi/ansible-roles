@@ -13,7 +13,6 @@
     - ansible_distribution == 'Ubuntu'
     - ansible_distribution_version == "18.04"
 
-
 - name: install AMD OpenCL env
   become: yes
   apt:
@@ -22,5 +21,3 @@
       - clinfo-amdgpu-pro
     state: latest
     update_cache: yes
-
-

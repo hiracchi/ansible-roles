@@ -26,4 +26,3 @@
       - libscalapack-openmpi-dev
 
     state: latest
-

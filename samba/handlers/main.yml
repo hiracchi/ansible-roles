@@ -4,4 +4,3 @@
   service:
     name: smbd
     state: restarted
-

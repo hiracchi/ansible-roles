@@ -40,4 +40,3 @@
     name: "user_hdd_spindown.{{ item }}"
     state: started
   with_items: "{{ hdd_spindown.uuid }}"
-

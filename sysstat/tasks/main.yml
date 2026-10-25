@@ -6,7 +6,6 @@
       - sysstat
     state: latest
 
-
 - name: enable sar command
   become: yes
   lineinfile:
@@ -16,4 +15,3 @@
     backup: yes
   notify:
     - restart sysstat
-

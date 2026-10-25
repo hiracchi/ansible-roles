@@ -1,7 +1,7 @@
 - name: restart ntp server
   become: yes
-  service: 
-    name: ntp 
+  service:
+    name: ntp
     state: restarted
 
 - name: restart systemd_timesyncd
@@ -26,4 +26,3 @@
   become: yes
   ansible.builtin.systemd:
     daemon_reload: true
-

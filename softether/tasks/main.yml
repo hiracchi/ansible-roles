@@ -13,7 +13,6 @@
   with_items:
     - bridge-utils
 
-
 # build
 - name: show ansible_machine
   debug:
@@ -40,7 +39,7 @@
     dest: /tmp/softether.tar.gz
     sha256sum: "{{ softether_url.ARM_EABI.sha256sum}}"
     force: True
-  when: 
+  when:
     - has_softether.rc != 0
     - ansible_machine == "armv7l"
 
@@ -53,8 +52,6 @@
   become: yes
   shell: "(cd {{ softether_root }}/vpnserver; yes 1 | make)"
   when: has_softether.rc != 0
-
-
 
 - name: set mode files
   become: yes
@@ -87,4 +84,3 @@
     name: softether
     state: started
     enabled: yes
-

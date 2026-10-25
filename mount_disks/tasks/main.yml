@@ -22,4 +22,3 @@
     opts: "{{ item['opts'] }}"
     state: "{{ item['state'] }}"
   loop: "{{ mount_disks }}"
-

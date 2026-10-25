@@ -1,10 +1,9 @@
 ---
 - name: install gromacs
   become: yes
-  apt: 
+  apt:
     pkg:
       - gromacs
       - gromacs-data
-      - gromacs-mpi 
+      - gromacs-mpi
     state: latest
-

@@ -5,13 +5,13 @@
   with_items:
     - munin
     - libcgi-pm-perl
-    
+
 - name: add munin clients
   become: yes
   template:
     src: munin.conf.j2
     dest: /etc/munin/munin.conf
-  notify: restart apache2  
+  notify: restart apache2
 
 - name: edit /etc/munin/apache24.conf
   become: yes
@@ -29,10 +29,9 @@
   become: yes
   command: "a2enmod cgi"
   notify: restart apache2
-  
+
 - name: setup cron for munin
   become: yes
   copy:
     src: munin.cron
     dest: /etc/cron.d/munin
-    

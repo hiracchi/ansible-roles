@@ -44,8 +44,8 @@
     group: gnome-remote-desktop
     mode: "{{ item.mode }}"
   loop:
-    - { path: "{{ gnome_remote_desktop_cert_file }}", mode: '0644' }
-    - { path: "{{ gnome_remote_desktop_key_file }}", mode: '0600' }
+    - {path: "{{ gnome_remote_desktop_cert_file }}", mode: '0644'}
+    - {path: "{{ gnome_remote_desktop_key_file }}", mode: '0600'}
 
 - name: Configure TLS certificate in gnome-remote-desktop
   become: true

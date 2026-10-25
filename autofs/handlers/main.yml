@@ -3,4 +3,3 @@
   service:
     name: autofs
     state: restarted
-

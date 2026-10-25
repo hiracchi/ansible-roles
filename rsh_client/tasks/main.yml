@@ -1,8 +1,7 @@
 ---
 - name: install rsh client
   become: yes
-  apt: 
+  apt:
     pkg:
       - rsh-client
     state: latest
-    

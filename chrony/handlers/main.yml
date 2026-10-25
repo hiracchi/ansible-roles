@@ -4,4 +4,3 @@
   ansible.builtin.service:
     name: "{{ chrony_service_name }}"
     state: restarted
-

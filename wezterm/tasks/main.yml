@@ -17,4 +17,3 @@
   ansible.builtin.apt:
     pkg: wezterm
     update_cache: yes
-

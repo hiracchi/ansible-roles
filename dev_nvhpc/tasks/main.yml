@@ -5,13 +5,11 @@
     return_content: yes
   register: nvidia_pgp
 
-
 - name: regist PGP
   become: yes
   shell:
     cmd: "gpg --dearmor -o /usr/share/keyrings/nvidia-hpcsdk-archive-keyring.gpg"
     stdin: "{{ nvidia_pgp.content }}"
-
 
 - name: set nvhpc source list
   become: yes
@@ -26,4 +24,3 @@
       - nvhpc-22-9
     state: latest
     update_cache: yes
-

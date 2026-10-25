@@ -1,7 +1,7 @@
 ---
 - name: install packages for r8168
   become: yes
-  apt: 
+  apt:
     pkg:
       - linux-headers-generic
       - build-essential
@@ -28,4 +28,3 @@
   become: yes
   command:
     cmd: update-initramfs -u
-

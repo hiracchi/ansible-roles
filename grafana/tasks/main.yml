@@ -1,14 +1,14 @@
 ---
-- name: prepare grafana 
+- name: prepare grafana
   become: yes
   apt:
     pkg:
       - apt-transport-https
-      - software-properties-common 
+      - software-properties-common
       - wget
     state: latest
 
-- name: add grafana key 
+- name: add grafana key
   become: yes
   apt_key:
     url: https://packages.grafana.com/gpg.key
@@ -44,5 +44,3 @@
   service:
     name: grafana-server
     state: started
-
-

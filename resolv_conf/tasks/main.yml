@@ -7,4 +7,3 @@
 - name: update resolvconf
   become: yes
   shell: resolvconf -u
-

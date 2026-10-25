@@ -2,4 +2,3 @@ autofs_items:
   - mount_point: ""
     options: ""
     location: ""
-

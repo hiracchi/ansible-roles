@@ -1,8 +1,7 @@
 ---
 - name: install quantum-espresso
   become: yes
-  apt: 
+  apt:
     pkg:
-      - quantum-espresso 
+      - quantum-espresso
     state: latest
-

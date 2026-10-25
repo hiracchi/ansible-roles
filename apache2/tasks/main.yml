@@ -1,31 +1,31 @@
 ---
 - name: install apache2
   become: yes
-  apt: 
+  apt:
     pkg:
       - apache2
-    update_cache: yes 
+    update_cache: yes
     cache_valid_time: 3600
     state: latest
 
 - name: start service apache2
   become: yes
-  service: 
+  service:
     name: apache2
-    enabled: yes 
-    state: started 
+    enabled: yes
+    state: started
 
 - name: apache2 config site
   become: yes
-  template: 
-    src: site.conf.j2 
+  template:
+    src: site.conf.j2
     dest: /etc/apache2/sites-available/site.conf
   notify: restart apache2
 
 - name: apache2 config ssl-site
   become: yes
-  template: 
-    src: site-ssl.conf.j2 
+  template:
+    src: site-ssl.conf.j2
     dest: /etc/apache2/sites-available/site-ssl.conf
   notify: restart apache2
 
@@ -48,5 +48,3 @@
 - name: enable mod_rewirte
   become: yes
   command: a2enmod rewrite
-
-

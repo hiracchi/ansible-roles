@@ -2,7 +2,6 @@
 - name: install mesa OpenCL
   become: yes
   apt:
-    name: 
-      - mesa-opencl-icd 
+    name:
+      - mesa-opencl-icd
     update_cache: yes
-

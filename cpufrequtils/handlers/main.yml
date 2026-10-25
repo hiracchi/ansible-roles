@@ -4,5 +4,3 @@
   service:
     name: cpufrequtils
     state: restarted
-
-

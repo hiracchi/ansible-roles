@@ -36,8 +36,8 @@
     direction: "{{ item.direction }}"
     policy: "{{ item.policy }}"
   loop:
-    - { direction: incoming, policy: "{{ ufw_default_direction_incoming }}" }
-    - { direction: outgoing, policy: "{{ ufw_default_direction_outgoing }}" }
+    - {direction: incoming, policy: "{{ ufw_default_direction_incoming }}"}
+    - {direction: outgoing, policy: "{{ ufw_default_direction_outgoing }}"}
   when: ansible_facts['os_family'] == "Debian"
 
 - name: Enable ufw

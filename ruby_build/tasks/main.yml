@@ -9,4 +9,3 @@
 
 - name: install latest available version of bundler
   gem: name=bundler state=latest
-

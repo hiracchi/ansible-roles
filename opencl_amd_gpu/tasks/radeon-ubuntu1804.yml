@@ -10,7 +10,7 @@
 - name: fetch AMD GPU pro driver (ubuntu 18.04)
   get_url:
     url: "https://drivers.amd.com/drivers/linux/amdgpu-pro-18.40-697810-ubuntu-18.04.tar.xz"
-    headers: 
+    headers:
       Referer: "https://www.amd.com/en/support/kb/release-notes/rn-prorad-lin-18-40"
     dest: "/tmp/amdgpu-pro-18.40-697810-ubuntu-18.04.tar.xz"
 
@@ -24,5 +24,3 @@
 - name: install AMD GPU pro driver
   become: yes
   shell: "/tmp/amdgpu-pro-18.40-697810-ubuntu-18.04/amdgpu-pro-install -y"
-
-

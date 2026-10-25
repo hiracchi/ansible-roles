@@ -9,7 +9,6 @@
   become: yes
   ansible.builtin.command: "update-initramfs -u"
 
-
 - name: install cuda on various os
   ansible.builtin.include_tasks:
     file: "{{ item }}"
@@ -19,10 +18,8 @@
     - "cuda-{{ ansible_distribution }}.yml"
   ignore_errors: true
 
-
 - name: disable graphical
   become: yes
   command: "systemctl set-default multi-user"
   when:
     - disable_graphical
-

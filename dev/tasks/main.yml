@@ -30,5 +30,3 @@
       - libgtest-dev
 
     state: latest
-
-

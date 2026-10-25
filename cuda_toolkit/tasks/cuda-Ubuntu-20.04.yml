@@ -29,4 +29,3 @@
   command: "systemctl set-default multi-user"
   when:
     - disable_graphical
-

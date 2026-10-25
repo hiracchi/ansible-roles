@@ -18,7 +18,7 @@
     - https://github.com/intel/compute-runtime/releases/download/19.11.12599/intel-igc-opencl_19.11.1622_amd64.deb
     - https://github.com/intel/compute-runtime/releases/download/19.11.12599/intel-opencl_19.11.12599_amd64.deb
     - https://github.com/intel/compute-runtime/releases/download/19.11.12599/intel-ocloc_19.11.12599_amd64.deb
-   
+
 - name: install intel OpenCL packages
   become: yes
   apt:
@@ -29,4 +29,3 @@
     - intel-igc-opencl_19.11.1622_amd64.deb
     - intel-opencl_19.11.12599_amd64.deb
     - intel-ocloc_19.11.12599_amd64.deb
-

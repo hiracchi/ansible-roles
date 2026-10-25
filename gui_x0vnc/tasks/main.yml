@@ -7,5 +7,3 @@
 
 - name: setup x0vnc.service
   become: yes
-  
-

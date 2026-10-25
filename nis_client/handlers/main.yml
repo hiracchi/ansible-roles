@@ -1,14 +1,14 @@
 ---
 - name: restart nis service
   become: yes
-  service: 
-    name: ypserv 
+  service:
+    name: ypserv
     state: restarted
   when:
     - ansible_distribution == "Ubuntu"
     - ansible_distribution_major_version >= "22"
 
-- name: restart nis service 
+- name: restart nis service
   become: yes
   service:
     name: nis
@@ -17,5 +17,3 @@
   when:
     - ansible_distribution == "Ubuntu"
     - ansible_distribution_major_version < "22"
-
-  

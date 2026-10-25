@@ -1,4 +1,4 @@
-#SPDX-License-Identifier: MIT-0
+# SPDX-License-Identifier: MIT-0
 ---
 # tasks/device-binding.yml - GPU device binding to VFIO
 
@@ -23,7 +23,7 @@
       1. Get the device ID: lspci -nn -s {{ gpu_bdf.stdout }}
       2. Extract the vendor and device ID (format: [vendor:device])
       3. Add to modprobe configuration or use: echo "vendor device" > /sys/bus/pci/drivers/vfio-pci/new_id
-      
+
       Example:
       echo "1002 731f" > /sys/bus/pci/drivers/vfio-pci/new_id
   when: gpu_bdf.stdout | length > 0
@@ -33,13 +33,13 @@
     msg: |
       Helper scripts available:
       - /usr/local/bin/vfio-bind.sh - Manual GPU binding to VFIO
-      
+
       Usage examples:
       1. Unbind GPU from current driver:
          echo {{ gpu_bdf.stdout }} > /sys/bus/pci/devices/0000:{{ gpu_bdf.stdout }}/driver/unbind
-      
+
       2. Bind to VFIO:
          echo vendor device > /sys/bus/pci/drivers/vfio-pci/new_id
-      
+
       3. Verify binding:
          lspci -k -s {{ gpu_bdf.stdout }}

@@ -7,5 +7,3 @@
     regexp: '{{ item.regexp }}'
     line: '{{ item.line }}'
   with_items: "{{ generate_locales | default() }}"
-
-

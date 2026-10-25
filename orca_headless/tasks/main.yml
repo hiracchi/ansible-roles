@@ -19,4 +19,3 @@
 
     - name: Configure and manage systemd service
       ansible.builtin.include_tasks: service.yml
-

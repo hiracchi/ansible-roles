@@ -11,4 +11,3 @@
     src: 'tmpreaper.conf.templ'
     dest: '/etc/tmpreaper.conf'
     mode: '0644'
-

@@ -11,11 +11,11 @@
 
 - name: setup postmirror.sh
   become: yes
-  template: src=postmirror.sh.j2 dest=/var/spool/apt-mirror/var/postmirror.sh 
+  template: src=postmirror.sh.j2 dest=/var/spool/apt-mirror/var/postmirror.sh
 
 - name: link ubuntu to apache
   become: yes
-  file: src="/var/spool/apt-mirror/mirror/{{ apt_mirror_remote_site }}/ubuntu" 
+  file: src="/var/spool/apt-mirror/mirror/{{ apt_mirror_remote_site }}/ubuntu"
         dest=/var/www/html/ubuntu
         state=link
         force=yes
@@ -39,4 +39,3 @@
   become: yes
   file: src="{{ apt_mirror_storage_path }}" dest="/var/spool/apt-mirror" state=link
   when: is_empty_apt_mirror_storage_path | failed
-

@@ -2,7 +2,7 @@
 - name: install watchdog
   become: yes
   apt:
-    pkg: 
+    pkg:
       - watchdog
     state: latest
 
@@ -12,4 +12,3 @@
     src: watchdog.conf.templ
     dest: /etc/watchdog.conf
   notify: restart watchdog server
-

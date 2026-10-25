@@ -1,5 +1,5 @@
 # vars
-# 
+#
 # postfix_relay_host: e.g. smtp.gmail.com
 # postfix_relay_port: e.g. 587
 # postfix_relay_user: e.g. someone@gmail.com
@@ -18,11 +18,11 @@
 #- name: display postfix vars
 #  debug:
 #    var: postfix
-  
+
 - name: set postfix config
   become: yes
-  template: 
-    src: main.cf.j2 
+  template:
+    src: main.cf.j2
     dest: /etc/postfix/main.cf
 
 - name: setup relay(sasl) password
@@ -30,7 +30,7 @@
   template:
     src: sasl_password.j2
     dest: /etc/postfix/sasl_passwd
-    mode: 0600 
+    mode: 0600
     owner: root
 
 - name: update sasl password
@@ -44,7 +44,7 @@
     dest: /etc/aliases
     mode: 0600
     owner: root
-  
+
 - name: run newaliases
   become: yes
   command: newaliases
@@ -62,8 +62,7 @@
   become: yes
   command: postmap /etc/postfix/transport
   notify: restart postfix
-  
+
 - name: restart service postfix
   become: yes
   service: name=postfix enabled=yes state=restarted
-

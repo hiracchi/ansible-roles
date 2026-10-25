@@ -21,7 +21,6 @@
 #   shell: pyenv install -s $(pyenv install -l | grep -v - | tail -1)
 #   register: result
 #   changed_when: '"Installed python" in result.stderr'
-# 
+#
 # - name: switch to latest stable version of Python
 #   shell: pyenv global $(pyenv install -l | grep -v - | tail -1)
-

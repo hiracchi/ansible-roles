@@ -1,14 +1,13 @@
 ---
 # - name: restart nis server
 #   become: yes
-#   service: 
+#   service:
 #     name: "{{ nis_service_name | default('ypserv') }}"
 #     state: restarted
 
-
 - name: "restart nis server on Ubuntu >= 22"
   become: yes
-  service: 
+  service:
     name: ypserv
     state: restarted
   when:
@@ -18,16 +17,13 @@
 
 - name: "restart nis server on Ubuntu < 22"
   become: yes
-  service: 
-    name: nis 
+  service:
+    name: nis
     state: restarted
   when:
-    - ansible_distribution == "Ubuntu" 
+    - ansible_distribution == "Ubuntu"
     - ansible_distribution_major_version | int < 22
   listen: "restart nis server"
-
-  
-
 
 # Reflect changes of local users/groups to NIS maps (/var/yp/<domain>).
 # Skipped until the maps have been created by `ypinit -m` (see nis_initialize).

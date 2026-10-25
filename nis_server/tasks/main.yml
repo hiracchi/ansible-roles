@@ -4,11 +4,10 @@
 ---
 - name: install nis server
   become: yes
-  apt: 
+  apt:
     pkg:
       - nis
     state: latest
-
 
 - name: edit yp.conf
   become: yes
@@ -17,51 +16,43 @@
     dest: /etc/yp.conf
   notify: restart nis server
 
-
 - name: setup ypserv.securenets
   become: yes
   template: src=ypserv.securenets.tmpl dest=/etc/ypserv.securenets
   notify: restart nis server
-
 
 - name: setup nis Makefile
   become: yes
   template: src=Makefile.tmpl dest=/var/yp/Makefile
   notify: restart nis server
 
-
 - name: setup /etc/defaultdomain
   become: yes
-  template: 
+  template:
     src: defaultdomain.tmpl
     dest: /etc/defaultdomain
-  notify: restart nis server  
-
+  notify: restart nis server
 
 # - name: debug var nis_task
 #   debug:
 #     msg: "nis_task = {{ nis_task }}"
-
 
 - name: setup NIS master
   include_tasks: master.yml
   when:
     - nis_task == "master"
 
-
 - name: setup NIS slave
   include_tasks: slave.yml
   when:
     - nis_task == "slave"
 
-
 - name: start service rpcbind
   become: yes
   service:
     name: rpcbind
-    enabled: yes  
+    enabled: yes
     state: started
-
 
 - name: start service nis
   become: yes
@@ -69,4 +60,3 @@
     name: ypserv
     enabled: yes
     state: started
-

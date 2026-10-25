@@ -1,4 +1,3 @@
 prometheus_jobs:
   - name: "node"
     targets: "'localhost:9100'"
-

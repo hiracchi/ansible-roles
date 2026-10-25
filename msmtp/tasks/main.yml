@@ -1,7 +1,7 @@
 ---
 - name: install msmtp
   become: yes
-  apt: 
+  apt:
     pkg:
       - msmtp
       - msmtp-mta
@@ -23,5 +23,3 @@
   become: yes
   command:
     cmd: "/usr/bin/newaliases"
-
-

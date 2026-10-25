@@ -1,7 +1,7 @@
 ---
 - name: install watchdog packages
   become: yes
-  apt: 
+  apt:
     pkg: "{{ item }}"
     force: yes
     update_cache: yes

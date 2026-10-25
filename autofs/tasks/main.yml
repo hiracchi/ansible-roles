@@ -6,11 +6,10 @@
 ---
 - name: install autofs
   become: yes
-  apt: 
+  apt:
     pkg:
-      - autofs 
+      - autofs
     state: latest
-
 
 - name: add direct map
   become: yes
@@ -18,9 +17,8 @@
     src: user_disk.autofs
     dest: /etc/auto.master.d/user_disk.autofs
     mode: "0644"
-  notify: 
+  notify:
     - restart autofs
-
 
 - name: setup /etc/auto.mount
   become: yes
@@ -30,5 +28,3 @@
     mode: "0644"
   notify:
     - restart autofs
-
-

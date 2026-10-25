@@ -3,7 +3,7 @@
 #   - my_groups:
 #     - group: hoge
 #       gid: 10000
-#       
+#
 ---
 - name: update groups
   become: yes
@@ -11,5 +11,4 @@
     name: "{{ item.group }}"
     gid: "{{ item.gid }}"
     state: present
-  with_items: "{{ my_groups }}" 
-
+  with_items: "{{ my_groups }}"

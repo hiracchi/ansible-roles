@@ -92,5 +92,3 @@
     name: slurmd
     state: started
     enabled: yes
-
-

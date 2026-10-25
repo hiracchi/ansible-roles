@@ -6,7 +6,6 @@
       - cpufrequtils
     state: latest
 
-
 - name: copy config file
   become: yes
   ansible.builtin.copy:
@@ -15,10 +14,7 @@
   notify:
     - restart cpufrequtils
 
-
 - name: Enable service cpufrequtils
   ansible.builtin.service:
     name: cpufrequtils
     enabled: yes
-
-

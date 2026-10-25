@@ -18,4 +18,3 @@
     HOMEBREW_CASK_OPTS: --appdir=/Applications
   with_items: homebrew_cask_packages
   when: homebrew_cask_packages
-

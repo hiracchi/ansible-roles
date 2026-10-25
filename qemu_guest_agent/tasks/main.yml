@@ -13,4 +13,3 @@
     name: qemu-guest-agent
     state: started
     enabled: yes
-

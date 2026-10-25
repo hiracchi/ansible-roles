@@ -45,4 +45,3 @@
   loop_control:
     label: "{{ item.mount_point | default(item.src | default('unknown')) }}"
   notify: Reload systemd daemon
-

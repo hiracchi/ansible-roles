@@ -9,7 +9,7 @@
       - libhdf5-dev
 
       - libopenblas-openmp-dev
-      
+
       - libopenmpi-dev
       - libscalapack-openmpi-dev
 
@@ -18,8 +18,8 @@
       - python3-autopep8
 
       # ViennaCL
-      # - ocl-icd-opencl-dev 
-      # - libclc-dev 
+      # - ocl-icd-opencl-dev
+      # - libclc-dev
       # - opencl-headers
       # - libviennacl-dev
 
@@ -37,4 +37,3 @@
       - libgtest-dev
 
     state: latest
-

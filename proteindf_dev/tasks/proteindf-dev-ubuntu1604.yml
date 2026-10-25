@@ -2,7 +2,7 @@
 - name: install ProteinDF devtools
   become: yes
   apt:
-    pkg: 
+    pkg:
       - build-essential
       - libgfortran3
       - libblas-dev
@@ -14,8 +14,8 @@
       - libopenblas-base
       - libopenblas-dev
       - libeigen3-dev
-      - ocl-icd-opencl-dev 
-      - libclc-dev 
+      - ocl-icd-opencl-dev
+      - libclc-dev
       - opencl-headers
       - libboost-all-dev
       - libviennacl-dev
@@ -23,4 +23,3 @@
     force: yes
     update_cache: yes
     state: latest
-

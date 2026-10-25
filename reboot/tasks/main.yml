@@ -11,5 +11,3 @@
   delegate_to: 127.0.0.1
 - name: test connection (after reboot)
   ping:
-
-        

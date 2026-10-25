@@ -1,7 +1,6 @@
 - name: install ruby
   become: yes
-  apt: 
+  apt:
     pkg:
       - ruby
     state: latest
-

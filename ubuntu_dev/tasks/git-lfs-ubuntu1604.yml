@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 - name: add packages for git lfs
   become: yes
-  apt: 
+  apt:
     pkg:
       - software-properties-common
     update_cache: yes
@@ -19,9 +19,8 @@
 
 - name: install git-lfs
   become: yes
-  apt: 
-    pkg: 
+  apt:
+    pkg:
       - git-lfs
     update_cache: yes
     state: latest
-

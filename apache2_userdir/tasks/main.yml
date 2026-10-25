@@ -3,4 +3,3 @@
   become: yes
   command: a2enmod userdir
   notify: restart apache2
-

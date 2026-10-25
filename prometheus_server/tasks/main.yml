@@ -27,6 +27,5 @@
 - name: start prometheus service
   become: yes
   service:
-    name: prometheus 
+    name: prometheus
     state: started
-

@@ -71,13 +71,11 @@
     line: '+::::::::'
   notify: restart nis service
 
- 
 - name: set /etc/domainname
   become: yes
   template:
     src: domainname.tmpl
     dest: /etc/defaultdomain
-
 
 - name: start ypbind service
   become: yes
@@ -85,4 +83,3 @@
     name: ypbind
     enabled: yes
     state: started
- 

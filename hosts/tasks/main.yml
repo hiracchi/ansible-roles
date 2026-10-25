@@ -18,4 +18,3 @@
 - name: update hosts.deny
   become: yes
   template: src=hosts.deny.j2 dest=/etc/hosts.deny
-  

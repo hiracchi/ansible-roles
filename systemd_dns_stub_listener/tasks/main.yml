@@ -7,5 +7,4 @@
     state: present
     regexp: '^#?DNSStubListener'
     line: 'DNSStubListener=no'
-  notify: restart systemd-resolved 
-
+  notify: restart systemd-resolved

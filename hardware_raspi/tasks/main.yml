@@ -9,7 +9,7 @@
   become: yes
   timezone:
     name: '{{ sys.timezone }}'
-  
+
 - name: start & stop services
   become: yes
   service:
@@ -17,4 +17,3 @@
     enabled: '{{ item.enabled | default("yes") }}'
     state: '{{ item.state | default("started") }}'
   with_items: '{{ sys.services }}'
-

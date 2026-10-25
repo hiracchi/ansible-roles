@@ -1,12 +1,10 @@
 ---
 - name: install chem packages
   become: yes
-  apt: 
+  apt:
     pkg:
       - openbabel
     state: latest
 
-
 - include_tasks: quantum_espresso.yml
 # - include_tasks: gromacs.yml
-

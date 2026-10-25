@@ -1,12 +1,12 @@
 ---
 - name: install packages for r8125
   become: yes
-  apt: 
+  apt:
     pkg:
-    - linux-headers-generic
-    - build-essential
-    - dkms
-    - r8125-dkms 
+      - linux-headers-generic
+      - build-essential
+      - dkms
+      - r8125-dkms
     state: latest
 
 - name: add blacklist
@@ -27,4 +27,3 @@
   become: yes
   command:
     cmd: update-initramfs -u
-    

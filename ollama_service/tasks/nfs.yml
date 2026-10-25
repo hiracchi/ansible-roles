@@ -27,4 +27,3 @@
     owner: "{{ ollama_user }}"
     group: "{{ ollama_group }}"
     mode: '0755'
-

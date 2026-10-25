@@ -11,11 +11,10 @@
     src: munin-node.conf.j2
     dest: /etc/munin/munin-node.conf
   notify: restart munin node
-    
+
 - name: start munin node
   become: yes
   service:
     name: "munin-node"
     enabled: yes
     state: started
-    

@@ -9,4 +9,3 @@ grafana:
     password: password
     from_address: example@gmail.com
     from_name: example
-

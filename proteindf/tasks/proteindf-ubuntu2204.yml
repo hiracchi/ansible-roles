@@ -18,7 +18,7 @@
 
       - libblas-dev
       - liblapack-dev
-      
+
       - libopenblas-openmp-dev
       - libblis-dev
 
@@ -69,7 +69,3 @@
   community.general.alternatives:
     name: libblas.so.3-x86_64-linux-gnu
     path: /usr/lib/x86_64-linux-gnu/openblas-openmp/libblas.so.3
-
-
-
-

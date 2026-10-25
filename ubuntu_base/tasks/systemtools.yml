@@ -1,7 +1,7 @@
 - name: install system tools
   become: yes
-  apt: 
-    pkg: 
+  apt:
+    pkg:
       - vim
       - wget
       - curl
@@ -27,4 +27,3 @@
       # - tty-clock
       # - neofetch
     state: latest
-    

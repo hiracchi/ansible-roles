@@ -5,7 +5,6 @@
     path: "{{ docker_data_root }}"
     state: directory
     mode: 0711
-   
 
 - name: setup docker image path
   become: yes
@@ -15,7 +14,6 @@
     line: "ExecStart=/usr/bin/dockerd -H unix:// --data-root {{ docker_data_root }}"
   notify: restart docker server
   changed_when: True
-    
 
 - name: add users to docker group
   become: yes
@@ -24,4 +22,3 @@
     groups: docker
     name: "{{ item }}"
   with_items: "{{ docker_users }}"
-  

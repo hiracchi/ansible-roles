@@ -9,4 +9,3 @@
     force: yes
     update_cache: yes
     state: latest
-

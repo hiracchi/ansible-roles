@@ -5,7 +5,7 @@
     url: http://repo.radeon.com/rocm/apt/debian/rocm.gpg.key
     state: present
 
-- name: add ROCm repos 
+- name: add ROCm repos
   become: yes
   apt_repository:
     repo: "deb [arch=amd64] http://repo.radeon.com/rocm/apt/debian/ xenial main"
@@ -24,4 +24,3 @@
       - rocm-dkms
     state: latest
     update_cache: yes
-

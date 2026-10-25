@@ -3,10 +3,10 @@
   become: yes
   apt:
     pkg:
-      - apt-transport-https 
-      - ca-certificates 
-      - curl 
-      - gnupg2 
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg2
       - software-properties-common
     state: latest
     update_cache: yes
@@ -15,7 +15,7 @@
   get_url:
     url: "https://download.docker.com/linux/debian/gpg"
     dest: /tmp/docker-gpg
-    
+
 - name: add new GPG key
   become: yes
   command: "apt-key add /tmp/docker-gpg"
@@ -50,4 +50,3 @@
   apt: pkg={{ item }} update_cache=yes state=latest
   with_items:
     - docker-ce
-

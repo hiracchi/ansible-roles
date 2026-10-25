@@ -10,7 +10,6 @@
     line: "NISSERVER=slave"
   notify: restart nis server
 
-
 - name: update /etc/default/nis
   become: yes
   lineinfile:
@@ -19,12 +18,9 @@
     line: "NISMASTER={{ nis_master_node }}"
   notify: restart nis server
 
-
 - name: initialize nis database for slave
   become: yes
   command: "/usr/lib/yp/ypinit -s {{ nis_master_node }}"
   notify: restart nis server
   when:
     - nis_initialize | bool
-
-
