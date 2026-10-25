@@ -6,7 +6,7 @@ make users
 
 ```
 vars:
-  - my_users:
+  - system_users_list:
     - user: someone
       group: somegroup
       groups: somegroup,adm,sudo

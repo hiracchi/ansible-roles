@@ -1,6 +1,6 @@
 # This role require followinf vars:
 # vars:
-#   - my_users:
+#   - system_users_list:
 #     - user: pdfadmin
 #       group: satolab
 #       groups: pdfadmin,adm,sudo
@@ -25,4 +25,4 @@
     group: "{{ item.group }}"
     groups: "{{ item.groups }}"
     password: "{{ item.password }}"
-  with_items: "{{ my_users }}"
+  with_items: "{{ system_users_list }}"

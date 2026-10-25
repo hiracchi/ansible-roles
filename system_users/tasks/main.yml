@@ -11,5 +11,5 @@
     shell: "{{ item.value.shell | default('/bin/bash') }}"
     createhome: "{{ item.createhome | default('no') }}"
     state: present
-  with_items: "{{ my_users }}"
+  with_items: "{{ system_users_list }}"
   # ignore_errors: yes

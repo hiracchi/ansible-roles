@@ -6,7 +6,7 @@ make groups
 
 ```
 vars:
-  - my_groups:
+  - system_groups_list:
     - group: hoge
       gid: 10000
 ```
