@@ -16,8 +16,8 @@ filegen clockstats file clockstats type day enable
 # Use servers from the NTP Pool Project. Approved by Ubuntu Technical Board
 # on 2011-02-08 (LP: #104525). See http://www.pool.ntp.org/join.html for
 # more information.
-{% for ntp_server in ntp_servers %}
-server {{ ntp_server }}
+{% for ubuntu_base_ntp_server in ubuntu_base_ntp_servers %}
+server {{ ubuntu_base_ntp_server }}
 {% else %}}
 server 0.ubuntu.pool.ntp.org
 server 1.ubuntu.pool.ntp.org

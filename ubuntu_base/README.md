@@ -38,8 +38,8 @@ Ubuntu サーバーの基盤環境（システムパラメータ調整、リソ�
 | `ubuntu_base_enable_unattended_upgrades` | `true` | 自動セキュリティアップデート機能の有効/無効 |
 | `ubuntu_base_unattended_upgrades_update_package_lists` | `"1"` | パッケージリスト更新の間隔（日数） |
 | `ubuntu_base_unattended_upgrades_unattended_upgrade` | `"1"` | セキュリティアップデート自動適用の間隔（日数） |
-| `limits` | *(リスト定義)* | `/etc/security/limits.conf` に設定するリソース制限 |
-| `ntp_servers` | *(リスト定義)* | NTP サーバー一覧 |
+| `ubuntu_base_limits` | *(リスト定義)* | `/etc/security/limits.conf` に設定するリソース制限 |
+| `ubuntu_base_ntp_servers` | *(リスト定義)* | NTP サーバー一覧 |
 
 ## 使い方
 

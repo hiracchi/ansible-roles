@@ -14,8 +14,8 @@
 # About using servers from the NTP Pool Project in general see (LP: #104525).
 # Approved by Ubuntu Technical Board on 2011-02-08.
 # See http://www.pool.ntp.org/join.html for more information.
-{% for ntp_server in ntp_servers %}
-server {{ ntp_server }}
+{% for ubuntu_base_ntp_server in ubuntu_base_ntp_servers %}
+server {{ ubuntu_base_ntp_server }}
 {% else %}}
 pool ntp.ubuntu.com        iburst maxsources 4
 pool 0.ubuntu.pool.ntp.org iburst maxsources 1

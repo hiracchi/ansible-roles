@@ -53,7 +53,7 @@
 #ftp             -       chroot          /ftp
 #@student        -       maxlogins       4
 
-{% for i in limits %}
+{% for i in ubuntu_base_limits %}
 {{i.domain}}    {{i.type}} {{i.item}} {{i.value}}
 {% endfor %}
 
