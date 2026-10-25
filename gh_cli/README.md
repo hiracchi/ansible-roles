@@ -1,4 +1,4 @@
-# gh-cli
+# gh_cli
 
 Ubuntu/Debian 系ホスト向けに [GitHub CLI (`gh`)](https://cli.github.com/) を公式 APT リポジトリからインストールする Ansible ロール。
 
@@ -30,7 +30,7 @@ Ubuntu/Debian 系ホスト向けに [GitHub CLI (`gh`)](https://cli.github.com/)
 - hosts: all
   become: false
   roles:
-    - gh-cli
+    - gh_cli
 ```
 
 ### 常に最新版にアップグレードしたい場合
@@ -39,7 +39,7 @@ Ubuntu/Debian 系ホスト向けに [GitHub CLI (`gh`)](https://cli.github.com/)
 - hosts: all
   become: false
   roles:
-    - role: gh-cli
+    - role: gh_cli
       vars:
         gh_cli_state: latest
 ```
