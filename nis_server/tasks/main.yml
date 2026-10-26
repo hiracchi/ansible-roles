@@ -37,6 +37,14 @@
 #   debug:
 #     msg: "nis_task = {{ nis_task }}"
 
+- name: pin ypserv listening port
+  become: yes
+  ansible.builtin.lineinfile:
+    path: /etc/default/nis
+    regexp: '^YPSERVARGS='
+    line: 'YPSERVARGS="-p {{ nis_server_port }}"'
+  notify: restart nis server
+
 - name: setup NIS master
   include_tasks: master.yml
   when:

@@ -11,3 +11,7 @@ nis_server_servers:
   - localhost
 nis_securenets_netmask: 255.255.255.0
 nis_securenets_network: 192.168.0.0
+# ypserv の待ち受けポート(TCP/UDP 共通)。ufw の許可もこのポートに合わせる
+nis_server_port: 792
+# このUID未満のアカウントは NIS マップに出さない(Makefile の MINUID)
+nis_server_minuid: 1000
