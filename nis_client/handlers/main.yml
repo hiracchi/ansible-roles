@@ -2,7 +2,7 @@
 - name: restart nis service
   become: yes
   service:
-    name: ypserv
+    name: ypbind
     state: restarted
   when:
     - ansible_distribution == "Ubuntu"

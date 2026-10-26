@@ -83,3 +83,16 @@
     name: ypbind
     enabled: yes
     state: started
+
+- name: Gather service facts
+  ansible.builtin.service_facts:
+
+- name: Stop and disable ypserv on NIS clients (not the NIS master)
+  become: yes
+  ansible.builtin.systemd:
+    name: ypserv
+    state: stopped
+    enabled: false
+  when:
+    - nis_task | default('') != 'master'
+    - "'ypserv.service' in ansible_facts.services"
