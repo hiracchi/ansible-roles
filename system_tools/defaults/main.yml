@@ -1,0 +1,17 @@
+---
+# 非常用・トラブル対応用ターミナルで使うツール一覧
+system_tools_packages:
+  # 接続・作業用
+  - tmux
+  - screen
+  - rsync
+  # ネットワーク調査用
+  - bind9-dnsutils
+  - mtr-tiny
+  - nmap
+  - iperf3
+  - tcpdump
+  # システム調査用
+  - htop
+  - ncdu
+  - lsof

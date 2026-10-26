@@ -1,0 +1,6 @@
+---
+- name: install system tools for troubleshooting
+  become: true
+  ansible.builtin.apt:
+    name: "{{ system_tools_packages }}"
+    state: present
