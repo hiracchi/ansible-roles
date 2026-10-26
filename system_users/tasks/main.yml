@@ -6,9 +6,10 @@
     uid: "{{ item.uid }}"
     group: "{{ item.group }}"
     groups: "{{ item.groups }}"
+    home: "{{ item.home | default(omit) }}"
     password: "{{ item.password }}"
     # password: "{{ item.value.password | password_hash('sha512') }}"
-    shell: "{{ item.value.shell | default('/bin/bash') }}"
+    shell: "{{ item.shell | default('/bin/bash') }}"
     createhome: "{{ item.createhome | default('no') }}"
     state: present
   with_items: "{{ system_users_list }}"
