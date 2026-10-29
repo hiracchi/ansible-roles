@@ -1,0 +1,14 @@
+---
+# 物理ホストの温度・電圧・ファン等を確認するためのパッケージ
+hardware_monitoring_packages:
+  - lm-sensors
+
+# IPMI(BMC)を搭載したホストで使うパッケージ。デバイスが無いホストでは導入しない
+hardware_monitoring_ipmi_packages:
+  - ipmitool
+
+# IPMI のデバイスノード(ipmi_si / ipmi_devintf ドライバが読み込まれていれば存在する)
+hardware_monitoring_ipmi_devices:
+  - /dev/ipmi0
+  - /dev/ipmi/0
+  - /dev/ipmidev/0

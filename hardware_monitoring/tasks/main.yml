@@ -1,0 +1,19 @@
+---
+- name: Install hardware sensor tools
+  become: true
+  ansible.builtin.apt:
+    name: "{{ hardware_monitoring_packages }}"
+    state: present
+
+- name: Check whether an IPMI device exists
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  loop: "{{ hardware_monitoring_ipmi_devices }}"
+  register: hardware_monitoring_ipmi_stat
+
+- name: Install IPMI tools on hosts with a BMC
+  become: true
+  ansible.builtin.apt:
+    name: "{{ hardware_monitoring_ipmi_packages }}"
+    state: present
+  when: hardware_monitoring_ipmi_stat.results | selectattr('stat.exists') | list | length > 0
