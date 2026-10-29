@@ -1,0 +1,26 @@
+# Managed by ansible (cluster_status_site). Do not edit manually.
+services:
+  generator:
+    image: python:3.13-alpine
+    restart: unless-stopped
+    command: ["python3", "/app/generate.py"]
+    environment:
+      PROMETHEUS_URL: "{{ cluster_status_site_prometheus_url }}"
+      INTERVAL: "{{ cluster_status_site_interval }}"
+      CLUSTER_NAME: "{{ cluster_status_site_cluster_name }}"
+    volumes:
+      - ./generate.py:/app/generate.py:ro
+      - site:/site
+
+  web:
+    image: nginx:stable-alpine
+    restart: unless-stopped
+    depends_on:
+      - generator
+    ports:
+      - "{{ cluster_status_site_bind_ip }}:{{ cluster_status_site_port }}:80"
+    volumes:
+      - site:/usr/share/nginx/html:ro
+
+volumes:
+  site:

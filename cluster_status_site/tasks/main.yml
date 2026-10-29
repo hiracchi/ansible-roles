@@ -1,0 +1,35 @@
+---
+- name: Create cluster status site directory
+  become: true
+  ansible.builtin.file:
+    path: "{{ cluster_status_site_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Deploy status page generator
+  become: true
+  ansible.builtin.copy:
+    src: generate.py
+    dest: "{{ cluster_status_site_dir }}/generate.py"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Start cluster status site
+
+- name: Deploy docker compose file
+  become: true
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ cluster_status_site_dir }}/compose.yaml"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Start cluster status site
+
+- name: Ensure cluster status site is running
+  become: true
+  ansible.builtin.command:
+    cmd: "docker compose -f {{ cluster_status_site_dir }}/compose.yaml up -d"
+  changed_when: false

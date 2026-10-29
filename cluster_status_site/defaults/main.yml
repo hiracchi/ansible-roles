@@ -1,0 +1,16 @@
+---
+# 静的ステータスページの設置先(docker compose の作業ディレクトリ)
+cluster_status_site_dir: /opt/cluster-status
+
+# 配信ポート。バインド先は LAN の IP に限定する(Docker は ufw を通らないため)
+cluster_status_site_bind_ip: "{{ ansible_host | default(ansible_facts['default_ipv4']['address']) }}"
+cluster_status_site_port: 8080
+
+# 情報源の Prometheus(alloy が各ノードのメトリクスを送信している先)
+cluster_status_site_prometheus_url: "http://{{ cluster_status_site_bind_ip }}:9090"
+
+# ページを作り直す間隔(秒)
+cluster_status_site_interval: 60
+
+# ページの見出しに使うクラスタ名
+cluster_status_site_cluster_name: "JARVIS"

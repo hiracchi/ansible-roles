@@ -1,0 +1,6 @@
+---
+- name: Start cluster status site
+  become: true
+  ansible.builtin.command:
+    cmd: "docker compose -f {{ cluster_status_site_dir }}/compose.yaml up -d"
+  changed_when: true
