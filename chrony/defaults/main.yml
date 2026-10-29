@@ -15,6 +15,11 @@ chrony_ntp_servers:
   - 1.pool.ntp.org iburst
   - 2.pool.ntp.org iburst
 
+# Ubuntu 既定の NTS プール(外部インターネットへ接続する)を無効化する。
+# 外部に出られない環境では接続がタイムアウトし、chronyd のエラーになるため、true で削除する
+chrony_disable_ubuntu_pools: false
+chrony_ubuntu_pool_sources: /etc/chrony/sources.d/ubuntu-ntp-pools.sources
+
 # Directories containing snippets or additional sources (e.g. ["/run/chrony-dhcp", "/etc/chrony/sources.d"])
 chrony_sourcedirs: []
 

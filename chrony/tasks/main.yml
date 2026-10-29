@@ -86,3 +86,11 @@
     name: "{{ chrony_service_name }}"
     state: started
     enabled: true
+
+- name: Remove Ubuntu default NTS pool sources (no internet access)
+  become: true
+  ansible.builtin.file:
+    path: "{{ chrony_ubuntu_pool_sources }}"
+    state: absent
+  when: chrony_disable_ubuntu_pools | bool
+  notify: Restart chrony
