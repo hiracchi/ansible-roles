@@ -11,8 +11,8 @@
 ## 主な変数 (`defaults/main.yml`)
 | 変数名 | デフォルト値 | 説明 |
 | :--- | :--- | :--- |
-| `alloy_prometheus_url` | `http://10.71.33.194:9090/api/v1/write` | Prometheus Remote Write エンドポイント |
-| `alloy_loki_url` | `http://10.71.33.194:3100/loki/api/v1/push` | Grafana Loki Push エンドポイント |
+| `alloy_prometheus_url` | `http://10.71.99.23:9090/api/v1/write` | Prometheus Remote Write エンドポイント |
+| `alloy_loki_url` | `http://10.71.99.23:3100/loki/api/v1/push` | Grafana Loki Push エンドポイント |
 | `alloy_collect_journal` | `true` | Systemd Journald ログ収集の有効化 |
 | `alloy_collect_var_logs` | `true` | `/var/log` ファイルログ収集の有効化 |
 | `alloy_collect_slurm_logs` | `true` | Slurm ログ収集の有効化 |
