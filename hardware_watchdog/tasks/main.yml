@@ -1,0 +1,43 @@
+---
+- name: Load watchdog kernel module at boot
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/modules-load.d/hardware_watchdog.conf
+    content: "{{ hardware_watchdog_module }}\n"
+    mode: "0644"
+
+- name: Load watchdog kernel module now
+  become: true
+  community.general.modprobe:
+    name: "{{ hardware_watchdog_module }}"
+    state: present
+
+- name: Check that the hardware watchdog device exists
+  ansible.builtin.stat:
+    path: /dev/watchdog0
+  register: hardware_watchdog_dev
+
+- name: Fail when the hardware watchdog is not available
+  ansible.builtin.assert:
+    that:
+      - hardware_watchdog_dev.stat.exists
+    fail_msg: >-
+      /dev/watchdog0 がありません。BIOS で Watchdog が無効になっている可能性があります。
+    success_msg: /dev/watchdog0 を確認しました
+
+- name: Ensure systemd drop-in directory exists
+  become: true
+  ansible.builtin.file:
+    path: /etc/systemd/system.conf.d
+    state: directory
+    mode: "0755"
+
+- name: Let systemd feed the hardware watchdog
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/systemd/system.conf.d/hardware_watchdog.conf
+    content: |
+      [Manager]
+      RuntimeWatchdogSec={{ hardware_watchdog_timeout_sec }}
+    mode: "0644"
+  notify: Re-execute systemd

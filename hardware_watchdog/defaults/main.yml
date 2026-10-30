@@ -1,0 +1,5 @@
+# AMD FCH(SB800 以降)のチップセットに内蔵された TCO watchdog を使う
+hardware_watchdog_module: sp5100_tco
+
+# systemd が watchdog を叩く間隔(秒)。この時間カーネルが応答しなければハードウェアが再起動する
+hardware_watchdog_timeout_sec: 60
