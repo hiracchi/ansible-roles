@@ -6,6 +6,8 @@
     uid: "{{ item.uid }}"
     group: "{{ item.group }}"
     groups: "{{ item.groups }}"
+    # 指定したグループを追加するだけにし、他ロール(docker など)が入れた所属を消さない
+    append: true
     home: "{{ item.home | default(omit) }}"
     password: "{{ item.password }}"
     # password: "{{ item.value.password | password_hash('sha512') }}"
