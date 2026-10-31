@@ -7,5 +7,27 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9090']
 
+{% if snmp_nas_targets | default([]) | length > 0 %}
+  # NAS の容量は snmp_exporter(snmp_nas ロール)経由で取得する。target は NAS の IP、instance は name
+  - job_name: 'nas'
+    metrics_path: /snmp
+    params:
+      module: [hrstorage]
+      auth: [nas_v2c]
+    static_configs:
+{% for nas in snmp_nas_targets %}
+      - targets: ['{{ nas.ip }}']
+        labels:
+          nas: '{{ nas.name }}'
+{% endfor %}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [nas]
+        target_label: instance
+      - target_label: __address__
+        replacement: '{{ ansible_host }}:{{ snmp_nas_port | default(9116) }}'
+{% endif %}
+
 # node_exporter / nvidia_gpu_exporter は各ノードの Grafana Alloy が remote_write で送信するため、
 # ここでは直接スクレイプしない (同じホストが IP と hostname の 2 系統で入るのを防ぐ)

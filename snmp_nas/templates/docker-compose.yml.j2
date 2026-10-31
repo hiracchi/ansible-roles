@@ -1,0 +1,12 @@
+# 管理用: {{ ansible_managed }}
+services:
+  snmp-exporter:
+    image: {{ snmp_nas_image }}
+    container_name: snmp-exporter
+    restart: unless-stopped
+    ports:
+      - "{{ snmp_nas_port }}:9116"
+    volumes:
+      - ./snmp.yml:/etc/snmp_exporter/snmp.yml:ro
+    command:
+      - --config.file=/etc/snmp_exporter/snmp.yml

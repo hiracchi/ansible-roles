@@ -1,0 +1,12 @@
+# NAS の SNMP を取得する snmp_exporter の設定
+snmp_nas_dir: /opt/snmp-nas
+snmp_nas_user: "{{ plg_monitoring_user | default(ansible_user) }}"
+snmp_nas_image: prom/snmp-exporter:v0.31.0
+snmp_nas_port: 9116
+
+# 読み取り専用のコミュニティ文字列(SNMP v2c)。値は host_vars で ansible-vault 暗号化して渡す
+snmp_nas_community: ""
+
+# 取得対象の NAS。name は状態ページと Prometheus の instance ラベルに使う
+# 例: [{name: jarvis-ds1817-1, ip: 10.71.99.221}]
+snmp_nas_targets: []

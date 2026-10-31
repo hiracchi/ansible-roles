@@ -1,0 +1,5 @@
+---
+- name: Restart snmp exporter
+  ansible.builtin.command:
+    cmd: "docker compose -f {{ snmp_nas_dir }}/compose.yaml up -d --force-recreate"
+  changed_when: true

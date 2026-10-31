@@ -1,0 +1,35 @@
+---
+- name: Create snmp_nas directory
+  become: true
+  ansible.builtin.file:
+    path: "{{ snmp_nas_dir }}"
+    state: directory
+    owner: "{{ snmp_nas_user }}"
+    group: root
+    mode: "0755"
+
+- name: Deploy snmp exporter configuration (contains community string)
+  become: true
+  ansible.builtin.template:
+    src: snmp.yml.j2
+    dest: "{{ snmp_nas_dir }}/snmp.yml"
+    owner: "{{ snmp_nas_user }}"
+    group: root
+    mode: "0600"
+  notify: Restart snmp exporter
+  no_log: true
+
+- name: Deploy docker compose file
+  become: true
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ snmp_nas_dir }}/compose.yaml"
+    owner: "{{ snmp_nas_user }}"
+    group: root
+    mode: "0644"
+  notify: Restart snmp exporter
+
+- name: Ensure snmp exporter is running
+  ansible.builtin.command:
+    cmd: "docker compose -f {{ snmp_nas_dir }}/compose.yaml up -d"
+  changed_when: false

@@ -1,0 +1,49 @@
+# このファイルにはコミュニティ文字列を含むため、権限を 0600 にしている
+auths:
+  nas_v2c:
+    version: 2
+    community: "{{ snmp_nas_community }}"
+
+modules:
+  # hrStorageTable(1.3.6.1.2.1.25.2.3.1)から、ボリュームの容量を取り出す
+  # 容量は「ブロック数」で、単位(hrStorageAllocationUnits)を掛けるとバイトになる
+  hrstorage:
+    walk:
+      - 1.3.6.1.2.1.25.2.3.1
+    metrics:
+      - name: hrStorageSize
+        oid: 1.3.6.1.2.1.25.2.3.1.5
+        type: gauge
+        help: Size of the storage in allocation units
+        indexes:
+          - labelname: hrStorageIndex
+            type: gauge
+        lookups:
+          - labels: [hrStorageIndex]
+            labelname: mountpoint
+            oid: 1.3.6.1.2.1.25.2.3.1.3
+            type: DisplayString
+      - name: hrStorageUsed
+        oid: 1.3.6.1.2.1.25.2.3.1.6
+        type: gauge
+        help: Used storage in allocation units
+        indexes:
+          - labelname: hrStorageIndex
+            type: gauge
+        lookups:
+          - labels: [hrStorageIndex]
+            labelname: mountpoint
+            oid: 1.3.6.1.2.1.25.2.3.1.3
+            type: DisplayString
+      - name: hrStorageAllocationUnits
+        oid: 1.3.6.1.2.1.25.2.3.1.4
+        type: gauge
+        help: Size of one allocation unit in bytes
+        indexes:
+          - labelname: hrStorageIndex
+            type: gauge
+        lookups:
+          - labels: [hrStorageIndex]
+            labelname: mountpoint
+            oid: 1.3.6.1.2.1.25.2.3.1.3
+            type: DisplayString
