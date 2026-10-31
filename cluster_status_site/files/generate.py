@@ -4,7 +4,9 @@
 標準ライブラリだけを使う。INTERVAL 秒ごとに作り直し、書き出しは一時ファイル経由で
 行うため、配信側(nginx)は途中まで書かれたページを読まない。
 取得に失敗した場合は、エラーを表示したページに置き換える。
+負荷の推移(直近 1 時間)は取得できなくても、ページ全体は表示する。
 """
+import datetime
 import html
 import json
 import os
@@ -12,6 +14,9 @@ import sys
 import time
 import urllib.parse
 import urllib.request
+
+# 表示する時刻は JST 固定。コンテナにはタイムゾーンのデータが無いため、オフセットで直接指定する
+JST = datetime.timezone(datetime.timedelta(hours=9), "JST")
 
 PROMETHEUS_URL = os.environ.get("PROMETHEUS_URL", "http://127.0.0.1:9090").rstrip("/")
 INTERVAL = int(os.environ.get("INTERVAL", "60"))
@@ -22,6 +27,7 @@ TIMEOUT = 10
 # 表示するファイルシステム(tmpfs や overlay などは除外する)
 FS_TYPES = "ext4|xfs|btrfs|zfs|vfat|nfs.*"
 JOB = 'job="node_exporter"'
+HISTORY_MINUTES = 60
 
 
 def query(promql):
@@ -30,6 +36,17 @@ def query(promql):
         body = json.load(resp)
     if body.get("status") != "success":
         raise RuntimeError("Prometheus クエリに失敗しました: " + promql)
+    return body["data"]["result"]
+
+
+def query_range(promql, minutes):
+    end = time.time()
+    params = {"query": promql, "start": end - minutes * 60, "end": end, "step": 60}
+    url = PROMETHEUS_URL + "/api/v1/query_range?" + urllib.parse.urlencode(params)
+    with urllib.request.urlopen(url, timeout=TIMEOUT) as resp:
+        body = json.load(resp)
+    if body.get("status") != "success":
+        raise RuntimeError("Prometheus 範囲クエリに失敗しました: " + promql)
     return body["data"]["result"]
 
 
@@ -54,6 +71,18 @@ def disks(size_promql, avail_promql):
     return result
 
 
+def load_history():
+    # 直近 1 時間の負荷の推移。取得できなければ空にして、グラフだけ省く
+    try:
+        history = {}
+        for item in query_range("node_load1{%s}" % JOB, HISTORY_MINUTES):
+            history[item["metric"].get("instance", "")] = [float(v) for _, v in item["values"]]
+        return history
+    except Exception as exc:
+        print("load history failed: %s" % exc, file=sys.stderr, flush=True)
+        return {}
+
+
 def collect():
     data = {
         # 直近 30 日に一度でも報告したホスト(停止中のホストも一覧に残す)
@@ -70,6 +99,7 @@ def collect():
             "node_filesystem_size_bytes{%s,fstype=~\"%s\"}" % (JOB, FS_TYPES),
             "node_filesystem_avail_bytes{%s,fstype=~\"%s\"}" % (JOB, FS_TYPES),
         ),
+        "history": load_history(),
     }
     kernel = {}
     for item in query("node_uname_info{%s}" % JOB):
@@ -98,33 +128,72 @@ def status_of(name, data):
     return "停止", "down"
 
 
-def render_row(name, data):
+def meter(percent):
+    pct = max(0.0, min(100.0, percent))
+    level = "crit" if pct >= 90 else "warn" if pct >= 70 else "ok"
+    return '<div class="meter"><div class="fill %s" style="width:%.0f%%"></div></div>' % (
+        level,
+        pct,
+    )
+
+
+def sparkline(values):
+    if len(values) < 2:
+        return ""
+    width, height, pad = 160, 36, 2
+    top = max(max(values), 1.0)
+    step = width / (len(values) - 1)
+    points = " ".join(
+        "%.1f,%.1f" % (i * step, height - pad - (v / top) * (height - 2 * pad))
+        for i, v in enumerate(values)
+    )
+    return (
+        '<svg class="spark" viewBox="0 0 %d %d" role="img" aria-label="直近 1 時間の負荷">'
+        '<polyline points="%s" fill="none" stroke="currentColor" stroke-width="2"/></svg>'
+        % (width, height, points)
+    )
+
+
+def render_card(name, data):
     label, css = status_of(name, data)
-    cells = [html.escape(name), '<span class="%s">%s</span>' % (css, label)]
+    parts = [
+        '<section class="card %s">' % css,
+        '<header><h2>%s</h2><span class="badge %s">%s</span></header>'
+        % (html.escape(name), css, label),
+    ]
+    meta = []
+    if name in data["boot"]:
+        meta.append("稼働 " + fmt_uptime(time.time() - data["boot"][name]))
+    if name in data["kernel"]:
+        meta.append(data["kernel"][name])
+    if name in data["cores"]:
+        meta.append("%d コア" % data["cores"][name])
+    if meta:
+        parts.append('<p class="meta">%s</p>' % html.escape(" / ".join(meta)))
+
     if name in data["load1"]:
-        cells.append("%.2f" % data["load1"][name])
-    else:
-        cells.append("-")
-    cells.append(str(int(data["cores"][name])) if name in data["cores"] else "-")
+        load = data["load1"][name]
+        cores = data["cores"].get(name)
+        bar = meter(load / cores * 100) if cores else ""
+        parts.append(
+            '<div class="row"><span>負荷 %.2f</span>%s</div>%s'
+            % (load, sparkline(data["history"].get(name, [])), bar)
+        )
     if name in data["mem_total"] and name in data["mem_avail"]:
         total = data["mem_total"][name]
         used_pct = (1 - data["mem_avail"][name] / total) * 100
-        cells.append("%.0f%%" % used_pct)
-        cells.append(fmt_gib(total))
-    else:
-        cells.extend(["-", "-"])
-    if name in data["boot"]:
-        cells.append(fmt_uptime(time.time() - data["boot"][name]))
-    else:
-        cells.append("-")
-    cells.append(html.escape(data["kernel"].get(name, "-")))
-    disk_lines = []
-    for mount, avail, size in sorted(data["disks"].get(name, [])):
-        disk_lines.append(
-            "%s: %s / %s" % (html.escape(mount), fmt_gib(avail), fmt_gib(size))
+        parts.append(
+            '<div class="row"><span>メモリ %.0f%%</span><span class="muted">総量 %s</span></div>%s'
+            % (used_pct, fmt_gib(total), meter(used_pct))
         )
-    cells.append("<br>".join(disk_lines) or "-")
-    return "<tr>" + "".join("<td>%s</td>" % c for c in cells) + "</tr>"
+    for mount, avail, size in sorted(data["disks"].get(name, [])):
+        used_pct = (1 - avail / size) * 100 if size else 0
+        parts.append(
+            '<div class="row"><span>%s %.0f%%</span><span class="muted">残り %s / %s</span></div>%s'
+            % (html.escape(mount), used_pct, fmt_gib(avail), fmt_gib(size), meter(used_pct))
+        )
+    parts.append("</section>")
+    return "".join(parts)
 
 
 PAGE = """<!doctype html>
@@ -135,49 +204,75 @@ PAGE = """<!doctype html>
 <meta http-equiv="refresh" content="{refresh}">
 <title>{cluster} Cluster Status</title>
 <style>
-  body {{ font-family: sans-serif; margin: 16px; background: #fafafa; color: #222; }}
-  table {{ border-collapse: collapse; width: 100%; background: #fff; }}
-  th, td {{ border: 1px solid #ddd; padding: 6px 8px; text-align: left; vertical-align: top; font-size: 14px; }}
-  th {{ background: #f0f0f0; }}
-  .ok {{ color: #0a7d32; font-weight: bold; }}
-  .down {{ color: #b00020; font-weight: bold; }}
-  .error {{ background: #fdecea; border: 1px solid #b00020; padding: 8px; }}
-  .note {{ color: #666; font-size: 13px; }}
-  @media (max-width: 720px) {{ table, thead, tbody, tr, th, td {{ display: block; }} thead {{ display: none; }} td {{ border: none; padding: 2px 8px; }} tr {{ border-bottom: 1px solid #ddd; padding: 6px 0; background: #fff; }} }}
+  :root {{
+    --bg: #f6f7f9; --card: #ffffff; --text: #1d232b; --muted: #6b7280;
+    --line: #e3e6eb; --track: #e5e7eb; --ok: #15803d; --warn: #b45309; --crit: #b91c1c;
+  }}
+  @media (prefers-color-scheme: dark) {{
+    :root:not([data-theme="light"]) {{
+      --bg: #0f1419; --card: #1a2029; --text: #e6e9ef; --muted: #9aa4b2;
+      --line: #2a323d; --track: #2f3742; --ok: #4ade80; --warn: #fbbf24; --crit: #f87171;
+    }}
+  }}
+  :root[data-theme="dark"] {{
+    --bg: #0f1419; --card: #1a2029; --text: #e6e9ef; --muted: #9aa4b2;
+    --line: #2a323d; --track: #2f3742; --ok: #4ade80; --warn: #fbbf24; --crit: #f87171;
+  }}
+  body {{ font-family: system-ui, sans-serif; margin: 16px; background: var(--bg); color: var(--text); }}
+  h1 {{ font-size: 22px; margin: 0 0 4px; }}
+  h2 {{ font-size: 17px; margin: 0; }}
+  .note {{ color: var(--muted); font-size: 13px; margin: 0 0 16px; }}
+  .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }}
+  .card {{ background: var(--card); border: 1px solid var(--line); border-top: 4px solid var(--crit); border-radius: 10px; padding: 12px 14px; }}
+  .card.ok {{ border-top-color: var(--ok); }}
+  .card header {{ display: flex; justify-content: space-between; align-items: center; gap: 8px; }}
+  .badge {{ font-size: 12px; font-weight: bold; padding: 2px 8px; border-radius: 999px; color: #fff; white-space: nowrap; }}
+  .badge.ok {{ background: var(--ok); }}
+  .badge.down {{ background: var(--crit); }}
+  .meta {{ color: var(--muted); font-size: 12px; margin: 6px 0 0; }}
+  .row {{ display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; margin-top: 10px; }}
+  .muted {{ color: var(--muted); font-size: 12px; }}
+  .meter {{ height: 6px; background: var(--track); border-radius: 3px; overflow: hidden; margin-top: 4px; }}
+  .fill {{ height: 100%; }}
+  .fill.ok {{ background: var(--ok); }}
+  .fill.warn {{ background: var(--warn); }}
+  .fill.crit {{ background: var(--crit); }}
+  .spark {{ width: 160px; height: 36px; color: var(--ok); flex-shrink: 0; }}
+  .error {{ background: #fdecea; color: #7f1d1d; border: 1px solid #b91c1c; padding: 8px; border-radius: 8px; }}
 </style>
 </head>
 <body>
 <h1>{cluster} Cluster Status</h1>
-<p class="note">最終更新: {updated}(約 {refresh} 秒ごとに更新)</p>
+<p class="note">最終更新: {updated}(約 {refresh} 秒ごとに更新) / {summary}</p>
 {body}
 </body>
 </html>
 """
 
-HEADERS = (
-    "<tr><th>ホスト</th><th>状態</th><th>Load (1m)</th><th>CPU コア</th>"
-    "<th>メモリ使用率</th><th>メモリ総量</th><th>稼働時間</th><th>カーネル</th>"
-    "<th>ディスク(使用可能 / 総量)</th></tr>"
-)
-
 
 def render(data):
     names = sorted(data["seen"].keys())
-    rows = "".join(render_row(name, data) for name in names)
-    table = "<table><thead>%s</thead><tbody>%s</tbody></table>" % (HEADERS, rows)
+    up = sum(1 for name in names if status_of(name, data)[1] == "ok")
+    cards = "".join(render_card(name, data) for name in names)
     return PAGE.format(
         refresh=INTERVAL,
         cluster=html.escape(CLUSTER_NAME),
-        updated=time.strftime("%Y-%m-%d %H:%M:%S %Z"),
-        body=table,
+        updated=now_jst(),
+        summary="稼働中 %d / %d 台" % (up, len(names)),
+        body='<div class="grid">%s</div>' % cards,
     )
+
+
+def now_jst():
+    return datetime.datetime.now(JST).strftime("%Y-%m-%d %H:%M:%S %Z")
 
 
 def render_error(message):
     return PAGE.format(
         refresh=INTERVAL,
         cluster=html.escape(CLUSTER_NAME),
-        updated=time.strftime("%Y-%m-%d %H:%M:%S %Z"),
+        updated=now_jst(),
+        summary="取得失敗",
         body='<p class="error">Prometheus からの取得に失敗しました: %s</p>'
         % html.escape(message),
     )
