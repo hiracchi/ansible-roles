@@ -27,6 +27,9 @@ TIMEOUT = 10
 # 表示するファイルシステム(tmpfs や overlay などは除外する)
 FS_TYPES = "ext4|xfs|btrfs|zfs|vfat|nfs.*"
 JOB = 'job="node_exporter"'
+# NAS は snmp_exporter(job="nas")で取得し、ボリュームだけを表示する
+NAS_JOB = 'job="nas"'
+NAS_VOLUMES = 'mountpoint=~"/volume.*"'
 HISTORY_MINUTES = 60
 
 
@@ -83,8 +86,31 @@ def load_history():
         return {}
 
 
+def nas_status():
+    # snmp_exporter 経由の NAS(job="nas")。取得できなくても、クラスタのページは表示する
+    try:
+        up = by_instance("up{%s}" % NAS_JOB)
+        totals, used, units = {}, {}, {}
+        for store, metric in ((totals, "hrStorageSize"), (used, "hrStorageUsed"), (units, "hrStorageAllocationUnits")):
+            for item in query("%s{%s,%s}" % (metric, NAS_JOB, NAS_VOLUMES)):
+                m = item["metric"]
+                store[(m.get("instance", ""), m.get("mountpoint", ""))] = float(item["value"][1])
+        volumes = {}
+        for key, blocks in totals.items():
+            if key not in used or key not in units:
+                continue
+            size = blocks * units[key]
+            usage = used[key] * units[key]
+            volumes.setdefault(key[0], []).append((key[1], size - usage, size))
+        return {"up": up, "volumes": volumes}
+    except Exception as exc:
+        print("nas status failed: %s" % exc, file=sys.stderr, flush=True)
+        return {"up": {}, "volumes": {}}
+
+
 def collect():
     data = {
+        "nas": nas_status(),
         # 直近 30 日に一度でも報告したホスト(停止中のホストも一覧に残す)
         "seen": by_instance(
             "count by (instance) (last_over_time(node_uname_info{%s}[30d]))" % JOB
@@ -238,6 +264,7 @@ PAGE = """<!doctype html>
   .fill.warn {{ background: var(--warn); }}
   .fill.crit {{ background: var(--crit); }}
   .spark {{ width: 160px; height: 36px; color: var(--ok); flex-shrink: 0; }}
+  .section {{ font-size: 17px; margin: 20px 0 8px; }}
   .error {{ background: #fdecea; color: #7f1d1d; border: 1px solid #b91c1c; padding: 8px; border-radius: 8px; }}
 </style>
 </head>
@@ -250,16 +277,45 @@ PAGE = """<!doctype html>
 """
 
 
+def render_nas_card(name, nas):
+    value = nas["up"].get(name)
+    if value is None:
+        label, css = "報告なし", "down"
+    elif value == 1:
+        label, css = "稼働中", "ok"
+    else:
+        label, css = "停止", "down"
+    parts = [
+        '<section class="card %s">' % css,
+        '<header><h2>%s</h2><span class="badge %s">%s</span></header>'
+        % (html.escape(name), css, label),
+    ]
+    for mount, avail, size in sorted(nas["volumes"].get(name, [])):
+        used_pct = (1 - avail / size) * 100 if size else 0
+        parts.append(
+            '<div class="row"><span>%s %.0f%%</span><span class="muted">残り %s / %s</span></div>%s'
+            % (html.escape(mount), used_pct, fmt_gib(avail), fmt_gib(size), meter(used_pct))
+        )
+    parts.append("</section>")
+    return "".join(parts)
+
+
 def render(data):
     names = sorted(data["seen"].keys())
     up = sum(1 for name in names if status_of(name, data)[1] == "ok")
     cards = "".join(render_card(name, data) for name in names)
+    body = '<div class="grid">%s</div>' % cards
+    nas = data["nas"]
+    nas_names = sorted(nas["up"].keys())
+    if nas_names:
+        nas_cards = "".join(render_nas_card(name, nas) for name in nas_names)
+        body += '<h2 class="section">NAS</h2><div class="grid">%s</div>' % nas_cards
     return PAGE.format(
         refresh=INTERVAL,
         cluster=html.escape(CLUSTER_NAME),
         updated=now_jst(),
         summary="稼働中 %d / %d 台" % (up, len(names)),
-        body='<div class="grid">%s</div>' % cards,
+        body=body,
     )
 
 

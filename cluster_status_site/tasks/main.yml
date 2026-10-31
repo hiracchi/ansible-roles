@@ -16,7 +16,8 @@
     owner: root
     group: root
     mode: "0644"
-  notify: Start cluster status site
+  # generator は起動時に生成スクリプトを読むだけなので、up -d では再読込されない。再作成が必要
+  notify: Recreate cluster status site
 
 - name: Deploy docker compose file
   become: true
