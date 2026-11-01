@@ -222,6 +222,127 @@ def render_card(name, data):
     return "".join(parts)
 
 
+SANS = '"Noto Sans JP", "Hiragino Sans", system-ui, sans-serif'
+MONO = "Consolas, Menlo, monospace"
+MARU = '"Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Noto Sans JP", sans-serif'
+ANGULAR = "polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px))"
+# テーマ: (id, 表示名, 色・形・フォントの値)。値を CSS 変数にして切り替える
+THEMES = [
+    ("light", "白背景", {
+        "bg": "#ffffff", "pattern": "none", "pattern-size": "auto",
+        "card": "#ffffff", "text": "#111111", "muted": "#555555",
+        "line": "#d4d4d8", "line-w": "1px", "track": "#e5e5e5",
+        "ok": "#0f7a3a", "warn": "#b45309", "crit": "#c81e1e", "accent": "#2563eb",
+        "badge-text": "#ffffff", "radius": "10px", "clip": "none", "shadow": "none",
+        "card-top": "4px", "body-font": SANS, "head-font": SANS, "head-case": "none", "head-spacing": "0",
+    }),
+    ("dark", "黒背景", {
+        "bg": "#0a0a0a", "pattern": "none", "pattern-size": "auto",
+        "card": "#141414", "text": "#ececec", "muted": "#9a9a9a",
+        "line": "#2e2e2e", "line-w": "1px", "track": "#2a2a2a",
+        "ok": "#4ade80", "warn": "#fbbf24", "crit": "#f87171", "accent": "#a3a3a3",
+        "badge-text": "#000000", "radius": "10px", "clip": "none", "shadow": "none",
+        "card-top": "4px", "body-font": SANS, "head-font": SANS, "head-case": "none", "head-spacing": "0",
+    }),
+    ("eva", "某アニメ風", {
+        # 参考デザインの値: 背景 #0b0e13、本文 #fff1dc、琥珀 #ffcf8a、橙 #ff9a3c、黄 #ffd23d、赤 #ff4d4d
+        "bg": "#0b0e13",
+        "pattern": "linear-gradient(rgba(255,207,138,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,207,138,0.05) 1px, transparent 1px)",
+        "pattern-size": "32px 32px",
+        "card": "rgba(20,24,32,0.55)", "text": "#fff1dc", "muted": "#8d96a5",
+        "line": "rgba(255,207,138,0.75)", "line-w": "1px", "track": "#2b323e",
+        "ok": "#ffd23d", "warn": "#ff9a3c", "crit": "#ff4d4d", "accent": "#ffcf8a",
+        "badge-text": "#0b0e13", "radius": "8px", "clip": "none",
+        "shadow": "0 0 0.6rem rgba(255,138,31,0.45)", "card-top": "3px",
+        "body-font": '"LINE Seed JP", "Hiragino Sans", sans-serif',
+        "head-font": '"Oswald", "Arial Narrow", sans-serif', "head-case": "uppercase", "head-spacing": "0.06em",
+    }),
+    ("terminal", "端末グリーン", {
+        "bg": "#000000", "pattern": "repeating-linear-gradient(0deg, rgba(51,255,102,0.06) 0 1px, transparent 1px 3px)",
+        "pattern-size": "auto",
+        "card": "#010a03", "text": "#33ff66", "muted": "#1f9e44",
+        "line": "#1f9e44", "line-w": "1px", "track": "#0d3b18",
+        "ok": "#33ff66", "warn": "#ffd33d", "crit": "#ff4d4d", "accent": "#33ff66",
+        "badge-text": "#000000", "radius": "0", "clip": "none", "shadow": "0 0 10px rgba(51,255,102,0.15)",
+        "card-top": "3px", "body-font": MONO, "head-font": MONO, "head-case": "uppercase", "head-spacing": "0.06em",
+    }),
+    ("pop", "ポップ", {
+        "bg": "#fff6fb", "pattern": "radial-gradient(#ffd6e7 2px, transparent 2px)", "pattern-size": "18px 18px",
+        "card": "#ffffff", "text": "#2b2d42", "muted": "#5c5f7a",
+        "line": "#2b2d42", "line-w": "3px", "track": "#e9ecf5",
+        "ok": "#06a77d", "warn": "#ff9f1c", "crit": "#ef476f", "accent": "#ff8fab",
+        "badge-text": "#ffffff", "radius": "18px", "clip": "none", "shadow": "4px 4px 0 #2b2d42",
+        "card-top": "3px", "body-font": MARU, "head-font": MARU, "head-case": "none", "head-spacing": "0",
+    }),
+    ("cyber", "サイバー青", {
+        "bg": "#04111f",
+        "pattern": "linear-gradient(rgba(56,189,248,0.10) 1px, transparent 1px), linear-gradient(90deg, rgba(56,189,248,0.10) 1px, transparent 1px)",
+        "pattern-size": "24px 24px",
+        "card": "#081e36", "text": "#cfefff", "muted": "#6fa8c9",
+        "line": "#0ea5e9", "line-w": "1px", "track": "#0b2a45",
+        "ok": "#34d399", "warn": "#facc15", "crit": "#fb7185", "accent": "#38bdf8",
+        "badge-text": "#001018", "radius": "2px", "clip": ANGULAR, "shadow": "0 0 14px rgba(56,189,248,0.2)",
+        "card-top": "4px", "body-font": SANS, "head-font": MONO, "head-case": "uppercase", "head-spacing": "0.1em",
+    }),
+    ("nerv", "情報パネル", {
+        "bg": "#101214", "pattern": "none", "pattern-size": "auto",
+        "card": "#1a1d21", "text": "#e8eaed", "muted": "#9aa0a6",
+        "line": "#3a4048", "line-w": "1px", "track": "#2b3036",
+        "ok": "#22c55e", "warn": "#f5a524", "crit": "#ef4444", "accent": "#e4572e",
+        "badge-text": "#111111", "radius": "4px", "clip": "none", "shadow": "none",
+        "card-top": "4px", "body-font": SANS, "head-font": SANS, "head-case": "none", "head-spacing": "0.02em",
+    }),
+]
+THEME_IDS = [tid for tid, _, _ in THEMES]
+
+
+def theme_css():
+    # 先頭の白背景は :root(テーマ未設定・スクリプト無効時)にも使う
+    blocks = []
+    for index, (tid, _, values) in enumerate(THEMES):
+        decl = " ".join("--%s: %s;" % (key, val) for key, val in values.items())
+        selector = ":root" if index == 0 else 'html[data-theme="%s"]' % tid
+        blocks.append("%s { %s }" % (selector, decl))
+    return "\n  ".join(blocks)
+
+
+THEME_CSS = theme_css()
+THEME_SELECT = '<select id="theme-select" aria-label="テーマ">%s</select>' % "".join(
+    '<option value="%s">%s</option>' % (tid, html.escape(label)) for tid, label, _ in THEMES
+)
+
+# 保存済みのテーマを <head> で先に適用し、表示のちらつきを防ぐ。未設定や不正な値は OS の設定に従う
+HEAD_SCRIPT = """(function () {
+  var themes = %s;
+  var theme = null;
+  try { theme = localStorage.getItem("status-theme"); } catch (e) {}
+  if (themes.indexOf(theme) < 0) {
+    theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  document.documentElement.setAttribute("data-theme", theme);
+})();""" % json.dumps(THEME_IDS)
+
+BODY_SCRIPT = """(function () {
+  var root = document.documentElement;
+  var select = document.getElementById("theme-select");
+  select.value = root.getAttribute("data-theme");
+  select.addEventListener("change", function () {
+    root.setAttribute("data-theme", select.value);
+    try { localStorage.setItem("status-theme", select.value); } catch (e) {}
+  });
+  // 現在時刻は閲覧者のブラウザで毎秒更新する。表示は JST に固定する
+  var clock = document.getElementById("clock-now");
+  var formatter = new Intl.DateTimeFormat("ja-JP", {
+    timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false
+  });
+  function tick() {
+    clock.textContent = formatter.format(new Date()) + " JST";
+  }
+  tick();
+  setInterval(tick, 1000);
+})();"""
+
 PAGE = """<!doctype html>
 <html lang="ja">
 <head>
@@ -229,49 +350,68 @@ PAGE = """<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="refresh" content="{refresh}">
 <title>{cluster} Cluster Status</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LINE+Seed+JP:wght@400;700&family=Oswald:wght@500&display=swap">
+<script>
+{head_script}
+</script>
 <style>
-  :root {{
-    --bg: #f6f7f9; --card: #ffffff; --text: #1d232b; --muted: #6b7280;
-    --line: #e3e6eb; --track: #e5e7eb; --ok: #15803d; --warn: #b45309; --crit: #b91c1c;
+  {theme_css}
+  body {{
+    font-family: var(--body-font); margin: 16px; color: var(--text);
+    background-color: var(--bg); background-image: var(--pattern); background-size: var(--pattern-size);
   }}
-  @media (prefers-color-scheme: dark) {{
-    :root:not([data-theme="light"]) {{
-      --bg: #0f1419; --card: #1a2029; --text: #e6e9ef; --muted: #9aa4b2;
-      --line: #2a323d; --track: #2f3742; --ok: #4ade80; --warn: #fbbf24; --crit: #f87171;
-    }}
-  }}
-  :root[data-theme="dark"] {{
-    --bg: #0f1419; --card: #1a2029; --text: #e6e9ef; --muted: #9aa4b2;
-    --line: #2a323d; --track: #2f3742; --ok: #4ade80; --warn: #fbbf24; --crit: #f87171;
-  }}
-  body {{ font-family: system-ui, sans-serif; margin: 16px; background: var(--bg); color: var(--text); }}
-  h1 {{ font-size: 22px; margin: 0 0 4px; }}
-  h2 {{ font-size: 17px; margin: 0; }}
+  .head {{ display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+    border-bottom: 3px solid var(--accent); padding-bottom: 8px; margin-bottom: 12px; }}
+  h1 {{ font-family: var(--head-font); font-size: 20px; margin: 0; letter-spacing: var(--head-spacing);
+    text-transform: var(--head-case); color: var(--accent); }}
+  .clock-wrap {{ display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }}
+  .clock {{ font-family: var(--head-font); font-size: 18px; letter-spacing: var(--head-spacing); color: var(--text);
+    font-variant-numeric: tabular-nums; }}
+  #theme-select {{ font: inherit; font-size: 13px; padding: 6px 8px; border: 2px solid var(--accent);
+    background: var(--card); color: var(--text); border-radius: var(--radius); }}
+  h2 {{ font-family: var(--head-font); font-size: 16px; margin: 0; letter-spacing: var(--head-spacing);
+    text-transform: var(--head-case); }}
   .note {{ color: var(--muted); font-size: 13px; margin: 0 0 16px; }}
   .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }}
-  .card {{ background: var(--card); border: 1px solid var(--line); border-top: 4px solid var(--crit); border-radius: 10px; padding: 12px 14px; }}
+  .card {{ background: var(--card); border: var(--line-w) solid var(--line); border-top: var(--card-top) solid var(--crit);
+    border-radius: var(--radius); padding: 12px 14px; box-shadow: var(--shadow); clip-path: var(--clip); }}
   .card.ok {{ border-top-color: var(--ok); }}
   .card header {{ display: flex; justify-content: space-between; align-items: center; gap: 8px; }}
-  .badge {{ font-size: 12px; font-weight: bold; padding: 2px 8px; border-radius: 999px; color: #fff; white-space: nowrap; }}
+  .badge {{ font-family: var(--head-font); font-size: 12px; font-weight: 700; padding: 2px 8px;
+    border-radius: var(--radius); color: var(--badge-text); white-space: nowrap; letter-spacing: var(--head-spacing); }}
   .badge.ok {{ background: var(--ok); }}
   .badge.down {{ background: var(--crit); }}
   .meta {{ color: var(--muted); font-size: 12px; margin: 6px 0 0; }}
   .row {{ display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; margin-top: 10px; }}
   .muted {{ color: var(--muted); font-size: 12px; }}
-  .meter {{ height: 6px; background: var(--track); border-radius: 3px; overflow: hidden; margin-top: 4px; }}
+  .meter {{ height: 8px; background: var(--track); overflow: hidden; margin-top: 4px; border-radius: var(--radius); }}
   .fill {{ height: 100%; }}
   .fill.ok {{ background: var(--ok); }}
   .fill.warn {{ background: var(--warn); }}
   .fill.crit {{ background: var(--crit); }}
   .spark {{ width: 160px; height: 36px; color: var(--ok); flex-shrink: 0; }}
-  .section {{ font-size: 17px; margin: 20px 0 8px; }}
-  .error {{ background: #fdecea; color: #7f1d1d; border: 1px solid #b91c1c; padding: 8px; border-radius: 8px; }}
+  .section {{ font-family: var(--head-font); font-size: 16px; text-transform: var(--head-case);
+    letter-spacing: var(--head-spacing); margin: 22px 0 8px; padding-left: 8px; border-left: 6px solid var(--accent); }}
+  .error {{ border: 2px solid var(--crit); color: var(--crit); padding: 8px; background: var(--card);
+    border-radius: var(--radius); }}
+  /* 某アニメ風: 半透明のパネル、発光する題名、枠で囲んだ区切り見出し */
+  html[data-theme="eva"] h1 {{ color: var(--text); text-shadow: 0 0 0.6rem rgba(255,138,31,0.85); }}
+  html[data-theme="eva"] .card {{ backdrop-filter: blur(14px) saturate(1.4); }}
+  html[data-theme="eva"] .card header h2 {{ color: var(--text); }}
+  html[data-theme="eva"] .section {{ display: inline-block; color: var(--accent); border: 1px solid var(--accent);
+    border-left-width: 1px; padding: 2px 10px; border-radius: 6px; }}
 </style>
 </head>
 <body>
+<div class="head">
 <h1>{cluster} Cluster Status</h1>
+<div class="clock-wrap"><span id="clock-now" class="clock">--/--/-- --:--:-- JST</span>{theme_select}</div>
+</div>
 <p class="note">最終更新: {updated}(約 {refresh} 秒ごとに更新) / {summary}</p>
 {body}
+<script>
+{body_script}
+</script>
 </body>
 </html>
 """
@@ -316,6 +456,10 @@ def render(data):
         updated=now_jst(),
         summary="稼働中 %d / %d 台" % (up, len(names)),
         body=body,
+        head_script=HEAD_SCRIPT,
+        body_script=BODY_SCRIPT,
+        theme_css=THEME_CSS,
+        theme_select=THEME_SELECT,
     )
 
 
@@ -331,6 +475,10 @@ def render_error(message):
         summary="取得失敗",
         body='<p class="error">Prometheus からの取得に失敗しました: %s</p>'
         % html.escape(message),
+        head_script=HEAD_SCRIPT,
+        body_script=BODY_SCRIPT,
+        theme_css=THEME_CSS,
+        theme_select=THEME_SELECT,
     )
 
 
