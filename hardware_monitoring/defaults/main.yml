@@ -1,7 +1,9 @@
 ---
 # 物理ホストの温度・電圧・ファン等を確認するためのパッケージ
+# dmidecode は BIOS・マザーボード・メモリ構成の確認(トラブルシュート)に使う
 hardware_monitoring_packages:
   - lm-sensors
+  - dmidecode
 
 # IPMI(BMC)を搭載したホストで使うパッケージ。デバイスが無いホストでは導入しない
 hardware_monitoring_ipmi_packages:

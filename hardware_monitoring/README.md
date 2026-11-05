@@ -3,12 +3,13 @@
 物理ホストで温度・電圧・ファンなどのハードウェア状態を確認するためのツールを導入します。
 
 - `lm-sensors`(`sensors` コマンド)を全ホストに導入します。
+- `dmidecode`(BIOS・マザーボード・メモリ構成の確認)を全ホストに導入します。
 - `ipmitool` は IPMI(BMC)のデバイスが存在するホストだけに導入します。
 
 # variables
 
 ```
-hardware_monitoring_packages: [lm-sensors]
+hardware_monitoring_packages: [lm-sensors, dmidecode]
 hardware_monitoring_ipmi_packages: [ipmitool]
 hardware_monitoring_ipmi_devices: [/dev/ipmi0, /dev/ipmi/0, /dev/ipmidev/0]
 ```
