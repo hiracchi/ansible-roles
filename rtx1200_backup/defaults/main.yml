@@ -1,0 +1,8 @@
+---
+# show config の保存先(ansible を実行するマシン)。設定にはパスワードが含まれるため、リポジトリの外に置く
+rtx_backup_dir: "{{ lookup('ansible.builtin.env', 'HOME') }}/rtx-backups"
+# 取得元。接続情報は hostvars から読む(既定は inventory の jarvis-rtx1200)
+rtx_target_host: jarvis-rtx1200
+rtx_host: "{{ hostvars[rtx_target_host].ansible_host }}"
+rtx_user: "{{ hostvars[rtx_target_host].ansible_user }}"
+rtx_password: "{{ hostvars[rtx_target_host].ansible_password }}"

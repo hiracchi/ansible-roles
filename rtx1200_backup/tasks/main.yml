@@ -1,0 +1,19 @@
+---
+# 読み取り専用。RTX の設定は表示も記録もしない(no_log)。
+# 接続は localhost から行う(network_cli と yamaha_network.rtx コレクションは使わない)
+
+- name: Create backup directory on the controller
+  ansible.builtin.file:
+    path: "{{ rtx_backup_dir }}"
+    state: directory
+    mode: "0700"
+
+- name: Save show config from the RTX
+  ansible.builtin.script:
+    cmd: >-
+      rtx_show_config.py {{ rtx_host | quote }} {{ rtx_user | quote }} {{ rtx_backup_dir | quote }}
+    executable: python3
+  environment:
+    SSHPASS: "{{ rtx_password }}"
+  changed_when: true
+  no_log: true
