@@ -1,10 +1,44 @@
 ---
-- name: Load watchdog kernel module at boot
+# Ubuntu のカーネルパッケージは sp5100_tco を blacklist に入れている
+# (/usr/lib/modprobe.d/blacklist_linux_*.conf)。そのため /etc/modules-load.d/ への記載は
+# systemd-modules-load に "deny-listed (by kmod)" として拒否され、起動時に読み込まれない。
+# 明示的な modprobe は blacklist を無視するので、起動時に modprobe する unit を使う。
+- name: Remove modules-load.d entry that is rejected by the kernel blacklist
+  become: true
+  ansible.builtin.file:
+    path: /etc/modules-load.d/hardware_watchdog.conf
+    state: absent
+
+- name: Install unit that loads the watchdog module at boot
   become: true
   ansible.builtin.copy:
-    dest: /etc/modules-load.d/hardware_watchdog.conf
-    content: "{{ hardware_watchdog_module }}\n"
+    dest: /etc/systemd/system/hardware-watchdog-module.service
+    content: |
+      [Unit]
+      Description=Load hardware watchdog module ({{ hardware_watchdog_module }})
+      DefaultDependencies=no
+      After=systemd-modules-load.service
+      Before=sysinit.target shutdown.target
+      Conflicts=shutdown.target
+
+      [Service]
+      Type=oneshot
+      RemainAfterExit=yes
+      ExecStart=/usr/sbin/modprobe {{ hardware_watchdog_module }}
+
+      [Install]
+      WantedBy=sysinit.target
     mode: "0644"
+  register: hardware_watchdog_unit
+
+# チェックモードでは unit ファイルがまだ作られないため、新規作成の場合は有効化を飛ばす
+- name: Enable the watchdog module unit
+  become: true
+  ansible.builtin.systemd_service:
+    name: hardware-watchdog-module.service
+    enabled: true
+    daemon_reload: true
+  when: not (ansible_check_mode and hardware_watchdog_unit is changed)
 
 - name: Load watchdog kernel module now
   become: true
@@ -24,6 +58,8 @@
     fail_msg: >-
       /dev/watchdog0 がありません。BIOS で Watchdog が無効になっている可能性があります。
     success_msg: /dev/watchdog0 を確認しました
+  # チェックモードでは modprobe が実行されず、装置がまだ無いため確認しない
+  when: not ansible_check_mode
 
 - name: Ensure systemd drop-in directory exists
   become: true
