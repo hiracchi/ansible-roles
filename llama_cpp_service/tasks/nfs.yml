@@ -1,16 +1,20 @@
 ---
+# bin のモードは後段の「Ensure correct ownership and permissions」(0755)と揃える。
+# 異なる値にすると、実行のたびに両タスクが交互に書き換えて changed になるため
 - name: Create shared NFS directories for llama.cpp
   become: true
   ansible.builtin.file:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     state: directory
     owner: "{{ llama_cpp_user }}"
     group: "{{ llama_cpp_group }}"
-    mode: '0775'
+    mode: "{{ item.mode }}"
   loop:
-    - "{{ llama_cpp_nfs_base_dir }}"
-    - "{{ llama_cpp_bin_dir }}"
-    - "{{ llama_cpp_models_dir }}"
+    - { path: "{{ llama_cpp_nfs_base_dir }}", mode: '0775' }
+    - { path: "{{ llama_cpp_bin_dir }}", mode: '0755' }
+    - { path: "{{ llama_cpp_models_dir }}", mode: '0775' }
+  loop_control:
+    label: "{{ item.path }}"
 
 - name: Download and extract llama.cpp CUDA binaries
   become: true
