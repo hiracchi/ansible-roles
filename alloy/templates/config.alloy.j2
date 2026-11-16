@@ -1,6 +1,6 @@
 // ==============================================================================
 // Grafana Alloy Configuration for JARVIS Cluster Node
-// Host: {{ ansible_hostname }}
+// Host: {{ ansible_facts['hostname'] }}
 // ==============================================================================
 
 // ------------------------------------------------------------------------------
@@ -21,7 +21,7 @@ prometheus.relabel "node" {
 
   rule {
     target_label = "instance"
-    replacement  = "{{ ansible_hostname }}"
+    replacement  = "{{ ansible_facts['hostname'] }}"
   }
 
   rule {
@@ -43,7 +43,7 @@ prometheus.relabel "gpu" {
 
   rule {
     target_label = "instance"
-    replacement  = "{{ ansible_hostname }}"
+    replacement  = "{{ ansible_facts['hostname'] }}"
   }
 
   rule {
@@ -75,7 +75,7 @@ loki.source.journal "systemd" {
   max_age    = "12h"
   labels     = {
     job  = "systemd-journal",
-    host = "{{ ansible_hostname }}",
+    host = "{{ ansible_facts['hostname'] }}",
   }
 }
 
@@ -100,23 +100,23 @@ local.file_match "var_logs" {
     {
       "__path__" = "/var/log/*.log",
       "job"      = "varlogs",
-      "host"     = "{{ ansible_hostname }}",
+      "host"     = "{{ ansible_facts['hostname'] }}",
     },
     {
       "__path__" = "/var/log/syslog",
       "job"      = "syslog",
-      "host"     = "{{ ansible_hostname }}",
+      "host"     = "{{ ansible_facts['hostname'] }}",
     },
 {% if alloy_collect_slurm_logs | bool %}
     {
       "__path__" = "/var/log/slurm*.log",
       "job"      = "slurm",
-      "host"     = "{{ ansible_hostname }}",
+      "host"     = "{{ ansible_facts['hostname'] }}",
     },
     {
       "__path__" = "/var/log/slurm/*.log",
       "job"      = "slurm",
-      "host"     = "{{ ansible_hostname }}",
+      "host"     = "{{ ansible_facts['hostname'] }}",
     },
 {% endif %}
   ]
