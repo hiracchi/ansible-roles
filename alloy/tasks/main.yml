@@ -23,12 +23,23 @@
     dest: /etc/apt/keyrings/grafana.asc
     mode: '0644'
 
+# 旧形式(.list)の定義が残っていると deb822 版と重複するため、先に削除する
+- name: Remove legacy Grafana APT repository (.list)
+  become: true
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/grafana.list
+    state: absent
+
 - name: Add Grafana APT repository
   become: true
-  ansible.builtin.apt_repository:
-    repo: "deb [signed-by=/etc/apt/keyrings/grafana.asc] https://apt.grafana.com stable main"
+  ansible.builtin.deb822_repository:
+    name: grafana
+    types: deb
+    uris: https://apt.grafana.com
+    suites: stable
+    components: main
+    signed_by: /etc/apt/keyrings/grafana.asc
     state: present
-    filename: grafana
 
 - name: Install Grafana Alloy
   become: true
