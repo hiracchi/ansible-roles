@@ -139,8 +139,10 @@ case "$1" in
                 "nvidia-smi --query-gpu=name,memory.used,memory.total,utilization.gpu --format=csv,noheader,nounits" 2>/dev/null || true)
             if [ -n "$GPU_INFO" ]; then
                 IFS=',' read -r GPU_NAME VRAM_USED VRAM_TOTAL GPU_UTIL <<< "$GPU_INFO"
+                # -f(コマンドライン全体)で探すと、パターン文字列を含む ssh 先の bash -c 自身に
+                # マッチしてしまうため、-x でプロセス名の完全一致で探す
                 PROC_NAME=$(ssh -o ConnectTimeout=5 -o BatchMode=yes "$node" \
-                    "pgrep -a -f 'llama-server|ggml-rpc-server' | head -n 1" 2>/dev/null || true)
+                    "pgrep -a -x 'llama-server|ggml-rpc-server' | head -n 1" 2>/dev/null || true)
                 echo "  GPU: $(echo $GPU_NAME | xargs) | VRAM: $(echo $VRAM_USED | xargs) / $(echo $VRAM_TOTAL | xargs) MiB | 利用率: $(echo $GPU_UTIL | xargs)%"
                 if [ -n "$PROC_NAME" ]; then
                     echo "  プロセス: $PROC_NAME"
