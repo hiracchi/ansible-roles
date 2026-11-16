@@ -1,2 +1,14 @@
 ---
-# defaults file for apptainer
+# Legacy PPA notation (kept for reference)
+apptainer_ppa_repository: "ppa:apptainer/ppa"
+
+# HTTPS URL for the Apptainer PPA signing key.
+# This avoids the HKP keyserver issue ("nothing exported") by fetching via HTTPS.
+apptainer_ppa_key_url: "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xF6B0F5193D4F3301EF491FF0AFE36534FC6218AE"
+
+# Ubuntu suite to use for the Apptainer PPA.
+# Defaults to the host's distribution release.
+# Override with "noble" if the PPA does not yet publish packages for the current release.
+apptainer_ppa_suite: "{{ ansible_facts['distribution_release'] }}"
+
+apptainer_install_suid: false
