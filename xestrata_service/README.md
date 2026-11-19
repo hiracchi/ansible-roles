@@ -24,18 +24,18 @@ OpenAI 互換の API(`http://<ノード>:<xestrata_port>/v1`)と Anthropic 互�
 
 ## 主な変数
 
-| 変数 | 既定値 | 説明 |
-| :--- | :--- | :--- |
-| `xestrata_state` | `present` | `absent` でタイマー、ジョブ、スクリプト、イメージを削除する |
-| `xestrata_remove_data` | `false` | `absent` のとき、モデルのデータも削除する |
-| `xestrata_version` | `0.2.2-1` | XeStrata のリリース。変えたら `xestrata_deb_sha256` も合わせる |
-| `xestrata_nodes` | `[]` | XeStrata を動かす計算ノード(必須) |
-| `xestrata_user` / `xestrata_group` | `""` | ジョブを実行するユーザー(必須)。モデルの設定はこのユーザーの `~/.config/xestrata` に置かれる |
-| `xestrata_base_dir` | `/opt/xestrata` | イメージ、データ、スクリプトの置き場所(共有ディレクトリ) |
-| `xestrata_host` / `xestrata_port` | `0.0.0.0` / `8095` | API の公開先 |
-| `xestrata_api_key` | `""` | API キー。127.0.0.1 以外に公開するときは必須(Vault で暗号化する) |
-| `xestrata_extra_args` | `[]` | `xestrata` に追加で渡すオプション(例: `["--context", "65536"]`) |
-| `xestrata_slurm_partition` ほか | | ジョブのパーティション、GRES、CPU 数、メモリ、時間 |
+| 変数                               | 既定値             | 説明                                                                                         |
+| :--------------------------------- | :----------------- | :------------------------------------------------------------------------------------------- |
+| `xestrata_state`                   | `present`          | `absent` でタイマー、ジョブ、スクリプト、イメージを削除する                                  |
+| `xestrata_remove_data`             | `false`            | `absent` のとき、モデルのデータも削除する                                                    |
+| `xestrata_version`                 | `0.2.2-1`          | XeStrata のリリース。変えたら `xestrata_deb_sha256` も合わせる                               |
+| `xestrata_nodes`                   | `[]`               | XeStrata を動かす計算ノード(必須)                                                            |
+| `xestrata_user` / `xestrata_group` | `""`               | ジョブを実行するユーザー(必須)。モデルの設定はこのユーザーの `~/.config/xestrata` に置かれる |
+| `xestrata_base_dir`                | `/opt/xestrata`    | イメージ、データ、スクリプトの置き場所(共有ディレクトリ)                                     |
+| `xestrata_host` / `xestrata_port`  | `0.0.0.0` / `8095` | API の公開先                                                                                 |
+| `xestrata_api_key`                 | `""`               | API キー。127.0.0.1 以外に公開するときは必須(Vault で暗号化する)                             |
+| `xestrata_extra_args`              | `[]`               | `xestrata` に追加で渡すオプション(例: `["--context", "65536"]`)                              |
+| `xestrata_slurm_partition` ほか    |                    | ジョブのパーティション、GRES、CPU 数、メモリ、時間                                           |
 
 ## 使い方
 
@@ -54,10 +54,23 @@ OpenAI 互換の API(`http://<ノード>:<xestrata_port>/v1`)と Anthropic 互�
 
 削除するときは `xestrata_state: absent` を指定して、もう一度適用します。
 
+## API キー
+
+`xestrata_api_key` の値は、次の場所に平文で置かれます。
+
+| 場所                                                                                 | 権限                                                  | 書く人                                         |
+| :----------------------------------------------------------------------------------- | :---------------------------------------------------- | :--------------------------------------------- |
+| `<xestrata_secrets_dir>/api.key`                                                     | `0600`(ディレクトリは `0700`)、`xestrata_user` の所有 | このロール                                     |
+| 各計算ノードの `~xestrata_user/.config/xestrata/xestrata-<モデル>.json` の `api_key` | `0600`                                                | XeStrata(起動のたびに、渡されたキーで書き直す) |
+
+- ジョブスクリプトは `api.key` を読み、`xestrata --api-key` で渡します。そのため、ジョブが動いている計算ノードでは `ps` で見えます。
+  計算ノードを XeStrata のジョブが占有する運用を前提にしています。
+- **キーを変えたら、ジョブの再起動が必要です。** 変数を変えて再適用すると `api.key` は書き換わりますが、動いているサーバーは古いキーのままです。
+  `xestrata-resubmit.timer` を止めてジョブを `scancel` し、タイマーを再開すると、新しいキーで起動し、各ノードの設定ファイルも書き直されます。
+- `xestrata_state: absent` は `api.key` を削除しますが、各ノードの `~/.config/xestrata` は残します。
+
 ## 注意
 
-- API キーは `xestrata` のコマンドラインで渡すため、ジョブが動いている計算ノードでは `ps` で見えます。
-  計算ノードを XeStrata のジョブが占有する運用を前提にしています。
 - 版を上げると新しいイメージをビルドしますが、動いているジョブは古いイメージのままです。
   `scancel` でジョブを止めると、タイマーが新しいイメージで投入し直します。古いイメージは残るので、不要なら消してください。
 - 2 回目以降の起動では、共有ディレクトリから RAM にエキスパートを読み込みます(数十 GB)。
