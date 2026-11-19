@@ -23,12 +23,16 @@
 set -u
 echo "== $(date) $(hostname) user=$(id -un) memlock=$(ulimit -Sl)/$(ulimit -Hl)"
 
+{% if xestrata_api_key | length > 0 %}
+# API キーは環境変数で渡す(--api-key だとコマンドラインに出て、ほかのユーザーにも ps で見える)。
+# サーバーは --api-key、STRATA_API_KEY、設定ファイルの api_key の順に使う
+STRATA_API_KEY="$(cat {{ xestrata_secrets_dir }}/api.key)"
+export STRATA_API_KEY
+
+{% endif %}
 apptainer run --nv{% for d in [xestrata_base_dir, xestrata_data_dir] | unique %} --bind {{ d }}{% endfor %} {{ xestrata_image_path }} \
   --yes --no-browser \
   --host {{ xestrata_host }} --port {{ xestrata_port }} \
-{% if xestrata_api_key | length > 0 %}
-  --api-key "$(cat {{ xestrata_secrets_dir }}/api.key)" \
-{% endif %}
 {% for a in xestrata_extra_args %}
   {{ a | quote }} \
 {% endfor %}

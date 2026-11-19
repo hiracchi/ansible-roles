@@ -56,18 +56,16 @@ OpenAI 互換の API(`http://<ノード>:<xestrata_port>/v1`)と Anthropic 互�
 
 ## API キー
 
-`xestrata_api_key` の値は、次の場所に平文で置かれます。
+`xestrata_api_key` の値は、このロールが `<xestrata_secrets_dir>/api.key`(`0600`、ディレクトリは `0700`、`xestrata_user` の所有)に平文で置きます。
 
-| 場所                                                                                 | 権限                                                  | 書く人                                         |
-| :----------------------------------------------------------------------------------- | :---------------------------------------------------- | :--------------------------------------------- |
-| `<xestrata_secrets_dir>/api.key`                                                     | `0600`(ディレクトリは `0700`)、`xestrata_user` の所有 | このロール                                     |
-| 各計算ノードの `~xestrata_user/.config/xestrata/xestrata-<モデル>.json` の `api_key` | `0600`                                                | XeStrata(起動のたびに、渡されたキーで書き直す) |
-
-- ジョブスクリプトは `api.key` を読み、`xestrata --api-key` で渡します。そのため、ジョブが動いている計算ノードでは `ps` で見えます。
-  計算ノードを XeStrata のジョブが占有する運用を前提にしています。
+- ジョブスクリプトは `api.key` を読み、環境変数 `STRATA_API_KEY` で XeStrata に渡します。
+  コマンドラインには出ないので、ほかのユーザーには `ps` で見えません(環境変数は本人と root だけが `/proc/<pid>/environ` で読めます)。
+  XeStrata は `--api-key`、`STRATA_API_KEY`、設定ファイル(`~/.config/xestrata/xestrata-<モデル>.json`)の `api_key` の順にキーを使います。
+- 設定ファイルにはキーを保存しません。以前の版のロール(`--api-key` で渡していた)で保存された `api_key` が残っていると、
+  環境変数より優先度は低いものの平文のまま残るので、消してください。
 - **キーを変えたら、ジョブの再起動が必要です。** 変数を変えて再適用すると `api.key` は書き換わりますが、動いているサーバーは古いキーのままです。
-  `xestrata-resubmit.timer` を止めてジョブを `scancel` し、タイマーを再開すると、新しいキーで起動し、各ノードの設定ファイルも書き直されます。
-- `xestrata_state: absent` は `api.key` を削除しますが、各ノードの `~/.config/xestrata` は残します。
+  `xestrata-resubmit.timer` を止めて各ノードのジョブを `scancel -n <ジョブ名>` で 1 つずつ止め、タイマーを再開すると、新しいキーで起動します。
+- `xestrata_state: absent` は `api.key` を削除します。
 
 ## 注意
 
