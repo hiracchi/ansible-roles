@@ -86,6 +86,44 @@
   notify:
     - restart slurmd
 
+# slurmd の上限をパッケージのユニット任せにせず明示する。PropagateResourceLimitsExcept で
+# 投入側の上限を引き継がない項目は、ジョブが slurmd の上限をそのまま使うため
+- name: Make slurmd systemd drop-in directory
+  become: true
+  ansible.builtin.file:
+    path: /etc/systemd/system/slurmd.service.d
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  when: slurm_slurmd_limit_memlock | length > 0
+
+- name: Setup slurmd LimitMEMLOCK drop-in
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/slurmd.service.d/limits.conf
+    content: |
+      # Managed by Ansible (slurm_client)
+      [Service]
+      LimitMEMLOCK={{ slurm_slurmd_limit_memlock }}
+    mode: '0644'
+    owner: root
+    group: root
+  when: slurm_slurmd_limit_memlock | length > 0
+  notify:
+    - Reload systemd
+    - restart slurmd
+
+- name: Remove slurmd LimitMEMLOCK drop-in when not configured
+  become: true
+  ansible.builtin.file:
+    path: /etc/systemd/system/slurmd.service.d/limits.conf
+    state: absent
+  when: slurm_slurmd_limit_memlock | length == 0
+  notify:
+    - Reload systemd
+    - restart slurmd
+
 - name: start and enable slurmd
   become: yes
   ansible.builtin.service:

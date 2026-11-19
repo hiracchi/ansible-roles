@@ -41,7 +41,11 @@ ProctrackType=proctrack/linuxproc
 #PrologSlurmctld=
 #PropagatePrioProcess=0
 #PropagateResourceLimits=
+{% if slurm_propagate_resource_limits_except %}
+PropagateResourceLimitsExcept={{ slurm_propagate_resource_limits_except }}
+{% else %}
 #PropagateResourceLimitsExcept=
+{% endif %}
 #RebootProgram=
 ReturnToService=1
 #SallocDefaultCommand=
