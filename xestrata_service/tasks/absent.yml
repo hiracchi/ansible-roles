@@ -1,0 +1,64 @@
+---
+# 再投入のタイマーを先に止める(止めずにジョブを消すと、すぐに投入し直される)
+- name: Check XeStrata resubmit timer
+  ansible.builtin.stat:
+    path: /etc/systemd/system/xestrata-resubmit.timer
+  register: xestrata_timer_unit
+
+- name: Stop and disable XeStrata resubmit timer
+  become: true
+  ansible.builtin.systemd:
+    name: xestrata-resubmit.timer
+    enabled: false
+    state: stopped
+  when: xestrata_timer_unit.stat.exists
+
+- name: Remove XeStrata resubmit systemd units
+  become: true
+  ansible.builtin.file:
+    path: "/etc/systemd/system/{{ item }}"
+    state: absent
+  loop:
+    - xestrata-resubmit.service
+    - xestrata-resubmit.timer
+  notify: Reload systemd
+
+- name: Cancel XeStrata Slurm jobs
+  become: true
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      jobs=$(squeue -h -n "{{ xestrata_job_name_prefix }}-{{ xestrata_node }}" -o %i)
+      if [ -n "$jobs" ]; then
+        scancel --name="{{ xestrata_job_name_prefix }}-{{ xestrata_node }}"
+        echo "CANCELLED $jobs"
+      fi
+    executable: /bin/bash
+  loop: "{{ xestrata_nodes }}"
+  loop_control:
+    loop_var: xestrata_node
+  register: xestrata_cancel
+  changed_when: "'CANCELLED' in xestrata_cancel.stdout"
+
+- name: Remove XeStrata scripts, image and state
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ xestrata_scripts_dir }}"
+    - "{{ xestrata_secrets_dir }}"
+    - "{{ xestrata_state_dir }}"
+    - "{{ xestrata_log_dir }}"
+    - "{{ xestrata_image_dir }}"
+    - "{{ xestrata_build_dir }}"
+
+- name: Remove XeStrata model data
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ xestrata_data_dir }}"
+    - "{{ xestrata_base_dir }}"
+  when: xestrata_remove_data | bool

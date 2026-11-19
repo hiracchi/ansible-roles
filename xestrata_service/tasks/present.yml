@@ -1,0 +1,132 @@
+---
+- name: Validate XeStrata variables
+  ansible.builtin.assert:
+    that:
+      - xestrata_nodes | length > 0
+      - xestrata_user | length > 0
+      - xestrata_host in ['127.0.0.1', 'localhost', '::1'] or xestrata_api_key | length > 0
+    fail_msg: >-
+      xestrata_nodes と xestrata_user を指定してください。
+      API を 127.0.0.1 以外に公開するときは xestrata_api_key も必要です
+
+# ディレクトリはコントローラと計算ノードから同じパスで見える共有ディレクトリにある前提
+- name: Create XeStrata directories owned by the service user
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ xestrata_user }}"
+    group: "{{ xestrata_group }}"
+    mode: "2775"
+  loop:
+    - "{{ xestrata_base_dir }}"
+    - "{{ xestrata_data_dir }}"
+    - "{{ xestrata_scripts_dir }}"
+    - "{{ xestrata_state_dir }}"
+    - "{{ xestrata_log_dir }}"
+
+- name: Create XeStrata directories owned by root
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop:
+    - "{{ xestrata_image_dir }}"
+    - "{{ xestrata_build_dir }}"
+
+- name: Create XeStrata secrets directory
+  become: true
+  ansible.builtin.file:
+    path: "{{ xestrata_secrets_dir }}"
+    state: directory
+    owner: "{{ xestrata_user }}"
+    group: "{{ xestrata_group }}"
+    mode: "0700"
+
+- name: Write XeStrata API key
+  become: true
+  ansible.builtin.copy:
+    content: "{{ xestrata_api_key }}"
+    dest: "{{ xestrata_secrets_dir }}/api.key"
+    owner: "{{ xestrata_user }}"
+    group: "{{ xestrata_group }}"
+    mode: "0600"
+  no_log: true
+  when: xestrata_api_key | length > 0
+
+- name: Deploy Apptainer definition for XeStrata
+  become: true
+  ansible.builtin.template:
+    src: xestrata.def.j2
+    dest: "{{ xestrata_build_dir }}/xestrata-{{ xestrata_version }}.def"
+    owner: root
+    group: root
+    mode: "0644"
+
+# ローカルディスクでビルドしてから共有ディレクトリに置く(ビルド中の不完全なイメージを使わせない)
+- name: Build XeStrata Apptainer image
+  become: true
+  delegate_to: "{{ xestrata_build_host }}"
+  run_once: true
+  ansible.builtin.shell:
+    cmd: >-
+      set -o pipefail &&
+      apptainer build --force /var/tmp/xestrata-{{ xestrata_version }}.sif
+      {{ xestrata_build_dir }}/xestrata-{{ xestrata_version }}.def
+      > /var/tmp/xestrata-build.log 2>&1 &&
+      install -m 0644 /var/tmp/xestrata-{{ xestrata_version }}.sif {{ xestrata_image_path }} &&
+      rm -f /var/tmp/xestrata-{{ xestrata_version }}.sif
+    executable: /bin/bash
+    chdir: /var/tmp
+    creates: "{{ xestrata_image_path }}"
+  async: 5400
+  poll: 30
+
+- name: Deploy XeStrata Slurm job scripts
+  become: true
+  ansible.builtin.template:
+    src: xestrata-job.sbatch.j2
+    dest: "{{ xestrata_scripts_dir }}/{{ xestrata_job_name_prefix }}-{{ xestrata_node }}.sbatch"
+    owner: "{{ xestrata_user }}"
+    group: "{{ xestrata_group }}"
+    mode: "0755"
+  loop: "{{ xestrata_nodes }}"
+  loop_control:
+    loop_var: xestrata_node
+
+- name: Deploy XeStrata resubmit script
+  become: true
+  ansible.builtin.template:
+    src: xestrata-resubmit.sh.j2
+    dest: "{{ xestrata_scripts_dir }}/xestrata-resubmit.sh"
+    owner: "{{ xestrata_user }}"
+    group: "{{ xestrata_group }}"
+    mode: "0755"
+
+- name: Deploy XeStrata resubmit systemd units
+  become: true
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: "/etc/systemd/system/{{ item }}"
+    owner: root
+    group: root
+    mode: "0644"
+  loop:
+    - xestrata-resubmit.service
+    - xestrata-resubmit.timer
+  notify: Reload systemd
+
+- name: Flush handlers before enabling the timer
+  ansible.builtin.meta: flush_handlers
+
+- name: Enable and start XeStrata resubmit timer
+  become: true
+  ansible.builtin.systemd:
+    name: xestrata-resubmit.timer
+    enabled: true
+    state: started
+  # check モードではユニットファイルが作られないため、見つからないのは想定どおり
+  ignore_errors: "{{ ansible_check_mode }}"

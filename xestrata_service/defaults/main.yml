@@ -1,0 +1,57 @@
+---
+# present: 導入して常駐させる / absent: タイマー・ジョブ・スクリプト・イメージを削除する
+xestrata_state: present
+# absent のとき、モデルのデータ(xestrata_data_dir)も削除するか
+xestrata_remove_data: false
+
+# XeStrata のリリース(https://github.com/MistVVK/XeStrata/releases)
+xestrata_version: "0.2.2-1"
+xestrata_release_tag: "xe{{ xestrata_version }}"
+xestrata_variant: "contrib-cuda13.1"
+xestrata_deb_name: "xestrata-{{ xestrata_variant }}_{{ xestrata_version }}_amd64.deb"
+xestrata_deb_url: "https://github.com/MistVVK/XeStrata/releases/download/{{ xestrata_release_tag }}/{{ xestrata_deb_name }}"
+# リリースの SHA256SUMS にある値。版を変えたら合わせて変える
+xestrata_deb_sha256: "9acc2d6824a17a533167091d204a3db0d40fc7d9b098d234970259f6fc55923c"
+
+# Apptainer イメージの元にするイメージと、追加で入れるパッケージ
+xestrata_base_image: "ubuntu:26.04"
+xestrata_extra_packages:
+  - libcublas-13-1
+
+# 置き場所。複数ノードで動かすときは、全ノードから見える共有ディレクトリ(NFS など)にする
+xestrata_base_dir: /opt/xestrata
+xestrata_image_dir: "{{ xestrata_base_dir }}/images"
+xestrata_build_dir: "{{ xestrata_base_dir }}/build"
+xestrata_data_dir: "{{ xestrata_base_dir }}/data"
+xestrata_scripts_dir: "{{ xestrata_base_dir }}/scripts"
+xestrata_secrets_dir: "{{ xestrata_base_dir }}/secrets"
+xestrata_state_dir: "{{ xestrata_base_dir }}/state"
+xestrata_log_dir: "{{ xestrata_base_dir }}/logs"
+xestrata_image_path: "{{ xestrata_image_dir }}/xestrata-{{ xestrata_version }}.sif"
+
+# イメージをビルドするホスト(apptainer が入った計算ノード)。既定は xestrata_nodes の先頭
+xestrata_build_host: "{{ xestrata_nodes | first }}"
+
+# XeStrata を 1 つずつ動かす計算ノード(1 ノード 1 インスタンス)
+xestrata_nodes: []
+# ジョブを実行するユーザー。モデルの設定は、このユーザーのホームの ~/.config/xestrata に置かれる
+xestrata_user: ""
+xestrata_group: "{{ xestrata_user }}"
+
+# API の公開先。127.0.0.1 以外にするときは xestrata_api_key が必須
+xestrata_host: "0.0.0.0"
+xestrata_port: 8095
+xestrata_api_key: ""
+# setup(xestrata)に追加で渡すオプション(例: ["--context", "65536"])。--yes は常に付ける
+xestrata_extra_args: []
+
+# Slurm のジョブ
+xestrata_job_name_prefix: xestrata
+xestrata_slurm_partition: ""
+xestrata_slurm_gres: "gpu:1"
+xestrata_slurm_cpus_per_task: 1
+xestrata_slurm_mem: ""
+xestrata_slurm_time: INFINITE
+
+# ジョブが無ければ投入し直すタイマー(コントローラ上で xestrata_user として動く)
+xestrata_resubmit_interval: 2min

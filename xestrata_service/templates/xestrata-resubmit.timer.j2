@@ -1,0 +1,11 @@
+# Managed by Ansible (xestrata_service). Do not edit manually.
+[Unit]
+Description=Periodically submit XeStrata Slurm jobs if they are not queued
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec={{ xestrata_resubmit_interval }}
+Unit=xestrata-resubmit.service
+
+[Install]
+WantedBy=timers.target

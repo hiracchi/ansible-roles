@@ -1,0 +1,28 @@
+Bootstrap: docker
+From: {{ xestrata_base_image }}
+
+# Managed by Ansible (xestrata_service). Do not edit manually.
+
+%labels
+    org.opencontainers.image.title XeStrata
+    org.opencontainers.image.version {{ xestrata_version }}
+
+%post
+    set -eu
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get update
+    apt-get install -y --no-install-recommends ca-certificates curl
+    curl -fL -o /tmp/xestrata.deb {{ xestrata_deb_url }}
+    echo "{{ xestrata_deb_sha256 }}  /tmp/xestrata.deb" | sha256sum -c -
+    apt-get install -y --no-install-recommends /tmp/xestrata.deb{% for p in xestrata_extra_packages %} {{ p }}{% endfor %}
+
+    rm -f /tmp/xestrata.deb
+    apt-get clean
+    rm -rf /var/lib/apt/lists/*
+
+%environment
+    # GitHub への新しいリリースの自動の問い合わせを止める
+    export XESTRATA_UPDATE_CHECK=0
+
+%runscript
+    exec xestrata "$@"

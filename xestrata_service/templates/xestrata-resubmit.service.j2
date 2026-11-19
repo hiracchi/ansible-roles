@@ -1,0 +1,10 @@
+# Managed by Ansible (xestrata_service). Do not edit manually.
+[Unit]
+Description=Submit XeStrata Slurm jobs if they are not queued
+After=network-online.target slurmctld.service
+
+[Service]
+Type=oneshot
+User={{ xestrata_user }}
+Group={{ xestrata_group }}
+ExecStart={{ xestrata_scripts_dir }}/xestrata-resubmit.sh

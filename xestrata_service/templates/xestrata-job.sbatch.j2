@@ -1,0 +1,53 @@
+#!/bin/bash
+# Managed by Ansible (xestrata_service). Do not edit manually.
+#SBATCH --job-name={{ xestrata_job_name_prefix }}-{{ xestrata_node }}
+{% if xestrata_slurm_partition %}
+#SBATCH --partition={{ xestrata_slurm_partition }}
+{% endif %}
+#SBATCH --nodelist={{ xestrata_node }}
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task={{ xestrata_slurm_cpus_per_task }}
+{% if xestrata_slurm_gres %}
+#SBATCH --gres={{ xestrata_slurm_gres }}
+{% endif %}
+{% if xestrata_slurm_mem %}
+#SBATCH --mem={{ xestrata_slurm_mem }}
+{% endif %}
+#SBATCH --time={{ xestrata_slurm_time }}
+#SBATCH --requeue
+#SBATCH --output={{ xestrata_log_dir }}/{{ xestrata_job_name_prefix }}-{{ xestrata_node }}_%j.log
+
+# XeStrata を起動する。初回はモデルのダウンロードと準備のあとにサーバーを起動し、
+# 2 回目からは起動だけを行う(xestrata --yes)。
+set -u
+echo "== $(date) $(hostname) user=$(id -un) memlock=$(ulimit -Sl)/$(ulimit -Hl)"
+
+apptainer run --nv{% for d in [xestrata_base_dir, xestrata_data_dir] | unique %} --bind {{ d }}{% endfor %} {{ xestrata_image_path }} \
+  --yes --no-browser \
+  --host {{ xestrata_host }} --port {{ xestrata_port }} \
+{% if xestrata_api_key | length > 0 %}
+  --api-key "$(cat {{ xestrata_secrets_dir }}/api.key)" \
+{% endif %}
+{% for a in xestrata_extra_args %}
+  {{ a | quote }} \
+{% endfor %}
+  --data-dir {{ xestrata_data_dir }} &
+pid=$!
+
+# プリエンプションや scancel の合図をサーバーに渡し、止まるのを待つ
+trap 'kill -TERM "$pid" 2>/dev/null; wait "$pid"' TERM INT
+
+# API が応答したら、初回の準備が済んだ印を置く(2 台目以降のノードは、この印の後に投入される)
+until code=$(curl -s -o /dev/null -m 5 -w '%{http_code}' http://127.0.0.1:{{ xestrata_port }}/v1/models); \
+      [ "$code" = 200 ] || [ "$code" = 401 ]; do
+  if ! kill -0 "$pid" 2>/dev/null; then
+    wait "$pid"
+    exit $?
+  fi
+  sleep 10
+done
+touch {{ xestrata_state_dir }}/prepared
+echo "== $(date) API ready on port {{ xestrata_port }}"
+
+wait "$pid"
