@@ -126,7 +126,7 @@
   become: true
   ansible.builtin.systemd:
     name: xestrata-resubmit.timer
-    enabled: true
-    state: started
+    enabled: "{{ xestrata_autosubmit | bool }}"
+    state: "{{ 'started' if xestrata_autosubmit | bool else 'stopped' }}"
   # check モードではユニットファイルが作られないため、見つからないのは想定どおり
   ignore_errors: "{{ ansible_check_mode }}"

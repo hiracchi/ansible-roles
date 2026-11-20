@@ -55,3 +55,5 @@ xestrata_slurm_time: INFINITE
 
 # ジョブが無ければ投入し直すタイマー(コントローラ上で xestrata_user として動く)
 xestrata_resubmit_interval: 2min
+# false にするとタイマーを停止・無効化し、ジョブを自動では投入しない(手動で xestrata-resubmit.sh を実行する)
+xestrata_autosubmit: true

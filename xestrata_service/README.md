@@ -34,6 +34,7 @@ OpenAI 互換の API(`http://<ノード>:<xestrata_port>/v1`)と Anthropic 互�
 | `xestrata_base_dir`                | `/opt/xestrata`    | イメージ、データ、スクリプトの置き場所(共有ディレクトリ)                                     |
 | `xestrata_host` / `xestrata_port`  | `0.0.0.0` / `8095` | API の公開先                                                                                 |
 | `xestrata_api_key`                 | `""`               | API キー。127.0.0.1 以外に公開するときは必須(Vault で暗号化する)                             |
+| `xestrata_autosubmit`              | `true`             | `false` で再投入タイマーを停止・無効化する(自動では投入されない)                             |
 | `xestrata_extra_args`              | `[]`               | `xestrata` に追加で渡すオプション(例: `["--context", "65536"]`)                              |
 | `xestrata_slurm_partition` ほか    |                    | ジョブのパーティション、GRES、CPU 数、メモリ、時間                                           |
 
