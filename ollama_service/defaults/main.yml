@@ -27,6 +27,7 @@ ollama_port: 11434
 # Default models to pull
 ollama_default_models:
   - "qwen2.5-coder:7b"
+  # - "qwen3.8:27b"
 
 # Timer check interval on controller (every 2 minutes)
 ollama_resubmit_interval: "*:0/2"
