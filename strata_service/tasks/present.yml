@@ -1,0 +1,137 @@
+---
+- name: Validate Strata variables
+  ansible.builtin.assert:
+    that:
+      - strata_nodes | length > 0
+      - strata_user | length > 0
+      - strata_api_key | length > 0
+    fail_msg: >-
+      strata_nodes、strata_user、strata_api_key を指定してください
+      (API キーは必須。Vault で暗号化して渡す)
+
+# ディレクトリはコントローラと計算ノードから同じパスで見える共有ディレクトリにある前提
+- name: Create Strata directories owned by the service user
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ strata_user }}"
+    group: "{{ strata_group }}"
+    mode: "2775"
+  loop:
+    - "{{ strata_base_dir }}"
+    - "{{ strata_data_dir }}"
+    - "{{ strata_scripts_dir }}"
+    - "{{ strata_state_dir }}"
+    - "{{ strata_log_dir }}"
+
+# Strata は /data に設定や状態を書く。2 台が同じ /data を同時に使うと衝突するので、ノードごとに分ける
+- name: Create Strata per-node data directories
+  become: true
+  ansible.builtin.file:
+    path: "{{ strata_data_dir }}/{{ item }}"
+    state: directory
+    owner: "{{ strata_user }}"
+    group: "{{ strata_group }}"
+    mode: "2775"
+  loop: "{{ strata_nodes }}"
+
+- name: Create Strata local state directory on each node
+  become: true
+  delegate_to: "{{ item }}"
+  ansible.builtin.file:
+    path: "{{ strata_local_dir }}"
+    state: directory
+    owner: "{{ strata_user }}"
+    group: "{{ strata_group }}"
+    mode: "0750"
+  loop: "{{ strata_nodes }}"
+
+- name: Create Strata image directory
+  become: true
+  ansible.builtin.file:
+    path: "{{ strata_image_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Create Strata secrets directory
+  become: true
+  ansible.builtin.file:
+    path: "{{ strata_secrets_dir }}"
+    state: directory
+    owner: "{{ strata_user }}"
+    group: "{{ strata_group }}"
+    mode: "0700"
+
+- name: Write Strata API key
+  become: true
+  ansible.builtin.copy:
+    content: "{{ strata_api_key }}"
+    dest: "{{ strata_secrets_dir }}/api.key"
+    owner: "{{ strata_user }}"
+    group: "{{ strata_group }}"
+    mode: "0600"
+  no_log: true
+
+# ローカルディスクのキャッシュで取得してから共有ディレクトリに置く
+- name: Pull Strata image as Apptainer image
+  become: true
+  delegate_to: "{{ strata_build_host }}"
+  run_once: true
+  ansible.builtin.command:
+    cmd: apptainer pull {{ strata_image_path }} {{ strata_image_ref }}
+    chdir: /var/tmp
+    creates: "{{ strata_image_path }}"
+  environment:
+    APPTAINER_CACHEDIR: /var/tmp/apptainer-cache
+    APPTAINER_TMPDIR: /var/tmp
+  async: 5400
+  poll: 30
+
+- name: Deploy Strata Slurm job scripts
+  become: true
+  ansible.builtin.template:
+    src: strata-job.sbatch.j2
+    dest: "{{ strata_scripts_dir }}/{{ strata_job_name_prefix }}-{{ strata_node }}.sbatch"
+    owner: "{{ strata_user }}"
+    group: "{{ strata_group }}"
+    mode: "0755"
+  loop: "{{ strata_nodes }}"
+  loop_control:
+    loop_var: strata_node
+
+- name: Deploy Strata resubmit script
+  become: true
+  ansible.builtin.template:
+    src: strata-resubmit.sh.j2
+    dest: "{{ strata_scripts_dir }}/strata-resubmit.sh"
+    owner: "{{ strata_user }}"
+    group: "{{ strata_group }}"
+    mode: "0755"
+
+- name: Deploy Strata resubmit systemd units
+  become: true
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: "/etc/systemd/system/{{ item }}"
+    owner: root
+    group: root
+    mode: "0644"
+  loop:
+    - strata-resubmit.service
+    - strata-resubmit.timer
+  notify: Reload systemd
+
+- name: Flush handlers before enabling the timer
+  ansible.builtin.meta: flush_handlers
+
+- name: Enable and start Strata resubmit timer
+  become: true
+  ansible.builtin.systemd:
+    name: strata-resubmit.timer
+    enabled: "{{ strata_autosubmit | bool }}"
+    state: "{{ 'started' if strata_autosubmit | bool else 'stopped' }}"
+  # check モードではユニットファイルが作られないため、見つからないのは想定どおり
+  ignore_errors: "{{ ansible_check_mode }}"

@@ -1,0 +1,16 @@
+---
+# Slurm のコントローラ(sbatch を実行できるホスト)に適用する。
+# イメージの取得だけは、apptainer が入った計算ノード(strata_build_host)で行う。
+- name: Validate strata_state
+  ansible.builtin.assert:
+    that:
+      - strata_state in ['present', 'absent']
+    fail_msg: "strata_state は present か absent を指定してください"
+
+- name: Install and run Strata
+  ansible.builtin.include_tasks: present.yml
+  when: strata_state == 'present'
+
+- name: Remove Strata
+  ansible.builtin.include_tasks: absent.yml
+  when: strata_state == 'absent'

@@ -1,0 +1,63 @@
+#!/bin/bash
+# Managed by Ansible (strata_service). Do not edit manually.
+#SBATCH --job-name={{ strata_job_name_prefix }}-{{ strata_node }}
+{% if strata_slurm_partition %}
+#SBATCH --partition={{ strata_slurm_partition }}
+{% endif %}
+#SBATCH --nodelist={{ strata_node }}
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task={{ strata_slurm_cpus_per_task }}
+{% if strata_slurm_gres %}
+#SBATCH --gres={{ strata_slurm_gres }}
+{% endif %}
+{% if strata_slurm_mem %}
+#SBATCH --mem={{ strata_slurm_mem }}
+{% endif %}
+#SBATCH --time={{ strata_slurm_time }}
+#SBATCH --requeue
+#SBATCH --output={{ strata_log_dir }}/{{ strata_job_name_prefix }}-{{ strata_node }}_%j.log
+
+# Strata を起動する。初回はモデルの準備のあとにサーバーを起動し、2 回目からは起動だけを行う。
+set -u
+echo "== $(date) $(hostname) user=$(id -un) memlock=$(ulimit -Sl)/$(ulimit -Hl)"
+
+# 設定と状態はローカルディスク、モデルなどの重いデータは共有ディレクトリ(ノードごと)に置く
+mkdir -p {{ strata_data_dir }}/{{ strata_node }}/Strata-data
+
+# API キーは環境変数で渡す(コマンドラインに出すと、ほかのユーザーにも ps で見える)
+APPTAINERENV_API_KEY="$(cat {{ strata_secrets_dir }}/api.key)"
+export APPTAINERENV_API_KEY
+
+# --containall: PID 名前空間を分け、ジョブ(コンテナの主プロセス)が終わったら Strata のサーバーも道連れにする
+# (分けないと、scancel しても常駐プロセスが残り、GPU とポートを握り続ける)
+apptainer run --nv --containall --cleanenv --writable-tmpfs \
+  --bind {{ strata_local_dir }}:/data \
+  --bind {{ strata_data_dir }}/{{ strata_node }}/Strata-data:/data/Strata-data \
+{% if strata_models_dir %}
+  --bind {{ strata_models_dir }}:/models:ro --env MODEL_PATH=/models \
+{% endif %}
+  --env FAMILY={{ strata_family }} --env MODEL={{ strata_model }} \
+  --env CONTEXT={{ strata_context }} --env PORT={{ strata_port }} --env VISION={{ strata_vision }} \
+{% for k, v in strata_extra_env.items() %}
+  --env {{ k }}={{ v | quote }} \
+{% endfor %}
+  {{ strata_image_path }} &
+pid=$!
+
+# プリエンプションや scancel の合図をサーバーに渡し、止まるのを待つ
+trap 'kill -TERM "$pid" 2>/dev/null; wait "$pid"' TERM INT
+
+# API が応答したら、初回の準備が済んだ印を置く(2 台目以降のノードは、この印の後に投入される)
+until code=$(curl -s -o /dev/null -m 5 -w '%{http_code}' http://127.0.0.1:{{ strata_port }}/v1/models); \
+      [ "$code" = 200 ] || [ "$code" = 401 ]; do
+  if ! kill -0 "$pid" 2>/dev/null; then
+    wait "$pid"
+    exit $?
+  fi
+  sleep 10
+done
+touch {{ strata_state_dir }}/prepared
+echo "== $(date) API ready on port {{ strata_port }}"
+
+wait "$pid"

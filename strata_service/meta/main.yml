@@ -1,0 +1,19 @@
+---
+galaxy_info:
+  author: hirano-lab
+  description: Run Strata (local LLM server) as Slurm jobs in an Apptainer image
+  license: MIT
+
+  min_ansible_version: "2.15"
+
+  platforms:
+    - name: Ubuntu
+      versions:
+        - all
+
+  galaxy_tags:
+    - llm
+    - slurm
+    - apptainer
+
+dependencies: []

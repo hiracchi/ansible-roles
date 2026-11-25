@@ -1,0 +1,71 @@
+---
+# 再投入のタイマーを先に止める(止めずにジョブを消すと、すぐに投入し直される)
+- name: Check Strata resubmit timer
+  ansible.builtin.stat:
+    path: /etc/systemd/system/strata-resubmit.timer
+  register: strata_timer_unit
+
+- name: Stop and disable Strata resubmit timer
+  become: true
+  ansible.builtin.systemd:
+    name: strata-resubmit.timer
+    enabled: false
+    state: stopped
+  when: strata_timer_unit.stat.exists
+
+- name: Remove Strata resubmit systemd units
+  become: true
+  ansible.builtin.file:
+    path: "/etc/systemd/system/{{ item }}"
+    state: absent
+  loop:
+    - strata-resubmit.service
+    - strata-resubmit.timer
+  notify: Reload systemd
+
+- name: Cancel Strata Slurm jobs
+  become: true
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      jobs=$(squeue -h -n "{{ strata_job_name_prefix }}-{{ strata_node }}" -o %i)
+      if [ -n "$jobs" ]; then
+        scancel --name="{{ strata_job_name_prefix }}-{{ strata_node }}"
+        echo "CANCELLED $jobs"
+      fi
+    executable: /bin/bash
+  loop: "{{ strata_nodes }}"
+  loop_control:
+    loop_var: strata_node
+  register: strata_cancel
+  changed_when: "'CANCELLED' in strata_cancel.stdout"
+
+- name: Remove Strata scripts, image and state
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ strata_scripts_dir }}"
+    - "{{ strata_secrets_dir }}"
+    - "{{ strata_state_dir }}"
+    - "{{ strata_log_dir }}"
+    - "{{ strata_image_dir }}"
+
+- name: Remove Strata local state directory on each node
+  become: true
+  delegate_to: "{{ item }}"
+  ansible.builtin.file:
+    path: "{{ strata_local_dir }}"
+    state: absent
+  loop: "{{ strata_nodes }}"
+
+- name: Remove Strata data
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ strata_data_dir }}"
+    - "{{ strata_base_dir }}"
+  when: strata_remove_data | bool

@@ -1,0 +1,10 @@
+# Managed by Ansible (strata_service). Do not edit manually.
+[Unit]
+Description=Submit Strata Slurm jobs if they are not queued
+After=network-online.target slurmctld.service
+
+[Service]
+Type=oneshot
+User={{ strata_user }}
+Group={{ strata_group }}
+ExecStart={{ strata_scripts_dir }}/strata-resubmit.sh

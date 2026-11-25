@@ -1,0 +1,61 @@
+---
+# present: 導入して常駐させる / absent: タイマー・ジョブ・スクリプト・イメージを削除する
+strata_state: present
+# absent のとき、Strata が作ったデータ(strata_data_dir)も削除するか
+strata_remove_data: false
+
+# Strata のリリース(https://github.com/Niko1221/Strata/releases)。Docker イメージのタグは <版>-<flavor>
+strata_version: "0.2.20"
+strata_flavor: cuda13
+strata_image_ref: "docker://ghcr.io/niko1221/strata:{{ strata_version }}-{{ strata_flavor }}"
+
+# 置き場所。複数ノードで動かすときは、全ノードから見える共有ディレクトリ(NFS など)にする
+strata_base_dir: /opt/strata
+strata_image_dir: "{{ strata_base_dir }}/images"
+strata_data_dir: "{{ strata_base_dir }}/data"
+strata_scripts_dir: "{{ strata_base_dir }}/scripts"
+strata_secrets_dir: "{{ strata_base_dir }}/secrets"
+strata_state_dir: "{{ strata_base_dir }}/state"
+strata_log_dir: "{{ strata_base_dir }}/logs"
+strata_image_path: "{{ strata_image_dir }}/strata-{{ strata_version }}-{{ strata_flavor }}.sif"
+
+# Strata が /data に書く設定と状態(state、config、home、install)の置き場所。各計算ノードのローカルディスク。
+# NFS に置くと、状態確認が失敗して起動の約 30 秒後に自分で終了したり、起動し直しが OSError で失敗したりする。
+# モデルなどの重いデータ(Strata-data)だけを、共有ディレクトリ(strata_data_dir/<ノード名>)に置く
+strata_local_dir: /var/lib/strata
+
+# イメージを取得するホスト(apptainer が入った計算ノード)。既定は strata_nodes の先頭
+strata_build_host: "{{ strata_nodes | first }}"
+
+# Strata を 1 つずつ動かす計算ノード(1 ノード 1 インスタンス)
+strata_nodes: []
+# ジョブを実行するユーザー
+strata_user: ""
+strata_group: "{{ strata_user }}"
+
+# モデル。strata_models_dir に取得済みの GGUF などがあれば、それを読み取り専用で使う(空ならダウンロードする)
+strata_family: qwen
+strata_model: IQ3_XXS
+strata_models_dir: ""
+strata_context: 32k
+# 画像入力: off / on / gpu / cpu
+strata_vision: "off"
+# 追加で渡す環境変数(例: { STRATA_SET: "prefill=65536" })
+strata_extra_env: {}
+
+# API の公開先(コンテナの中のポート。Apptainer はホストと同じネットワークを使う)。API キーは必須
+strata_port: 8080
+strata_api_key: ""
+
+# Slurm のジョブ
+strata_job_name_prefix: strata
+strata_slurm_partition: ""
+strata_slurm_gres: "gpu:1"
+strata_slurm_cpus_per_task: 1
+strata_slurm_mem: ""
+strata_slurm_time: INFINITE
+
+# ジョブが無ければ投入し直すタイマー(コントローラ上で strata_user として動く)
+strata_resubmit_interval: 2min
+# false にするとタイマーを停止・無効化し、ジョブを自動では投入しない(手動で strata-resubmit.sh を実行する)
+strata_autosubmit: true

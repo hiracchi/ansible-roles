@@ -1,0 +1,11 @@
+# Managed by Ansible (strata_service). Do not edit manually.
+[Unit]
+Description=Periodically submit Strata Slurm jobs if they are not queued
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec={{ strata_resubmit_interval }}
+Unit=strata-resubmit.service
+
+[Install]
+WantedBy=timers.target

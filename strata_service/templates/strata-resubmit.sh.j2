@@ -1,0 +1,18 @@
+#!/bin/bash
+# Managed by Ansible (strata_service). Do not edit manually.
+# 各ノードの Strata のジョブが無ければ投入する。
+# 初回の準備(モデルの取得と変換)が済むまでは、先頭のノードだけを投入する。
+# 2 台が同時に準備すると、共有のデータを奪い合うため。
+set -u
+PREPARED={{ strata_state_dir }}/prepared
+
+first=1
+for node in{% for n in strata_nodes %} {{ n }}{% endfor %}; do
+  name="{{ strata_job_name_prefix }}-${node}"
+  # slurmctld に問い合わせられないときは、何もしない(誤って二重に投入しない)
+  jobs=$(squeue -h -n "$name" -o %i) || exit 1
+  if [ -z "$jobs" ] && { [ "$first" = 1 ] || [ -e "$PREPARED" ]; }; then
+    sbatch "{{ strata_scripts_dir }}/${name}.sbatch"
+  fi
+  first=0
+done
