@@ -7,6 +7,11 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9090']
 
+  # Loki の死活監視用(Loki Down のアラートが使う。Loki が止まると、ログとログ系のアラート(OOM など)が止まる)
+  - job_name: 'loki'
+    static_configs:
+      - targets: ['loki:3100']
+
 {% if snmp_nas_targets | default([]) | length > 0 %}
   # NAS の容量は snmp_exporter(snmp_nas ロール)経由で取得する。target は NAS の IP、instance は name
   - job_name: 'nas'

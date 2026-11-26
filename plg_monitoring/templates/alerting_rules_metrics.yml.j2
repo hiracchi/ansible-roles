@@ -54,6 +54,54 @@ groups:
           summary: "Host {{ '{{' }} $labels.instance {{ '}}' }} is DOWN"
           description: "Target node {{ '{{' }} $labels.instance {{ '}}' }} has been unreachable for more than {{ plg_monitoring_alert_host_down_for }}."
 
+      - uid: "{{ plg_monitoring_cluster_name | lower }}-loki-down"
+        title: "Loki Down ({{ plg_monitoring_cluster_name }})"
+        condition: "B"
+        data:
+          - refId: "A"
+            queryType: "range"
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: "Prometheus"
+            model:
+              editorMode: "code"
+              expr: "up{job=\"loki\"} == 0"
+              instant: true
+              range: false
+              refId: "A"
+          - refId: "B"
+            datasourceUid: "-100"
+            model:
+              conditions:
+                - evaluator:
+                    params: [0]
+                    type: "gt"
+                  operator:
+                    type: "and"
+                  query:
+                    params: ["A"]
+                  reducer:
+                    params: []
+                    type: "last"
+                  type: "query"
+              datasource:
+                name: "Expression"
+                type: "__expr__"
+                uid: "__expr__"
+              expression: "A"
+              refId: "B"
+              type: "threshold"
+        noDataState: "Alerting"
+        execErrState: "Alerting"
+        for: "5m"
+        labels:
+          severity: "critical"
+          cluster: "{{ plg_monitoring_cluster_name }}"
+        annotations:
+          summary: "Loki is DOWN"
+          description: "Loki has not responded for more than 5m. Logs are not being collected, and log-based alerts (such as OOM Killer Detected) do not work."
+
       - uid: "{{ plg_monitoring_cluster_name | lower }}-disk-space-low"
         title: "Disk Space Low ({{ plg_monitoring_cluster_name }})"
         condition: "B"
