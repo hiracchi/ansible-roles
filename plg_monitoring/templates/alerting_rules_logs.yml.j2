@@ -45,7 +45,9 @@ groups:
               refId: "B"
               type: "threshold"
         noDataState: "OK"
-        execErrState: "Alerting"
+        # Loki への問い合わせが失敗したとき(Loki の起動中や、ディスクの I/O で詰まったとき)に、
+        # 「OOM を検出した」という誤報にならないよう、異常なしとして扱う(以前は Alerting で、ホスト名のない通知が飛んだ)
+        execErrState: "OK"
         for: "0m"
         labels:
           severity: "critical"
