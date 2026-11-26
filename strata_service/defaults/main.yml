@@ -38,6 +38,8 @@ strata_family: qwen
 strata_model: IQ3_XXS
 strata_models_dir: ""
 strata_context: 32k
+# ノードごとに、コンテキストを変えるとき(例: { node-02: 128k })。無いノードは strata_context を使う
+strata_context_by_node: {}
 # 画像入力: off / on / gpu / cpu
 strata_vision: "off"
 # 追加で渡す環境変数(例: { STRATA_SET: "prefill=65536" })

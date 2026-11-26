@@ -38,7 +38,7 @@ apptainer run --nv --containall --cleanenv --writable-tmpfs \
   --bind {{ strata_models_dir }}:/models:ro --env MODEL_PATH=/models \
 {% endif %}
   --env FAMILY={{ strata_family }} --env MODEL={{ strata_model }} \
-  --env CONTEXT={{ strata_context }} --env PORT={{ strata_port }} --env VISION={{ strata_vision }} \
+  --env CONTEXT={{ strata_context_by_node[strata_node] | default(strata_context) }} --env PORT={{ strata_port }} --env VISION={{ strata_vision }} \
 {% for k, v in strata_extra_env.items() %}
   --env {{ k }}={{ v | quote }} \
 {% endfor %}

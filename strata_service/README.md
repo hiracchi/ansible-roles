@@ -42,6 +42,7 @@ OpenAI 互換の API(`http://<ノード>:<strata_port>/v1`)と Anthropic 互換�
 | `strata_context` / `strata_vision` | `32k` / `off`         | コンテキストの長さ、画像入力(`off` / `on` / `gpu` / `cpu`)                                 |
 | `strata_port`                      | `8080`                | API のポート(Apptainer はホストと同じネットワークを使う)                                   |
 | `strata_api_key`                   | `""`                  | API キー(必須。Vault で暗号化する)                                                         |
+| `strata_context_by_node`           | `{}`                  | ノードごとにコンテキストを変える(例: `{ node-02: 128k }`)。無いノードは `strata_context`    |
 | `strata_extra_env`                 | `{}`                  | 追加で渡す環境変数(例: `{ STRATA_SET: "prefill=65536" }`)                                  |
 | `strata_autosubmit`                | `true`                | `false` で再投入タイマーを停止・無効化する                                                 |
 | `strata_slurm_partition` ほか      |                       | ジョブのパーティション、GRES、CPU 数、メモリ、時間                                         |
