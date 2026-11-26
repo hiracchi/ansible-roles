@@ -1,0 +1,19 @@
+---
+galaxy_info:
+  author: hirano-lab
+  description: Run LiteLLM Proxy (per-user API keys, usage tracking and limits) in Docker
+  license: MIT
+
+  min_ansible_version: "2.15"
+
+  platforms:
+    - name: Ubuntu
+      versions:
+        - all
+
+  galaxy_tags:
+    - llm
+    - docker
+    - proxy
+
+dependencies: []

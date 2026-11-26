@@ -1,0 +1,14 @@
+---
+- name: Validate litellm_proxy_state
+  ansible.builtin.assert:
+    that:
+      - litellm_proxy_state in ['present', 'absent']
+    fail_msg: "litellm_proxy_state は present か absent を指定してください"
+
+- name: Install LiteLLM proxy
+  ansible.builtin.include_tasks: present.yml
+  when: litellm_proxy_state == 'present'
+
+- name: Remove LiteLLM proxy
+  ansible.builtin.include_tasks: absent.yml
+  when: litellm_proxy_state == 'absent'

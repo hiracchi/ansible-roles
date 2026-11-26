@@ -1,0 +1,79 @@
+---
+- name: Validate LiteLLM proxy variables
+  ansible.builtin.assert:
+    that:
+      - litellm_proxy_models | length > 0
+      - litellm_proxy_master_key | length > 0
+      - litellm_proxy_salt_key | length > 0
+      - litellm_proxy_db_password | length > 0
+    fail_msg: >-
+      litellm_proxy_models、litellm_proxy_master_key、litellm_proxy_salt_key、
+      litellm_proxy_db_password を指定してください(秘密情報は Vault で暗号化して渡す)
+
+- name: Create LiteLLM proxy directories
+  become: true
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+  loop:
+    - { path: "{{ litellm_proxy_dir }}", mode: "0750" }
+    - { path: "{{ litellm_proxy_data_dir }}", mode: "0755" }
+
+# 秘密情報を含むので、root だけが読める
+- name: Deploy LiteLLM proxy environment file
+  become: true
+  ansible.builtin.template:
+    src: env.j2
+    dest: "{{ litellm_proxy_dir }}/.env"
+    owner: root
+    group: root
+    mode: "0600"
+  no_log: true
+  notify: Restart LiteLLM proxy
+
+- name: Deploy LiteLLM proxy config
+  become: true
+  ansible.builtin.template:
+    src: config.yaml.j2
+    dest: "{{ litellm_proxy_dir }}/config.yaml"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart LiteLLM proxy
+
+- name: Deploy LiteLLM proxy compose file
+  become: true
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ litellm_proxy_dir }}/docker-compose.yml"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart LiteLLM proxy
+
+- name: Deploy LiteLLM proxy systemd unit
+  become: true
+  ansible.builtin.template:
+    src: litellm-proxy.service.j2
+    dest: /etc/systemd/system/litellm-proxy.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - Reload systemd
+    - Restart LiteLLM proxy
+
+- name: Flush handlers before starting the proxy
+  ansible.builtin.meta: flush_handlers
+
+- name: Enable and start LiteLLM proxy
+  become: true
+  ansible.builtin.systemd:
+    name: litellm-proxy.service
+    enabled: true
+    state: started
+  # check モードではユニットファイルが作られないため、見つからないのは想定どおり
+  ignore_errors: "{{ ansible_check_mode }}"

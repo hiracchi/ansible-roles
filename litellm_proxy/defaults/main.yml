@@ -1,0 +1,46 @@
+---
+# present: 導入して常駐させる / absent: コンテナと設定を削除する
+litellm_proxy_state: present
+# absent のとき、PostgreSQL のデータ(人ごとのキーと利用量)も削除するか
+litellm_proxy_remove_data: false
+
+litellm_proxy_dir: /opt/litellm-proxy
+# PostgreSQL のデータの置き場所(人ごとのキーと利用量が入る。ローカルディスクに置く)
+litellm_proxy_data_dir: /var/lib/litellm-proxy
+
+# コンテナのイメージ。再現したいときは、タグを版(例: v1.111.0)に固定する
+litellm_proxy_image: ghcr.io/berriai/litellm:main-stable
+litellm_proxy_postgres_image: postgres:16
+
+# 待ち受け。リバースプロキシを前に置くなら 127.0.0.1 にする
+litellm_proxy_bind: "0.0.0.0"
+litellm_proxy_port: 4000
+
+# 秘密情報(必須。Vault で暗号化して渡す)
+# 管理者のキー(sk- で始まる文字列)。人ごとのキーの発行と失効に使う
+litellm_proxy_master_key: ""
+# 保存した認証情報の暗号化に使う。後から変えると、保存済みの値が読めなくなる
+litellm_proxy_salt_key: ""
+litellm_proxy_db_password: ""
+
+# 転送先(バックエンド)。同じ model_name を複数並べると、振り分ける
+# 例:
+#   - model_name: qwen3.8-flash-next
+#     model: qwen3.8-flash-next      # バックエンドに送るモデル名(任意でよいサーバーが多い)
+#     api_base: http://10.0.0.1:8095/v1
+#     api_key: "{{ vault_backend_key }}"
+#     max_parallel_requests: 1       # 同時に処理できる件数
+litellm_proxy_models: []
+
+# 振り分けの方式(least-busy: 空いている方へ)と、失敗したときの再試行回数、1 リクエストの待ち時間(秒)
+litellm_proxy_routing_strategy: least-busy
+litellm_proxy_num_retries: 2
+litellm_proxy_request_timeout: 900
+
+# 1 トークンあたりの単価(任意の単位)。自前のモデルには単価がなく、利用額が 0 のままで予算の上限が効かないので、
+# 仮の単価を決めて、予算(max_budget)をトークン数の上限として使う(0.000001 なら、予算 1 = 100 万トークン)。0 なら設定しない
+litellm_proxy_input_cost_per_token: 0
+litellm_proxy_output_cost_per_token: 0
+
+# true にすると、プロンプトと応答の中身をデータベースに保存する(既定は、利用量だけを記録する)
+litellm_proxy_store_prompts: false

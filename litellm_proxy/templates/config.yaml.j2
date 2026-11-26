@@ -1,0 +1,32 @@
+# Managed by Ansible (litellm_proxy). Do not edit manually.
+model_list:
+{% for m in litellm_proxy_models %}
+  - model_name: {{ m.model_name }}
+    litellm_params:
+      model: openai/{{ m.model | default(m.model_name) }}
+      api_base: {{ m.api_base }}
+      api_key: os.environ/BACKEND_KEY_{{ loop.index0 }}
+{% if litellm_proxy_input_cost_per_token | float > 0 %}
+      input_cost_per_token: {{ litellm_proxy_input_cost_per_token }}
+{% endif %}
+{% if litellm_proxy_output_cost_per_token | float > 0 %}
+      output_cost_per_token: {{ litellm_proxy_output_cost_per_token }}
+{% endif %}
+{% if m.max_parallel_requests is defined %}
+      max_parallel_requests: {{ m.max_parallel_requests }}
+{% endif %}
+{% endfor %}
+
+router_settings:
+  routing_strategy: {{ litellm_proxy_routing_strategy }}
+  num_retries: {{ litellm_proxy_num_retries }}
+  timeout: {{ litellm_proxy_request_timeout }}
+
+litellm_settings:
+  drop_params: true
+  request_timeout: {{ litellm_proxy_request_timeout }}
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  database_url: os.environ/DATABASE_URL
+  store_prompts_in_spend_logs: {{ litellm_proxy_store_prompts | lower }}

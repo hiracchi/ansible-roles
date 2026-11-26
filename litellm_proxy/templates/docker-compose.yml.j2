@@ -1,0 +1,26 @@
+# Managed by Ansible (litellm_proxy). Do not edit manually.
+services:
+  db:
+    image: {{ litellm_proxy_postgres_image }}
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - {{ litellm_proxy_data_dir }}:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U litellm -d litellm"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  litellm:
+    image: {{ litellm_proxy_image }}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+    ports:
+      - "{{ litellm_proxy_bind }}:{{ litellm_proxy_port }}:4000"
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+    command: ["--config", "/app/config.yaml", "--port", "4000"]

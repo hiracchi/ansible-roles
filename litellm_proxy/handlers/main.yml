@@ -1,0 +1,11 @@
+---
+- name: Reload systemd
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Restart LiteLLM proxy
+  become: true
+  ansible.builtin.systemd:
+    name: litellm-proxy.service
+    state: restarted

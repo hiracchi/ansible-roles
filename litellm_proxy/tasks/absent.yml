@@ -1,0 +1,33 @@
+---
+- name: Check LiteLLM proxy unit
+  ansible.builtin.stat:
+    path: /etc/systemd/system/litellm-proxy.service
+  register: litellm_proxy_unit
+
+- name: Stop and disable LiteLLM proxy
+  become: true
+  ansible.builtin.systemd:
+    name: litellm-proxy.service
+    enabled: false
+    state: stopped
+  when: litellm_proxy_unit.stat.exists
+
+- name: Remove LiteLLM proxy systemd unit
+  become: true
+  ansible.builtin.file:
+    path: /etc/systemd/system/litellm-proxy.service
+    state: absent
+  notify: Reload systemd
+
+- name: Remove LiteLLM proxy files
+  become: true
+  ansible.builtin.file:
+    path: "{{ litellm_proxy_dir }}"
+    state: absent
+
+- name: Remove LiteLLM proxy data
+  become: true
+  ansible.builtin.file:
+    path: "{{ litellm_proxy_data_dir }}"
+    state: absent
+  when: litellm_proxy_remove_data | bool
