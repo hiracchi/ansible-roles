@@ -92,7 +92,9 @@ groups:
               expression: "A"
               refId: "B"
               type: "threshold"
-        noDataState: "Alerting"
+        # 監視の再起動(Prometheus のデータの途切れ)で、「Loki が止まった」という誤報にならないよう、データがないときは異常なしとして扱う。
+        # Loki が本当に止まったときは、up == 0 で検出する
+        noDataState: "OK"
         execErrState: "Alerting"
         for: "5m"
         labels:
